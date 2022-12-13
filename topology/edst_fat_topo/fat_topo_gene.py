@@ -293,8 +293,6 @@ def span_fat_gene(switch_num, switch_port, host_port,tree_num, downlink_devision
     return route_path
 
         
-
-
 if __name__ == "__main__":
     switches = 200
     hosts = 24
