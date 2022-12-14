@@ -79,10 +79,51 @@ def search_path(topo_index, root, topo_dic):
         for node_num in range(len(path)):
             if(path[node_num] != root):
                 if(root not in topo_dic[path[node_num]].keys()):
-                    topo_dic[path[node_num]][root] = [(i,node_num)]
+                    topo_dic[path[node_num]][root] = [i,node_num*(-1)]
                 else:
-                    topo_dic[path[node_num]][root].append((i,node_num))
+                    if(i not in topo_dic[path[node_num]][root]):
+                        topo_dic[path[node_num]][root].append(i)
+                        topo_dic[path[node_num]][root].append(node_num*(-1))
     return root_path,topo_dic
+
+def find_route_path(src, dst, all_path, topo_dic, layers):
+    route_path = []
+    src_path_infor = topo_dic[dst][src]
+    for path_index in range(0,len(src_path_infor),2):
+        aroute_path = []
+        path = all_path[src][src_path_infor[path_index]]
+        loca = src_path_infor[path_index+1]*(-1)
+        aroute_path.append((path[loca],layers+loca*-1))
+        loca -= 1
+        while(path[loca] != src):
+            aroute_path.append((path[loca], layers+loca*-1))
+            loca -= 1
+        aroute_path.append((path[loca], layers+loca*-1))
+        if(aroute_path not in route_path):
+            route_path.append(aroute_path)
+
+    dst_path_infor = topo_dic[src][dst]
+    for path_index in range(0,len(dst_path_infor),2):
+        aroute_path = []
+        path = all_path[dst][dst_path_infor[path_index]]
+        loca = dst_path_infor[path_index+1]*(-1)
+        aroute_path.append((path[loca],layers+loca*-1))
+        loca -= 1
+        while(path[loca] != dst):
+            aroute_path.append((path[loca], layers+loca*-1))
+            loca -= 1
+        aroute_path.append((path[loca], layers+loca*-1))
+        if(aroute_path not in route_path):
+            route_path.append(aroute_path)
+    src_keys = set(topo_dic[src].keys())
+    dst_keys = set(topo_dic[dst].keys())
+    if(dst in src_keys):
+        src_keys.remove(dst)
+    if(src in dst_keys):
+        dst_keys.remove(src)
+    inter_node = src_keys & dst_keys
+    print(inter_node)
+    return route_path
 
 def route_generate(topo_index, switches):
     all_path = []
@@ -94,6 +135,10 @@ def route_generate(topo_index, switches):
         all_path.append(root_path)
         print(root_path)
     print(topo_dic)
+    layers = len(all_path)
+    route_path = find_route_path(0, 2, all_path, topo_dic, layers)
+    print(route_path)
+    
 
 
 if __name__ == "__main__":
@@ -102,7 +147,7 @@ if __name__ == "__main__":
     ports = 30
     vir_layer_degree = [1,2,2,1]
     is_random = 0
-    # switches = 10000
+    # switches = 5000
     # hosts = 24
     # ports = 64
     # vir_layer_degree = [5,10,10,10,5]
