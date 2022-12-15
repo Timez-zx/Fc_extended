@@ -1,6 +1,6 @@
 import random
 import multiprocessing
-
+import math
 def change_base(basic, switches):
     if(basic == 0):
         basic = switches - 1
@@ -126,6 +126,7 @@ def find_route_path(src, dst, all_path, topo_dic, layers):
     if(src in dst_keys):
         dst_keys.remove(src)
     inter_nodes = list(src_keys & dst_keys)
+
     for inter in inter_nodes:
         src_inter = topo_dic[src][inter]
         dst_inter = topo_dic[dst][inter]
@@ -141,16 +142,47 @@ def find_route_path(src, dst, all_path, topo_dic, layers):
                 src_valid.append(judge)
             elif(src_loca > dst_loca):
                 dst_valid.append(judge)
-
+        src_revalid_path = []
+        src_revalid = []
         for src_index in src_valid:
-            for dst_index in dst_valid:
+            src_path = all_path[inter][src_index]
+            path_temp = []
+            for node in src_path:
+                if(node != src):
+                    path_temp.append(node)
+                    continue
+                else:
+                    break
+            if(path_temp not in src_revalid_path):
+                src_revalid_path.append(path_temp)
+                src_revalid.append(src_index)
+        dst_revalid_path = []
+        dst_revalid = []
+        for dst_index in dst_valid:
+            dst_path = all_path[inter][dst_index]
+            path_temp = []
+            for node in dst_path:
+                if(node != dst):
+                    path_temp.append(node)
+                    continue
+                else:
+                    break
+            if(path_temp not in dst_revalid_path):
+                dst_revalid_path.append(path_temp)
+                dst_revalid.append(dst_index)
+
+        for src_index in src_revalid:
+            for dst_index in dst_revalid:
                 src_path = all_path[inter][src_index]
                 dst_path = all_path[inter][dst_index]
                 begin_src = 0
                 begin_dst = 0
                 while(src_path[begin_src] == dst_path[begin_dst]):
-                    begin_src += 1
-                    begin_dst += 1
+                    if(src_path[begin_src] == inter):
+                        begin_src += 1
+                        begin_dst += 1
+                    else:
+                        break
                 begin_src = begin_src - 1
                 aroute_src = []
                 aroute_dst = []
@@ -161,8 +193,10 @@ def find_route_path(src, dst, all_path, topo_dic, layers):
                 while(dst_path[begin_dst] != dst):
                     aroute_dst.append((dst_path[begin_dst], -1*begin_dst+layers))
                     begin_dst += 1
-                aroute_dst.append((dst_path[begin_dst], -1*begin_dst+layers))     
-                route_path.append(aroute_src+aroute_dst)
+                aroute_dst.append((dst_path[begin_dst], -1*begin_dst+layers))
+                aroute_path = aroute_src+aroute_dst
+                if(aroute_path not in route_path):  
+                    route_path.append(aroute_path)
 
     return route_path
 
@@ -170,11 +204,11 @@ def route_find_thread(pairs, all_path, topo_dic,layers):
     count = 0
     for pair in pairs:
         route_path = find_route_path(pair[0], pair[1], all_path, topo_dic, layers)
+        if(count%10000 == 0):
+            print(count/len(pairs),len(route_path))
         count += 1
-        if(count % 10000 == 0):
-            print(count/len(pairs), len(route_path))
 
-def route_generate(topo_index, switches, thread_num):
+def route_generate(topo_index, switches, thread_num, layers):
     all_path = []
     topo_dic = {}
     for i in range(switches):
@@ -183,9 +217,9 @@ def route_generate(topo_index, switches, thread_num):
         root_path,topo_dic= search_path(topo_index, sw, topo_dic)
         all_path.append(root_path)
  
-    layers = len(all_path)
+
     pair_num = switches*(switches-1)/2
-    average_num = int(round(pair_num/thread_num))
+    average_num = int(math.ceil(pair_num/thread_num))
     pair_list = [[] for i in range(thread_num)]
     count = 0
     allo_index = 0
@@ -210,17 +244,17 @@ def route_generate(topo_index, switches, thread_num):
 
 
 if __name__ == "__main__":
-    switches = 4000
+    switches = 3000
     hosts = 24
-    ports = 64
-    vir_layer_degree = [7,13,13,7]
+    ports = 56
+    vir_layer_degree = [4,8,8,8,4]
     is_random = 1
     # switches = 5000
     # hosts = 24
     # ports = 64
     # vir_layer_degree = [5,10,10,10,5]
     # is_random = 1
-    thread_num = 8
+    thread_num = 16
     topo_index = fc_topo_gene(switches, hosts, ports, vir_layer_degree, is_random)
-    route_generate(topo_index, switches, thread_num)
+    route_generate(topo_index, switches, thread_num, len(vir_layer_degree))
 
