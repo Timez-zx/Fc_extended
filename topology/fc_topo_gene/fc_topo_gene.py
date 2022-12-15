@@ -1,4 +1,5 @@
 import random
+import multiprocessing
 
 def change_base(basic, switches):
     if(basic == 0):
@@ -165,7 +166,15 @@ def find_route_path(src, dst, all_path, topo_dic, layers):
 
     return route_path
 
-def route_generate(topo_index, switches):
+def route_find_thread(pairs, all_path, topo_dic,layers):
+    count = 0
+    for pair in pairs:
+        route_path = find_route_path(pair[0], pair[1], all_path, topo_dic, layers)
+        count += 1
+        if(count % 10000 == 0):
+            print(count/len(pairs), len(route_path))
+
+def route_generate(topo_index, switches, thread_num):
     all_path = []
     topo_dic = {}
     for i in range(switches):
@@ -175,25 +184,43 @@ def route_generate(topo_index, switches):
         all_path.append(root_path)
  
     layers = len(all_path)
+    pair_num = switches*(switches-1)/2
+    average_num = int(round(pair_num/thread_num))
+    pair_list = [[] for i in range(thread_num)]
+    count = 0
+    allo_index = 0
     for i in range(switches):
         for j in range(i+1, switches):
-            route_path = find_route_path(i, j, all_path, topo_dic, layers)
-        if(i % 100 == 0):
-            print(i,j,len(route_path))
+            pair_list[allo_index].append((i,j))
+            if(count < average_num-1):
+                count += 1
+            else:
+                count = 0
+                allo_index += 1
+    thread_list = []
+    for i in range(thread_num):
+        thread = multiprocessing.Process(target = route_find_thread, args = (pair_list[i], all_path, topo_dic, layers))
+        thread.start()
+        thread_list.append(thread)
+    for th in thread_list:
+        th.join()
+            
+    # route_path = find_route_path(i, j, all_path, topo_dic, layers)
     
 
 
 if __name__ == "__main__":
-    switches = 1000
+    switches = 4000
     hosts = 24
-    ports = 54
-    vir_layer_degree = [5,10,10,5]
+    ports = 64
+    vir_layer_degree = [7,13,13,7]
     is_random = 1
     # switches = 5000
     # hosts = 24
     # ports = 64
     # vir_layer_degree = [5,10,10,10,5]
     # is_random = 1
+    thread_num = 8
     topo_index = fc_topo_gene(switches, hosts, ports, vir_layer_degree, is_random)
-    route_generate(topo_index, switches)
+    route_generate(topo_index, switches, thread_num)
 
