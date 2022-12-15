@@ -8,7 +8,7 @@ def change_base(basic, switches):
         basic = basic - 1
     return basic
 
-def fc_topo_gene(switches, hosts, ports, vir_layer_degree, is_random):
+def fc_topo_gene(switches, hosts, ports, vir_layer_degree, is_random, random_seed):
     sw_ports = ports - hosts
     remain_ports = [[j for j in range(1, sw_ports+1)] for i in range(switches)]
     bipart_num = len(vir_layer_degree) - 1
@@ -21,6 +21,7 @@ def fc_topo_gene(switches, hosts, ports, vir_layer_degree, is_random):
         basic = switches - 1
         remain_list = []
         if(is_random):
+            random.seed(random_seed)
             random.shuffle(switch_list)
         for sw in range(switches):
             src = switch_list[sw]
@@ -204,11 +205,11 @@ def route_find_thread(pairs, all_path, topo_dic,layers):
     count = 0
     for pair in pairs:
         route_path = find_route_path(pair[0], pair[1], all_path, topo_dic, layers)
-        # print(pair[0], pair[1])
-        # print(route_path)
-        if(count%50000 == 0):
-            print(count/len(pairs),len(route_path))
-        count += 1
+        print(pair[0], pair[1])
+        print(len(route_path))
+        # if(count%1000 == 0):
+        #     print(count/len(pairs),len(route_path))
+        # count += 1
 
 def route_generate(topo_index, switches, thread_num, layers):
     all_path = []
@@ -246,17 +247,18 @@ def route_generate(topo_index, switches, thread_num, layers):
 
 
 if __name__ == "__main__":
-    switches = 1000
+    switches = 5
     hosts = 24
-    ports = 64
-    vir_layer_degree = [5,10,10,10,5]
+    ports = 36
+    vir_layer_degree = [2,4,4,2]
     is_random = 1
+    random_seed = 3
     # switches = 5000
     # hosts = 24
     # ports = 64
     # vir_layer_degree = [5,10,10,10,5]
     # is_random = 1
-    thread_num = 8
-    topo_index = fc_topo_gene(switches, hosts, ports, vir_layer_degree, is_random)
+    thread_num = 1
+    topo_index = fc_topo_gene(switches, hosts, ports, vir_layer_degree, is_random, random_seed)
     route_generate(topo_index, switches, thread_num, len(vir_layer_degree))
 
