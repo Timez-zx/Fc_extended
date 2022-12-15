@@ -204,7 +204,9 @@ def route_find_thread(pairs, all_path, topo_dic,layers):
     count = 0
     for pair in pairs:
         route_path = find_route_path(pair[0], pair[1], all_path, topo_dic, layers)
-        if(count%10000 == 0):
+        # print(pair[0], pair[1])
+        # print(route_path)
+        if(count%50000 == 0):
             print(count/len(pairs),len(route_path))
         count += 1
 
@@ -244,17 +246,17 @@ def route_generate(topo_index, switches, thread_num, layers):
 
 
 if __name__ == "__main__":
-    switches = 3000
+    switches = 1000
     hosts = 24
-    ports = 56
-    vir_layer_degree = [4,8,8,8,4]
+    ports = 64
+    vir_layer_degree = [5,10,10,10,5]
     is_random = 1
     # switches = 5000
     # hosts = 24
     # ports = 64
     # vir_layer_degree = [5,10,10,10,5]
     # is_random = 1
-    thread_num = 16
+    thread_num = 8
     topo_index = fc_topo_gene(switches, hosts, ports, vir_layer_degree, is_random)
     route_generate(topo_index, switches, thread_num, len(vir_layer_degree))
 
