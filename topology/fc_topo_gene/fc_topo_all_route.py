@@ -122,12 +122,12 @@ class Fc_topo_all_route():
                 aroute_path = []
                 path = all_path[src][src_path_infor[path_index]]
                 loca = src_path_infor[path_index+1]*(-1)
-                aroute_path.append((path[loca],layers+loca*-1))
+                aroute_path.append(path[loca] + layers*10+loca*-10)
                 loca -= 1
                 while(path[loca] != src):
-                    aroute_path.append((path[loca], layers+loca*-1))
+                    aroute_path.append(path[loca] + layers*10+loca*-10)
                     loca -= 1
-                aroute_path.append((path[loca], layers+loca*-1))
+                aroute_path.append(path[loca] + layers*10+loca*-10)
                 if(aroute_path not in route_path):
                     route_path.append(aroute_path)
 
@@ -137,12 +137,12 @@ class Fc_topo_all_route():
                 aroute_path = []
                 path = all_path[dst][dst_path_infor[path_index]]
                 loca = dst_path_infor[path_index+1]*(-1)
-                aroute_path.append((path[loca],layers+loca*-1))
+                aroute_path.append(path[loca] + layers*10+loca*-10)
                 loca -= 1
                 while(path[loca] != dst):
-                    aroute_path.append((path[loca], layers+loca*-1))
+                    aroute_path.append(path[loca] + layers*10+loca*-10)
                     loca -= 1
-                aroute_path.append((path[loca], layers+loca*-1))
+                aroute_path.append(path[loca] + layers*10+loca*-10)
                 if(aroute_path not in route_path):
                     route_path.append(aroute_path)
 
@@ -213,14 +213,22 @@ class Fc_topo_all_route():
                     begin_src = begin_src - 1
                     aroute_src = []
                     aroute_dst = []
+                    pass_node = []
+                    pass_flag = 0
                     while(src_path[begin_src] != src):
-                        aroute_src = [(src_path[begin_src], -1*begin_src+layers)] + aroute_src
+                        aroute_src = [src_path[begin_src] - 10*begin_src+layers*10] + aroute_src
+                        pass_node.append(src_path[begin_src])
                         begin_src += 1
-                    aroute_src = [(src_path[begin_src], -1*begin_src+layers)] + aroute_src
+                    aroute_src = [src_path[begin_src] - 10*begin_src+layers*10] + aroute_src
                     while(dst_path[begin_dst] != dst):
-                        aroute_dst.append((dst_path[begin_dst], -1*begin_dst+layers))
+                        if(dst_path[begin_dst] in pass_node):
+                            pass_flag = 1
+                            break
+                        aroute_dst.append(dst_path[begin_dst]-10*begin_dst+layers*10)
                         begin_dst += 1
-                    aroute_dst.append((dst_path[begin_dst], -1*begin_dst+layers))
+                    if(pass_flag):
+                        continue
+                    aroute_dst.append(dst_path[begin_dst]-10*begin_dst+layers*10)
                     aroute_path = aroute_src+aroute_dst
                     if(aroute_path not in route_path):  
                         route_path.append(aroute_path)
@@ -231,8 +239,9 @@ class Fc_topo_all_route():
         count = 0
         for pair in pairs:
             route_path = self.find_route_path(pair[0], pair[1], all_path, topo_dict)
-            print(pair[0], pair[1])
-            print(len(route_path))
+            print(pair[0], pair[1], len(route_path))
+            print(route_path)
+            # print(len(route_path))
             # if(count%1000 == 0):
             #     print(count/len(pairs),len(route_path))
             # count += 1
@@ -272,4 +281,4 @@ if __name__ == "__main__":
     fc_demo = Fc_topo_all_route(switches, hosts, ports, vir_layer_degree, is_random, random_seed)
     fc_demo.fc_topo_gene()
     fc_demo.route_infor_generate()
-    fc_demo.route_gene(2)
+    fc_demo.route_gene(1)
