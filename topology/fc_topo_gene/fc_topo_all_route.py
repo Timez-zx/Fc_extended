@@ -239,12 +239,12 @@ class Fc_topo_all_route():
         count = 0
         for pair in pairs:
             route_path = self.find_route_path(pair[0], pair[1], all_path, topo_dict)
-            print(pair[0], pair[1], len(route_path))
-            print(route_path)
+            # print(pair[0], pair[1], len(route_path))
+            # print(route_path)
             # print(len(route_path))
-            # if(count%1000 == 0):
-            #     print(count/len(pairs),len(route_path))
-            # count += 1
+            if(count%10000 == 0):
+                print(count/len(pairs),len(route_path))
+            count += 1
 
 
     def route_gene(self, thread_num):
@@ -272,13 +272,13 @@ class Fc_topo_all_route():
 
 
 if __name__ == "__main__":
-    switches = 5
+    switches = 5000
     hosts = 24
-    ports = 36
-    vir_layer_degree = [2,4,4,2]
+    ports = 64
+    vir_layer_degree = [5,10,10,10,5]
     is_random = 1
     random_seed = 3
     fc_demo = Fc_topo_all_route(switches, hosts, ports, vir_layer_degree, is_random, random_seed)
     fc_demo.fc_topo_gene()
     fc_demo.route_infor_generate()
-    fc_demo.route_gene(1)
+    fc_demo.route_gene(4)
