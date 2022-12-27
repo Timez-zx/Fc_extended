@@ -1,11 +1,14 @@
+import os
+import math
 import random
 import multiprocessing
-import math
+
 
 class Fc_topo_all_route():
     topo_index = []
     all_path = []
     topo_dic = {}
+    route_all_path = []
 
     def __init__(self, switches, hosts, ports, vir_layer_degree, is_random, random_seed):
         self.switches = switches
@@ -235,19 +238,23 @@ class Fc_topo_all_route():
         return route_path
 
 
-    def route_find_thread(self, pairs, all_path, topo_dict):
+    def route_find_thread(self, pairs, all_path, topo_dict, multi_pro_queue, if_report, report_number):
         count = 0
+        path_thread = []
         for pair in pairs:
+            infor = [pair[0],pair[1]]
             route_path = self.find_route_path(pair[0], pair[1], all_path, topo_dict)
-            # print(pair[0], pair[1], len(route_path))
-            # print(route_path)
-            # print(len(route_path))
-            if(count%10000 == 0):
-                print(count/len(pairs),len(route_path))
-            count += 1
+            infor.append(route_path)
+            path_thread.append(infor)
+            if(if_report):
+                if(count%report_number == 0):
+                  print("The progress for multi-pro %s is %.4f"%(multiprocessing.current_process().name, count/len(pairs)))
+                count += 1
+        multi_pro_queue.put(path_thread)
+        print("Multi-pro %s has fininshed"%(multiprocessing.current_process().name))
 
 
-    def route_gene(self, thread_num):
+    def route_gene(self, thread_num, if_report, report_number, if_save):
         pair_num = self.switches*(self.switches-1)/2
         average_num = int(math.ceil(pair_num/thread_num))
         pair_list = [[] for i in range(thread_num)]
@@ -262,23 +269,62 @@ class Fc_topo_all_route():
                     count = 0
                     allo_index += 1
         thread_list = []
+        multi_pro_queue = multiprocessing.Queue()
         for i in range(thread_num):
-            thread = multiprocessing.Process(target = self.route_find_thread, args = (pair_list[i], self.all_path, self.topo_dic))
+            thread = multiprocessing.Process(target = self.route_find_thread, args = (pair_list[i], self.all_path, self.topo_dic, multi_pro_queue, if_report, report_number))
             thread.start()
             thread_list.append(thread)
         for th in thread_list:
             th.join()
+        
+        if(if_save):
+            if(not os.path.isdir("route")):
+                os.mkdir("route")
+            vir_label = ""
+            for vir in self.vir_layer_degree:
+                vir_label += str(vir)
+            file_name = "route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed)
+            with open(file_name, mode='w', encoding='utf-8') as file_obj:
+                for th in thread_list:
+                    for route_infor in multi_pro_queue.get():
+                        file_obj.write(str(route_infor[0]) + " " + str(route_infor[1]) + " " + str(len(route_infor[2])) + "\n")
+                        path_infor  = route_infor[2]
+                        for path in path_infor:
+                            path_str = ""
+                            for node in path:
+                                path_str += str(node) + " "
+                            file_obj.write(path_str + "\n")
+                        
+    def route_read(self):
+        vir_label = ""
+        for vir in self.vir_layer_degree:
+            vir_label += str(vir)
+        file_name = "route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed)
+        if(not os.path.isfile(file_name)):
+            print("The route hasn't been generated or saved")
+            exit(1)
+        file_obj = open(file_name)
+        file_line = file_obj.readline()
+        file_line = file_line[0:-1]
+        print(file_line.split(" "))
 
+
+        
 
 
 if __name__ == "__main__":
-    switches = 5000
+    switches = 5
     hosts = 24
-    ports = 64
-    vir_layer_degree = [5,10,10,10,5]
+    ports = 36
+    vir_layer_degree = [2,4,4,2]
     is_random = 1
     random_seed = 3
     fc_demo = Fc_topo_all_route(switches, hosts, ports, vir_layer_degree, is_random, random_seed)
     fc_demo.fc_topo_gene()
     fc_demo.route_infor_generate()
-    fc_demo.route_gene(4)
+    thread_num = 2
+    if_report = 1
+    report_num = 2
+    if_save = 1
+    # fc_demo.route_gene(thread_num, if_report, report_num, if_save)
+    fc_demo.route_read()
