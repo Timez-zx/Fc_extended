@@ -274,6 +274,7 @@ class Fc_topo_all_route():
                     if(if_report):    
                         print("Pro %s has saved %.4f data"%(multiprocessing.current_process().name, save_count/len(pairs)))
                     path_route.clear()
+                    file_obj.flush()
                     file_obj.close()
         print("Multi-pro %s has fininshed"%(multiprocessing.current_process().name))
 
