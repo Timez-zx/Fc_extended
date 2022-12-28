@@ -8,7 +8,7 @@ class Fc_topo_all_route():
     topo_index = []
     all_path = []
     topo_dic = {}
-    route_all_path = []
+    route_all_path = {}
 
     def __init__(self, switches, hosts, ports, vir_layer_degree, is_random, random_seed):
         self.switches = switches
@@ -287,7 +287,7 @@ class Fc_topo_all_route():
             with open(file_name, mode='w', encoding='utf-8') as file_obj:
                 for th in thread_list:
                     for route_infor in multi_pro_queue.get():
-                        file_obj.write(str(route_infor[0]) + " " + str(route_infor[1]) + " " + str(len(route_infor[2])) + "\n")
+                        file_obj.write(str(route_infor[0]) + " " + str(route_infor[1]) + " " + str(-1*len(route_infor[2])) + "\n")
                         path_infor  = route_infor[2]
                         for path in path_infor:
                             path_str = ""
@@ -303,14 +303,16 @@ class Fc_topo_all_route():
         if(not os.path.isfile(file_name)):
             print("The route hasn't been generated or saved")
             exit(1)
-        file_obj = open(file_name)
-        file_line = file_obj.readline()
-        file_line = file_line[0:-1]
-        print(file_line.split(" "))
-
-
+        with open(file_name) as file_obj:
+            for file_line in file_obj:
+                line_content = file_line.split()
+                if((len(line_content) >= 3) and (int(line_content[2]) < 0)):
+                    pairs = (line_content[0], line_content[1])
+                    self.route_all_path[pairs] = []
+                else:
+                    self.route_all_path[pairs].append(line_content)
+        print("The route information has been read")
         
-
 
 if __name__ == "__main__":
     switches = 5
