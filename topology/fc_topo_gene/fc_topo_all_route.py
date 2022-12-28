@@ -125,12 +125,12 @@ class Fc_topo_all_route():
                 aroute_path = []
                 path = all_path[src][src_path_infor[path_index]]
                 loca = src_path_infor[path_index+1]*(-1)
-                aroute_path.append(path[loca] + layers*10+loca*-10)
+                aroute_path.append(str(path[loca]) + "." + str(layers+loca*-1))
                 loca -= 1
                 while(path[loca] != src):
-                    aroute_path.append(path[loca] + layers*10+loca*-10)
+                    aroute_path.append(str(path[loca]) + "." + str(layers+loca*-1))
                     loca -= 1
-                aroute_path.append(path[loca] + layers*10+loca*-10)
+                aroute_path.append(str(path[loca]) + "." + str(layers+loca*-1))
                 if(aroute_path not in route_path):
                     route_path.append(aroute_path)
 
@@ -140,12 +140,12 @@ class Fc_topo_all_route():
                 aroute_path = []
                 path = all_path[dst][dst_path_infor[path_index]]
                 loca = dst_path_infor[path_index+1]*(-1)
-                aroute_path.append(path[loca] + layers*10+loca*-10)
+                aroute_path.append(str(path[loca]) + "." + str(layers+loca*-1))
                 loca -= 1
                 while(path[loca] != dst):
-                    aroute_path.append(path[loca] + layers*10+loca*-10)
+                    aroute_path.append(str(path[loca]) + "." + str(layers+loca*-1))
                     loca -= 1
-                aroute_path.append(path[loca] + layers*10+loca*-10)
+                aroute_path.append(str(path[loca]) + "." + str(layers+loca*-1))
                 if(aroute_path not in route_path):
                     route_path.append(aroute_path)
 
@@ -219,19 +219,19 @@ class Fc_topo_all_route():
                     pass_node = []
                     pass_flag = 0
                     while(src_path[begin_src] != src):
-                        aroute_src = [src_path[begin_src] - 10*begin_src+layers*10] + aroute_src
+                        aroute_src = [str(src_path[begin_src]) + "." + str(-1*begin_src+layers)] + aroute_src
                         pass_node.append(src_path[begin_src])
                         begin_src += 1
-                    aroute_src = [src_path[begin_src] - 10*begin_src+layers*10] + aroute_src
+                    aroute_src = [str(src_path[begin_src]) + "." + str(-1*begin_src+layers)] + aroute_src
                     while(dst_path[begin_dst] != dst):
                         if(dst_path[begin_dst] in pass_node):
                             pass_flag = 1
                             break
-                        aroute_dst.append(dst_path[begin_dst]-10*begin_dst+layers*10)
+                        aroute_dst.append(str(dst_path[begin_dst]) + "." + str(-1*begin_dst+layers))
                         begin_dst += 1
                     if(pass_flag):
                         continue
-                    aroute_dst.append(dst_path[begin_dst]-10*begin_dst+layers*10)
+                    aroute_dst.append(str(dst_path[begin_dst]) + "." + str(-1*begin_dst+layers))
                     aroute_path = aroute_src+aroute_dst
                     if(aroute_path not in route_path):  
                         route_path.append(aroute_path)
@@ -240,7 +240,18 @@ class Fc_topo_all_route():
 
     def route_find_thread(self, pairs, all_path, topo_dict, if_report, report_number, if_save, save_report):
         count = 0
+        save_count = 0
         path_route = []
+        vir_label = ""
+        for vir in self.vir_layer_degree:
+            vir_label += str(vir)
+        file_name = "route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed) + "_pro" + multiprocessing.current_process().name
+        if(if_save):
+            if(not os.path.isdir("route")):
+                os.mkdir("route")
+            file_obj = open(file_name, "w")
+            file_obj.close()
+            file_obj = open(file_name, "a")
         for pair in pairs:
             infor = [pair[0],pair[1]]
             route_path = self.find_route_path(pair[0], pair[1], all_path, topo_dict)
@@ -250,30 +261,21 @@ class Fc_topo_all_route():
                 if(count%report_number == 0):
                   print("The progress for multi-pro %s is %.4f, the path num is %d"%(multiprocessing.current_process().name, count/len(pairs), len(route_path)))
                 count += 1
-        
-        if(if_save):
-            if(not os.path.isdir("route")):
-                os.mkdir("route")
-            vir_label = ""
-            for vir in self.vir_layer_degree:
-                vir_label += str(vir)
-            file_name = "route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed) + "_pro" + multiprocessing.current_process().name
-            count = 0
-            print("Pro %s start save"%multiprocessing.current_process().name)
-            with open(file_name, mode='w', encoding='utf-8') as file_obj:
-                for route_infor in path_route:
-                    file_obj.write(str(route_infor[0]) + " " + str(route_infor[1]) + " " + str(len(route_infor[2])) + "\n")
-                    path_infor  = route_infor[2]
-                    for path in path_infor:
-                        path_str = list(map(str,path))
-                        path_str = " ".join(path_str)
-                        file_obj.write(path_str + " , ")
-                    file_obj.write("\n")
-                    if(if_report):
-                        if(count % save_report == 0):
-                            print("Pro %s has saved %.4f data"%(multiprocessing.current_process().name, count/len(path_route)))
-                        count += 1
-            file_obj.close()
+            if(if_save):
+                save_count += 1
+                if(save_count % save_report == 0):
+                    print("Pro %s start save"%multiprocessing.current_process().name)
+                    for route_infor in path_route:
+                        file_obj.write(str(route_infor[0]) + " " + str(route_infor[1]) + " " + str(len(route_infor[2])) + "\n")
+                        path_infor = route_infor[2]
+                        for path in path_infor:
+                            path_str = " ".join(path)
+                            file_obj.write(path_str + " , ")
+                        file_obj.write("\n")
+                    if(if_report):    
+                        print("Pro %s has saved %.4f data"%(multiprocessing.current_process().name, save_count/len(pairs)))
+                    path_route.clear()
+        file_obj.close()
         print("Multi-pro %s has fininshed"%(multiprocessing.current_process().name))
 
 
@@ -303,13 +305,13 @@ class Fc_topo_all_route():
             thread_list.append(thread)
         for th in thread_list:
             th.join()
-        with open(file_name_list[0], mode='a', encoding='utf-8') as file_obj:
-            old_name = file_name_list.pop(0)
-            for file in file_name_list:
-                read_file = open(file, "r")
-                file_obj.write(read_file.read())
-                read_file.close()
-                os.remove(file)
+        file_obj = open(file_name_list[0], 'a')
+        old_name = file_name_list.pop(0)
+        for file in file_name_list:
+            read_file = open(file, "r")
+            file_obj.write(read_file.read())
+            read_file.close()
+            os.remove(file)
         file_name = "route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed)
         os.rename(old_name, file_name)
            
@@ -354,5 +356,5 @@ if __name__ == "__main__":
     report_num = 10000
     if_save = 1
     save_report_num = 100000
-    # fc_demo.route_gene(thread_num, if_report, report_num, if_save, save_report_num)
-    fc_demo.route_read()
+    fc_demo.route_gene(thread_num, if_report, report_num, if_save, save_report_num)
+    # fc_demo.route_read()
