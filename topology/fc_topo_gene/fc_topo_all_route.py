@@ -8,7 +8,7 @@ class Fc_topo_all_route():
     topo_index = []
     all_path = []
     topo_dic = {}
-    route_all_path = {}
+    route_all_path = []
 
     def __init__(self, switches, hosts, ports, vir_layer_degree, is_random, random_seed):
         self.switches = switches
@@ -238,23 +238,46 @@ class Fc_topo_all_route():
         return route_path
 
 
-    def route_find_thread(self, pairs, all_path, topo_dict, multi_pro_queue, if_report, report_number):
+    def route_find_thread(self, pairs, all_path, topo_dict, if_report, report_number, if_save, save_report):
         count = 0
-        path_thread = []
+        path_route = []
         for pair in pairs:
             infor = [pair[0],pair[1]]
             route_path = self.find_route_path(pair[0], pair[1], all_path, topo_dict)
             infor.append(route_path)
-            path_thread.append(infor)
+            path_route.append(infor)
             if(if_report):
                 if(count%report_number == 0):
                   print("The progress for multi-pro %s is %.4f, the path num is %d"%(multiprocessing.current_process().name, count/len(pairs), len(route_path)))
                 count += 1
-        multi_pro_queue.put(path_thread)
+        
+        if(if_save):
+            if(not os.path.isdir("route")):
+                os.mkdir("route")
+            vir_label = ""
+            for vir in self.vir_layer_degree:
+                vir_label += str(vir)
+            file_name = "route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed) + "_pro" + multiprocessing.current_process().name
+            count = 0
+            print("Pro %s start save"%multiprocessing.current_process().name)
+            with open(file_name, mode='w', encoding='utf-8') as file_obj:
+                for route_infor in path_route:
+                    file_obj.write(str(route_infor[0]) + " " + str(route_infor[1]) + " " + str(len(route_infor[2])) + "\n")
+                    path_infor  = route_infor[2]
+                    for path in path_infor:
+                        path_str = list(map(str,path))
+                        path_str = " ".join(path_str)
+                        file_obj.write(path_str + " , ")
+                    file_obj.write("\n")
+                    if(if_report):
+                        if(count % save_report == 0):
+                            print("Pro %s has saved %.4f data"%(multiprocessing.current_process().name, count/len(path_route)))
+                        count += 1
+            file_obj.close()
         print("Multi-pro %s has fininshed"%(multiprocessing.current_process().name))
 
 
-    def route_gene(self, thread_num, if_report, report_number, if_save):
+    def route_gene(self, thread_num, if_report, report_number, if_save, save_report):
         pair_num = self.switches*(self.switches-1)/2
         average_num = int(math.ceil(pair_num/thread_num))
         pair_list = [[] for i in range(thread_num)]
@@ -269,32 +292,27 @@ class Fc_topo_all_route():
                     count = 0
                     allo_index += 1
         thread_list = []
-        multi_pro_queue = multiprocessing.Queue()
+        file_name_list = []
+        vir_label = ""
+        for vir in self.vir_layer_degree:
+            vir_label += str(vir)
         for i in range(thread_num):
-            thread = multiprocessing.Process(target = self.route_find_thread, args = (pair_list[i], self.all_path, self.topo_dic, multi_pro_queue, if_report, report_number))
+            thread = multiprocessing.Process(target = self.route_find_thread, name = str(i),args = (pair_list[i], self.all_path, self.topo_dic, if_report, report_number, if_save, save_report))
             thread.start()
+            file_name_list.append("route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed) + "_pro" + str(i))
             thread_list.append(thread)
         for th in thread_list:
             th.join()
-        
-        if(if_save):
-            if(not os.path.isdir("route")):
-                os.mkdir("route")
-            vir_label = ""
-            for vir in self.vir_layer_degree:
-                vir_label += str(vir)
-            file_name = "route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed)
-            with open(file_name, mode='w', encoding='utf-8') as file_obj:
-                for th in thread_list:
-                    for route_infor in multi_pro_queue.get():
-                        file_obj.write(str(route_infor[0]) + " " + str(route_infor[1]) + " " + str(-1*len(route_infor[2])) + "\n")
-                        path_infor  = route_infor[2]
-                        for path in path_infor:
-                            path_str = ""
-                            for node in path:
-                                path_str += str(node) + " "
-                            file_obj.write(path_str + "\n")
-                        
+        with open(file_name_list[0], mode='a', encoding='utf-8') as file_obj:
+            old_name = file_name_list.pop(0)
+            for file in file_name_list:
+                read_file = open(file, "r")
+                file_obj.write(read_file.read())
+                read_file.close()
+                os.remove(file)
+        file_name = "route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed)
+        os.rename(old_name, file_name)
+           
     def route_read(self):
         vir_label = ""
         for vir in self.vir_layer_degree:
@@ -304,23 +322,30 @@ class Fc_topo_all_route():
             print("The route hasn't been generated or saved")
             exit(1)
         with open(file_name) as file_obj:
+            total_num = 0
             for file_line in file_obj:
                 line_content = file_line.split()
-                if((len(line_content) >= 3) and (int(line_content[2]) < 0)):
-                    pairs = (line_content[0], line_content[1])
-                    self.route_all_path[pairs] = []
-                else:
-                    self.route_all_path[pairs].append(line_content)
+                self.route_all_path.append(line_content)
+                if(total_num % 100000 == 0):
+                    print(total_num)
+                total_num += 1
         print("The route information has been read")
         
 
 if __name__ == "__main__":
-    switches = 5000
+    switches = 3000
     hosts = 24
-    ports = 64
-    vir_layer_degree = [7,13,13,7]
+    ports = 54
+    vir_layer_degree = [5,10,10,5]
     is_random = 1
     random_seed = 3
+
+    # switches = 5
+    # hosts = 24
+    # ports = 36
+    # vir_layer_degree = [2,4,4,2]
+    # is_random = 1
+    # random_seed = 3
     fc_demo = Fc_topo_all_route(switches, hosts, ports, vir_layer_degree, is_random, random_seed)
     fc_demo.fc_topo_gene()
     fc_demo.route_infor_generate()
@@ -328,5 +353,6 @@ if __name__ == "__main__":
     if_report = 1
     report_num = 10000
     if_save = 1
-    fc_demo.route_gene(thread_num, if_report, report_num, if_save)
-    # fc_demo.route_read()
+    save_report_num = 100000
+    # fc_demo.route_gene(thread_num, if_report, report_num, if_save, save_report_num)
+    fc_demo.route_read()
