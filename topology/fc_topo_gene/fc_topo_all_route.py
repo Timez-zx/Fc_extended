@@ -8,7 +8,6 @@ class Fc_topo_all_route():
     topo_index = []
     all_path = []
     topo_dic = {}
-    route_all_path = []
 
     def __init__(self, switches, hosts, ports, vir_layer_degree, is_random, random_seed):
         self.switches = switches
@@ -238,7 +237,7 @@ class Fc_topo_all_route():
         return route_path
 
 
-    def route_find_thread(self, pairs, all_path, topo_dict, if_report, report_number, if_save, save_report):
+    def route_find_thread(self, pairs, all_path, topo_dict, if_report, report_number, if_save, save_batch_size):
         count = 0
         save_count = 0
         path_route = []
@@ -259,11 +258,11 @@ class Fc_topo_all_route():
             path_route.append(infor)
             if(if_report):
                 if(count%report_number == 0):
-                  print("The progress for multi-pro %s is %.4f, the path num is %d"%(multiprocessing.current_process().name, count/len(pairs), len(route_path)))
+                    print("The progress for multi-pro %s is %.4f, the path num is %d"%(multiprocessing.current_process().name, count/len(pairs), len(route_path)))
                 count += 1
             if(if_save):
                 save_count += 1
-                if(save_count % save_report == 0):
+                if((save_count % save_batch_size == 0) or (save_count == len(pairs))):
                     print("Pro %s start save"%multiprocessing.current_process().name)
                     for route_infor in path_route:
                         file_obj.write(str(route_infor[0]) + " " + str(route_infor[1]) + " " + str(len(route_infor[2])) + "\n")
@@ -279,7 +278,7 @@ class Fc_topo_all_route():
         print("Multi-pro %s has fininshed"%(multiprocessing.current_process().name))
 
 
-    def route_gene(self, thread_num, if_report, report_number, if_save, save_report):
+    def route_gene(self, thread_num, if_report, report_number, if_save, save_batch_size):
         pair_num = self.switches*(self.switches-1)/2
         average_num = int(math.ceil(pair_num/thread_num))
         pair_list = [[] for i in range(thread_num)]
@@ -299,7 +298,7 @@ class Fc_topo_all_route():
         for vir in self.vir_layer_degree:
             vir_label += str(vir)
         for i in range(thread_num):
-            thread = multiprocessing.Process(target = self.route_find_thread, name = str(i),args = (pair_list[i], self.all_path, self.topo_dic, if_report, report_number, if_save, save_report))
+            thread = multiprocessing.Process(target = self.route_find_thread, name = str(i),args = (pair_list[i], self.all_path, self.topo_dic, if_report, report_number, if_save, save_batch_size))
             thread.start()
             file_name_list.append("route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed) + "_pro" + str(i))
             thread_list.append(thread)
@@ -312,10 +311,13 @@ class Fc_topo_all_route():
             file_obj.write(read_file.read())
             read_file.close()
             os.remove(file)
+        file_obj.close()
         file_name = "route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed)
         os.rename(old_name, file_name)
            
-    def route_read(self):
+
+    def route_read(self, read_batch_size, start_line):
+        route_all_path = []
         vir_label = ""
         for vir in self.vir_layer_degree:
             vir_label += str(vir)
@@ -324,21 +326,19 @@ class Fc_topo_all_route():
             print("The route hasn't been generated or saved")
             exit(1)
         with open(file_name) as file_obj:
-            total_num = 0
-            for file_line in file_obj:
+            for file_line in file_obj.readlines()[start_line: start_line + read_batch_size]:
                 line_content = file_line.split()
-                self.route_all_path.append(line_content)
-                if(total_num % 100000 == 0):
-                    print(total_num)
-                total_num += 1
-        print("The route information has been read")
+                route_all_path.append(line_content)
+        file_obj.close()
+        print("The route information from %d has been read" % start_line)
+        return route_all_path
         
 
 if __name__ == "__main__":
-    switches = 3000
+    switches = 5000
     hosts = 24
-    ports = 54
-    vir_layer_degree = [5,10,10,5]
+    ports = 64
+    vir_layer_degree = [5,10,10,10,5]
     is_random = 1
     random_seed = 3
 
@@ -355,6 +355,7 @@ if __name__ == "__main__":
     if_report = 1
     report_num = 10000
     if_save = 1
-    save_report_num = 100000
-    fc_demo.route_gene(thread_num, if_report, report_num, if_save, save_report_num)
-    # fc_demo.route_read()
+    save_batch_size = 50000
+    fc_demo.route_gene(thread_num, if_report, report_num, if_save, save_batch_size)
+    # read_batch_size = 100000
+    # fc_demo.route_read(read_batch_size, 8900000)
