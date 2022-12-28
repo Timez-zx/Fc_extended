@@ -250,7 +250,6 @@ class Fc_topo_all_route():
                 os.mkdir("route")
             file_obj = open(file_name, "w")
             file_obj.close()
-            file_obj = open(file_name, "a")
         for pair in pairs:
             infor = [pair[0],pair[1]]
             route_path = self.find_route_path(pair[0], pair[1], all_path, topo_dict)
@@ -263,6 +262,7 @@ class Fc_topo_all_route():
             if(if_save):
                 save_count += 1
                 if((save_count % save_batch_size == 0) or (save_count == len(pairs))):
+                    file_obj = open(file_name, "a")
                     print("Pro %s start save"%multiprocessing.current_process().name)
                     for route_infor in path_route:
                         file_obj.write(str(route_infor[0]) + " " + str(route_infor[1]) + " " + str(len(route_infor[2])) + "\n")
@@ -274,7 +274,7 @@ class Fc_topo_all_route():
                     if(if_report):    
                         print("Pro %s has saved %.4f data"%(multiprocessing.current_process().name, save_count/len(pairs)))
                     path_route.clear()
-        file_obj.close()
+                    file_obj.close()
         print("Multi-pro %s has fininshed"%(multiprocessing.current_process().name))
 
 
@@ -355,7 +355,7 @@ if __name__ == "__main__":
     if_report = 1
     report_num = 10000
     if_save = 1
-    save_batch_size = 50000
+    save_batch_size = 10000
     fc_demo.route_gene(thread_num, if_report, report_num, if_save, save_batch_size)
     # read_batch_size = 100000
     # fc_demo.route_read(read_batch_size, 8900000)
