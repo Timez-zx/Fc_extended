@@ -248,7 +248,7 @@ class Fc_topo_all_route():
             path_thread.append(infor)
             if(if_report):
                 if(count%report_number == 0):
-                  print("The progress for multi-pro %s is %.4f"%(multiprocessing.current_process().name, count/len(pairs)))
+                  print("The progress for multi-pro %s is %.4f, the path num is %d"%(multiprocessing.current_process().name, count/len(pairs), len(route_path)))
                 count += 1
         multi_pro_queue.put(path_thread)
         print("Multi-pro %s has fininshed"%(multiprocessing.current_process().name))
@@ -315,18 +315,18 @@ class Fc_topo_all_route():
         
 
 if __name__ == "__main__":
-    switches = 5
+    switches = 5000
     hosts = 24
-    ports = 36
-    vir_layer_degree = [2,4,4,2]
+    ports = 64
+    vir_layer_degree = [7,13,13,7]
     is_random = 1
     random_seed = 3
     fc_demo = Fc_topo_all_route(switches, hosts, ports, vir_layer_degree, is_random, random_seed)
     fc_demo.fc_topo_gene()
     fc_demo.route_infor_generate()
-    thread_num = 2
+    thread_num = 8
     if_report = 1
-    report_num = 2
+    report_num = 10000
     if_save = 1
-    # fc_demo.route_gene(thread_num, if_report, report_num, if_save)
-    fc_demo.route_read()
+    fc_demo.route_gene(thread_num, if_report, report_num, if_save)
+    # fc_demo.route_read()
