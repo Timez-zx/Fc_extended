@@ -250,7 +250,6 @@ class Fc_topo_all_route():
                 os.mkdir("route")
             file_obj = open(file_name, "w")
             file_obj.close()
-            file_obj = open(file_name, "a")
         for pair in pairs:
             infor = [pair[0],pair[1]]
             route_path = self.find_route_path(pair[0], pair[1], all_path, topo_dict)
@@ -264,6 +263,7 @@ class Fc_topo_all_route():
                 save_count += 1
                 if((save_count % save_batch_size == 0) or (save_count == len(pairs))):
                     print("Pro %s start save"%multiprocessing.current_process().name)
+                    file_obj = open(file_name, "a")
                     for route_infor in path_route:
                         file_obj.write(str(route_infor[0]) + " " + str(route_infor[1]) + " " + str(len(route_infor[2])) + "\n")
                         path_infor = route_infor[2]
@@ -276,7 +276,7 @@ class Fc_topo_all_route():
                     path_route.clear()
                     file_obj.flush()
                     os.fsync(file_obj.fileno())
-        file_obj.close()
+                    file_obj.close()
         print("Multi-pro %s has fininshed"%(multiprocessing.current_process().name))
 
 
@@ -313,6 +313,8 @@ class Fc_topo_all_route():
             file_obj.write(read_file.read())
             read_file.close()
             os.remove(file)
+            file_obj.flush()
+            os.fsync(file_obj.fileno())
         file_obj.close()
         file_name = "route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed)
         os.rename(old_name, file_name)
@@ -337,10 +339,10 @@ class Fc_topo_all_route():
         
 
 if __name__ == "__main__":
-    switches = 5000
+    switches = 3000
     hosts = 24
-    ports = 64
-    vir_layer_degree = [5,10,10,10,5]
+    ports = 54
+    vir_layer_degree = [5,10,10,5]
     is_random = 1
     random_seed = 3
 
