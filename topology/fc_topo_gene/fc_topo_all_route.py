@@ -246,7 +246,6 @@ class Fc_topo_all_route():
 
 
     def route_find_thread(self, pairs, all_path, topo_dict, if_report, report_number, if_save, save_batch_size, clear_rate):
-        mem = psutil.virtual_memory()
         count = 0
         save_count = 0
         path_route = []
@@ -284,13 +283,13 @@ class Fc_topo_all_route():
                         print("Pro %s has saved %.4f data"%(multiprocessing.current_process().name, save_count/len(pairs)))
                     path_route = []
                     file_obj.close()
-                    if(mem.free/mem.total <= clear_rate):
+                    mem = psutil.virtual_memory()
+                    if(((mem.cached+mem.buffers)/mem.total >= clear_rate) and (multiprocessing.current_process().name == '0')):
                         clear_cache_mem()
         print("Multi-pro %s has fininshed"%(multiprocessing.current_process().name))
 
 
     def route_gene(self, thread_num, if_report, report_number, if_save, save_batch_size, clear_rate):
-        mem = psutil.virtual_memory()
         pair_num = self.switches*(self.switches-1)/2
         average_num = int(math.ceil(pair_num/thread_num))
         pair_list = [[] for i in range(thread_num)]
@@ -328,7 +327,8 @@ class Fc_topo_all_route():
                     file_obj.write(line)
             read_file.close()
             os.remove(file)
-            if(mem.free/mem.total <= clear_rate):
+            mem = psutil.virtual_memory()
+            if((mem.cached+mem.buffers)/mem.total >= clear_rate):
                 clear_cache_mem()
         file_obj.close()
         file_name = "route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed)
@@ -376,7 +376,7 @@ if __name__ == "__main__":
     report_num = 10000
     if_save = 1
     save_batch_size = 10000
-    clear_rate = 0.6
+    clear_rate = 0.3
     fc_demo.route_gene(thread_num, if_report, report_num, if_save, save_batch_size, clear_rate)
     # read_batch_size = 100000
     # fc_demo.route_read(read_batch_size, 8900000)
