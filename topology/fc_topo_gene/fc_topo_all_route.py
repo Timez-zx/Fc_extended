@@ -1,8 +1,15 @@
 import os
 import math
 import random
+import psutil
 import platform
 import multiprocessing
+
+def clear_cache_mem():
+    if(platform.system().lower() == 'linux'):
+        os.system('sh -c "sync; echo 3 > /proc/sys/vm/drop_caches"')
+    elif(platform.system().lower() == 'darwin'):
+        os.system('sh -c "sync; purge"')
 
 
 class Fc_topo_all_route():
@@ -238,7 +245,8 @@ class Fc_topo_all_route():
         return route_path
 
 
-    def route_find_thread(self, pairs, all_path, topo_dict, if_report, report_number, if_save, save_batch_size):
+    def route_find_thread(self, pairs, all_path, topo_dict, if_report, report_number, if_save, save_batch_size, clear_rate):
+        mem = psutil.virtual_memory()
         count = 0
         save_count = 0
         path_route = []
@@ -276,14 +284,13 @@ class Fc_topo_all_route():
                         print("Pro %s has saved %.4f data"%(multiprocessing.current_process().name, save_count/len(pairs)))
                     path_route = []
                     file_obj.close()
-                    if(platform.system().lower() == 'linux'):
-                        os.system('sh -c "sync; echo 3 > /proc/sys/vm/drop_caches"')
-                    elif(platform.system().lower() == 'darwin'):
-                        os.system('sh -c "sync; purge"')
+                    if(mem.free/mem.total <= clear_rate):
+                        clear_cache_mem()
         print("Multi-pro %s has fininshed"%(multiprocessing.current_process().name))
 
 
-    def route_gene(self, thread_num, if_report, report_number, if_save, save_batch_size):
+    def route_gene(self, thread_num, if_report, report_number, if_save, save_batch_size, clear_rate):
+        mem = psutil.virtual_memory()
         pair_num = self.switches*(self.switches-1)/2
         average_num = int(math.ceil(pair_num/thread_num))
         pair_list = [[] for i in range(thread_num)]
@@ -303,7 +310,7 @@ class Fc_topo_all_route():
         for vir in self.vir_layer_degree:
             vir_label += str(vir)
         for i in range(thread_num):
-            thread = multiprocessing.Process(target = self.route_find_thread, name = str(i),args = (pair_list[i], self.all_path, self.topo_dic, if_report, report_number, if_save, save_batch_size))
+            thread = multiprocessing.Process(target = self.route_find_thread, name = str(i),args = (pair_list[i], self.all_path, self.topo_dic, if_report, report_number, if_save, save_batch_size, clear_rate))
             thread.start()
             file_name_list.append("route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed) + "_pro" + str(i))
             thread_list.append(thread)
@@ -321,13 +328,12 @@ class Fc_topo_all_route():
                     file_obj.write(line)
             read_file.close()
             os.remove(file)
-            if(platform.system().lower() == 'linux'):
-                os.system('sh -c "sync; echo 3 > /proc/sys/vm/drop_caches"')
-            elif(platform.system().lower() == 'darwin'):
-                os.system('sh -c "sync; purge"')
+            if(mem.free/mem.total <= clear_rate):
+                clear_cache_mem()
         file_obj.close()
         file_name = "route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed)
         os.rename(old_name, file_name)
+        clear_cache_mem()
            
 
     def route_read(self, read_batch_size, start_line):
@@ -370,6 +376,7 @@ if __name__ == "__main__":
     report_num = 10000
     if_save = 1
     save_batch_size = 10000
-    fc_demo.route_gene(thread_num, if_report, report_num, if_save, save_batch_size)
+    clear_rate = 0.6
+    fc_demo.route_gene(thread_num, if_report, report_num, if_save, save_batch_size, clear_rate)
     # read_batch_size = 100000
     # fc_demo.route_read(read_batch_size, 8900000)
