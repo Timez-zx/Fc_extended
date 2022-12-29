@@ -1,6 +1,7 @@
 import os
 import math
 import random
+import platform
 import multiprocessing
 
 
@@ -275,6 +276,10 @@ class Fc_topo_all_route():
                         print("Pro %s has saved %.4f data"%(multiprocessing.current_process().name, save_count/len(pairs)))
                     path_route = []
                     file_obj.close()
+                    if(platform.system.lower() == 'linux'):
+                        os.system('sudo sh -c "sync; echo 3 > /proc/sys/vm/drop_caches"')
+                    elif(platform.system.lower() == 'darwin'):
+                        os.system('sudo sh -c "sync; purge"')
         print("Multi-pro %s has fininshed"%(multiprocessing.current_process().name))
 
 
@@ -311,6 +316,10 @@ class Fc_topo_all_route():
             file_obj.write(read_file.read())
             read_file.close()
             os.remove(file)
+            if(platform.system.lower() == 'linux'):
+                os.system('sudo sh -c "sync; echo 3 > /proc/sys/vm/drop_caches"')
+            elif(platform.system.lower() == 'darwin'):
+                os.system('sudo sh -c "sync; purge"')
         file_obj.close()
         file_name = "route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed)
         os.rename(old_name, file_name)
