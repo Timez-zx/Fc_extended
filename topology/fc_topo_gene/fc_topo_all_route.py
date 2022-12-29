@@ -11,7 +11,9 @@ def clear_cache_mem(clear_rate):
         if((mem.cached+mem.buffers)/mem.total >= clear_rate):
             os.system('sh -c "sync; echo 3 > /proc/sys/vm/drop_caches"')
     elif(platform.system().lower() == 'darwin'):
-        os.system('sh -c "sync; purge"')
+        mem = psutil.virtual_memory()
+        if(mem.used/mem.total >= clear_rate):
+            os.system('sh -c "sync; purge"')
 
 
 class Fc_topo_all_route():
@@ -375,7 +377,9 @@ if __name__ == "__main__":
     report_num = 10000
     if_save = 1
     save_batch_size = 10000
-    clear_rate = 0.05
+    # mac 使用used作为参考：0.6比较合适
+    # linux 直接使用buffer\cache作为参考：0.3对于32G大概是10G
+    clear_rate = 0.3
     fc_demo.route_gene(thread_num, if_report, report_num, if_save, save_batch_size, clear_rate)
     # read_batch_size = 100000
     # fc_demo.route_read(read_batch_size, 8900000)
