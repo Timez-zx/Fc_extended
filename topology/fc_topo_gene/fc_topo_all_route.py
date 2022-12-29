@@ -5,9 +5,11 @@ import psutil
 import platform
 import multiprocessing
 
-def clear_cache_mem():
+def clear_cache_mem(clear_rate):
     if(platform.system().lower() == 'linux'):
-        os.system('sh -c "sync; echo 3 > /proc/sys/vm/drop_caches"')
+        mem = psutil.virtual_memory()
+        if((mem.cached+mem.buffers)/mem.total >= clear_rate):
+            os.system('sh -c "sync; echo 3 > /proc/sys/vm/drop_caches"')
     elif(platform.system().lower() == 'darwin'):
         os.system('sh -c "sync; purge"')
 
@@ -283,9 +285,8 @@ class Fc_topo_all_route():
                         print("Pro %s has saved %.4f data"%(multiprocessing.current_process().name, save_count/len(pairs)))
                     path_route = []
                     file_obj.close()
-                    mem = psutil.virtual_memory()
-                    if(((mem.cached+mem.buffers)/mem.total >= clear_rate) and (multiprocessing.current_process().name == '0')):
-                        clear_cache_mem()
+                    if(multiprocessing.current_process().name == '0'):
+                        clear_cache_mem(clear_rate)
         print("Multi-pro %s has fininshed"%(multiprocessing.current_process().name))
 
 
@@ -327,13 +328,11 @@ class Fc_topo_all_route():
                     file_obj.write(line)
             read_file.close()
             os.remove(file)
-            mem = psutil.virtual_memory()
-            if((mem.cached+mem.buffers)/mem.total >= clear_rate):
-                clear_cache_mem()
+            clear_cache_mem(clear_rate)
         file_obj.close()
         file_name = "route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed)
         os.rename(old_name, file_name)
-        clear_cache_mem()
+        clear_cache_mem(0)
            
 
     def route_read(self, read_batch_size, start_line):
@@ -376,7 +375,7 @@ if __name__ == "__main__":
     report_num = 10000
     if_save = 1
     save_batch_size = 10000
-    clear_rate = 0.3
+    clear_rate = 0.05
     fc_demo.route_gene(thread_num, if_report, report_num, if_save, save_batch_size, clear_rate)
     # read_batch_size = 100000
     # fc_demo.route_read(read_batch_size, 8900000)
