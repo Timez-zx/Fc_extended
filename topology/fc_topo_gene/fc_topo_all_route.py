@@ -273,9 +273,7 @@ class Fc_topo_all_route():
                         file_obj.write("\n")
                     if(if_report):    
                         print("Pro %s has saved %.4f data"%(multiprocessing.current_process().name, save_count/len(pairs)))
-                    path_route.clear()
-                    file_obj.flush()
-                    os.fsync(file_obj.fileno())
+                    path_route = []
                     file_obj.close()
         print("Multi-pro %s has fininshed"%(multiprocessing.current_process().name))
 
@@ -313,8 +311,6 @@ class Fc_topo_all_route():
             file_obj.write(read_file.read())
             read_file.close()
             os.remove(file)
-            file_obj.flush()
-            os.fsync(file_obj.fileno())
         file_obj.close()
         file_name = "route/" + "sw" + str(self.switches) + "_vir" + vir_label + "_randSe" + str(self.random_seed)
         os.rename(old_name, file_name)
