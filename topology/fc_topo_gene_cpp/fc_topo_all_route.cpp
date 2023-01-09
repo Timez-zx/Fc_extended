@@ -46,7 +46,8 @@ void Fc_topo_all_route::fc_topo_gene(void){
     queue<int> remains;
     int src, dst;
     int initial_sub = 0;
-    bipart_degree = new int[bipart_num];
+    bipart_degree = new int[bipart_num+1];
+    int bipart_count = 0;
 
     int total_degree = 0;
     for(int i = 0; i < switches; i++){
@@ -60,7 +61,8 @@ void Fc_topo_all_route::fc_topo_gene(void){
 
     for(int i = layer_num - 1; i > 0; i--){
         degree = vir_layer_degree[i] - initial_sub;
-        bipart_degree[i-1] = degree;
+        bipart_degree[bipart_count] = degree;
+        bipart_count++;
         for(int j = 0; j < switches; j++){
             degrees[j] = degree;
         }
@@ -100,14 +102,58 @@ void Fc_topo_all_route::fc_topo_gene(void){
         }
         initial_sub = degree;
     }
+    bipart_degree[bipart_count] = 0;
     delete[] switch_array;
     delete[] degrees;
 }
 
 void Fc_topo_all_route::search_path(int root){
-    int max_path = pow(2, layer_num);
+    int max_path = pow(2, layer_num-1);
     int** root_path = new int*[max_path];
-    int* path_len = new int[max_path];
+    int* path_len = new int[max_path + 1];
+    int layer_root, layer_degree, temp_path_num;
+    int basic = 0;
+    int node, flag, drop_num = 0;
+
+    path_len[max_path] = 1;
+    for(int i = 0; i < max_path; i++){
+        root_path[i] = new int[layer_num];
+    }
+    root_path[0][0] = root;
+    path_len[0] = 1;
+
+    for(int i = 0; i < layer_num - 1; i++){
+        layer_degree = bipart_degree[i];
+        temp_path_num = path_len[max_path];
+        for(int j = 0; j < temp_path_num; j++){
+            layer_root = root_path[j][i];
+            for(int k = 0; k < layer_degree; k++){
+                node = topo_index[basic + layer_degree*layer_root + k];
+                cout << layer_root << " " << node << endl;
+                if((i != layer_num - 2) | (node != layer_root)){
+                    flag = 0;
+                    for(int len = 0; len < path_len[j]; len++){
+                        if(root_path[j][len] == node)
+                            flag = 1;
+                    }
+                    if((!flag) | (node == layer_root)){
+                        if(k == 0){
+                            root_path[j][i+1] = node;
+                            path_len[j]++;
+                        }
+                        else{
+                            memcpy(root_path[path_len[max_path]], root_path[j], 4*layer_num);
+                            root_path[path_len[max_path]][i+1] = node;
+                            path_len[path_len[max_path]] = path_len[j] + 1;
+                            path_len[max_path]++;
+                        }
+                    }
+                }
+            }
+        }
+        basic += layer_degree*switches;
+    }
+    cout << path_len[max_path] << endl;
 }
 
 int main(){
