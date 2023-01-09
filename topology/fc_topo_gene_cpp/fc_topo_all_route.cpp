@@ -1,6 +1,9 @@
 #include <iostream>
-#include <vector>
+#include <algorithm>
+#include <queue>
 using namespace std;
+
+int Rand(int i){return rand()%i;}
 
 class Fc_topo_all_route{
     public:
@@ -13,34 +16,84 @@ class Fc_topo_all_route{
         int is_random;
         int random_seed;
 
+        int* bipart_degree;
+        int* topo_index;
+
         Fc_topo_all_route(int switches, int hosts, int ports, int* vir_layer_degree, int layer_num, int is_random, int random_seed):
         switches(switches), hosts(hosts), ports(ports), vir_layer_degree(vir_layer_degree), layer_num(layer_num),is_random(is_random), random_seed(random_seed){}
         // generate topology
+        int  change_base(int basic);
         void fc_topo_gene(void);
-
-
-
 };
+
+int Fc_topo_all_route::change_base(int basic){
+    int new_basic;
+    if(basic == 0)
+        new_basic = switches - 1;
+    else
+        new_basic = basic - 1;
+    return new_basic;
+}
 
 void Fc_topo_all_route::fc_topo_gene(void){
     int sw_ports = ports - hosts;
     int bipart_num = layer_num - 1;
-    int* switch_array = new int(switches);
-    int degree;
-    int* degrees = new int(switches);
-    int basic;
+    int* switch_array = new int[switches];
+    int degree, basic;
+    int* degrees = new int[switches];
+    queue<int> remains;
+    int src, dst;
+    int initial_sub = 0;
+    bipart_degree = new int[bipart_num];
 
+    int total_degree = 0;
     for(int i = 0; i < switches; i++){
         switch_array[i] = i;
     }
+    for(int i = 0; i < layer_num; i++){
+        total_degree += vir_layer_degree[i];
+    }
+    topo_index = new int[switches*total_degree/2];
 
     for(int i = layer_num - 1; i > 0; i--){
-        degree = vir_layer_degree[i];
+        degree = vir_layer_degree[i] - initial_sub;
+        bipart_degree[i-1] = degree;
         for(int j = 0; j < switches; j++){
             degrees[j] = degree;
         }
         basic = switches - 1;
-        
+        if(is_random){
+            srand(random_seed);
+            random_shuffle(switch_array, switch_array+switches-1, Rand);
+        }
+        for(int j = 0; j < switches; j++){
+            src = switch_array[j];
+            for(int k = 0; k < degree; k++){
+                if(basic == j){
+                    remains.push(j);
+                    basic = change_base(basic);
+                }
+                dst = switch_array[basic];
+                while(degrees[dst] == 0){
+                    basic = change_base(basic);
+                    dst = switch_array[basic];
+                }
+                if(remains.size() > 0){
+                    if(remains.front() != j){
+                        dst = switch_array[remains.front()];
+                        basic = remains.front();
+                        remains.pop();
+                        basic = change_base(basic);
+                    }
+                    else
+                        basic = change_base(basic);
+                }
+                else
+                    basic = change_base(basic);
+                degrees[dst]--;
+            }
+        }
+        initial_sub = degree;
     }
     
 }
