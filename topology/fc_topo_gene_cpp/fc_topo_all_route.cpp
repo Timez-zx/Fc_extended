@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <queue>
+#include <cmath>
 using namespace std;
 
 int Rand(int i){return rand()%i;}
@@ -24,6 +25,7 @@ class Fc_topo_all_route{
         // generate topology
         int  change_base(int basic);
         void fc_topo_gene(void);
+        void search_path(int root);
 };
 
 int Fc_topo_all_route::change_base(int basic){
@@ -54,6 +56,7 @@ void Fc_topo_all_route::fc_topo_gene(void){
         total_degree += vir_layer_degree[i];
     }
     topo_index = new int[switches*total_degree/2];
+    int topo_count = 0;
 
     for(int i = layer_num - 1; i > 0; i--){
         degree = vir_layer_degree[i] - initial_sub;
@@ -91,11 +94,20 @@ void Fc_topo_all_route::fc_topo_gene(void){
                 else
                     basic = change_base(basic);
                 degrees[dst]--;
+                topo_index[topo_count] = dst;
+                topo_count++;
             }
         }
         initial_sub = degree;
     }
-    
+    delete[] switch_array;
+    delete[] degrees;
+}
+
+void Fc_topo_all_route::search_path(int root){
+    int max_path = pow(2, layer_num);
+    int** root_path = new int*[max_path];
+    int* path_len = new int[max_path];
 }
 
 int main(){
@@ -108,5 +120,6 @@ int main(){
     int random_seed = 1;
     Fc_topo_all_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     fc_test.fc_topo_gene();
+    fc_test.search_path(0);
     return 0;
 }
