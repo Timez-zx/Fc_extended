@@ -53,15 +53,18 @@ void Fc_topo_all_route::fc_topo_gene(void){
     for(int i = 0; i < switches; i++){
         switch_array[i] = i;
     }
-    for(int i = 0; i < layer_num; i++){
-        total_degree += vir_layer_degree[i];
+    int remain_degree = vir_layer_degree[layer_num-1];
+    total_degree += remain_degree + 1;
+    for(int i = layer_num-2; i > 0; i--){
+        remain_degree = vir_layer_degree[i] - remain_degree;
+        total_degree += remain_degree + 1;
     }
-    topo_index = new int[switches*total_degree/2];
+    topo_index = new int[switches*total_degree];
     int topo_count = 0;
 
     for(int i = layer_num - 1; i > 0; i--){
         degree = vir_layer_degree[i] - initial_sub;
-        bipart_degree[bipart_count] = degree;
+        bipart_degree[bipart_count] = degree + 1;
         bipart_count++;
         for(int j = 0; j < switches; j++){
             degrees[j] = degree;
@@ -73,6 +76,8 @@ void Fc_topo_all_route::fc_topo_gene(void){
         }
         for(int j = 0; j < switches; j++){
             src = switch_array[j];
+            topo_index[topo_count] = src;
+            topo_count++;
             for(int k = 0; k < degree; k++){
                 if(basic == j){
                     remains.push(j);
@@ -108,7 +113,15 @@ void Fc_topo_all_route::fc_topo_gene(void){
 }
 
 void Fc_topo_all_route::search_path(int root){
-    int max_path = pow(2, layer_num-1);
+    int remain_degree = vir_layer_degree[layer_num-1];
+    int max_path = 1;
+    max_path *= remain_degree + 1;
+    for(int i = layer_num-2; i > 0; i--){
+        remain_degree = vir_layer_degree[i] - remain_degree;
+        max_path *= remain_degree + 1;
+    }
+    cout << max_path << endl;
+
     int** root_path = new int*[max_path];
     int* path_len = new int[max_path + 1];
     int layer_root, layer_degree, temp_path_num;
@@ -129,7 +142,6 @@ void Fc_topo_all_route::search_path(int root){
             layer_root = root_path[j][i];
             for(int k = 0; k < layer_degree; k++){
                 node = topo_index[basic + layer_degree*layer_root + k];
-                cout << layer_root << " " << node << endl;
                 if((i != layer_num - 2) | (node != layer_root)){
                     flag = 0;
                     for(int len = 0; len < path_len[j]; len++){
@@ -137,14 +149,14 @@ void Fc_topo_all_route::search_path(int root){
                             flag = 1;
                     }
                     if((!flag) | (node == layer_root)){
-                        if(k == 0){
+                        if(path_len[j] == i + 1){
                             root_path[j][i+1] = node;
                             path_len[j]++;
                         }
                         else{
-                            memcpy(root_path[path_len[max_path]], root_path[j], 4*layer_num);
+                            memcpy(root_path[path_len[max_path]], root_path[j], 4*(i+1));
                             root_path[path_len[max_path]][i+1] = node;
-                            path_len[path_len[max_path]] = path_len[j] + 1;
+                            path_len[path_len[max_path]] = (i+1) + 1;
                             path_len[max_path]++;
                         }
                     }
@@ -153,19 +165,26 @@ void Fc_topo_all_route::search_path(int root){
         }
         basic += layer_degree*switches;
     }
+    for(int i = 0; i < path_len[max_path]; i++){
+        for(int j = 0; j < path_len[i]; j++){
+            cout << root_path[i][j] << " "; 
+        }
+        cout << endl;
+        cout << path_len[i] << endl;
+    }
     cout << path_len[max_path] << endl;
 }
 
 int main(){
-    int switches = 5;
+    int switches = 3;
     int hosts = 24;
     int ports = 36;
-    int vir_layer_degree[] = {2, 4, 4, 2};
+    int vir_layer_degree[] = {2, 5, 4, 1};
     int layer_num = 4;
-    int is_random = 1;
+    int is_random = 0;
     int random_seed = 1;
     Fc_topo_all_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     fc_test.fc_topo_gene();
-    fc_test.search_path(0);
+    fc_test.search_path(1);
     return 0;
 }
