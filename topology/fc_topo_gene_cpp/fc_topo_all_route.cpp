@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <queue>
 #include <cmath>
+#include <vector>
 using namespace std;
 
 typedef struct {   
@@ -13,11 +14,10 @@ typedef struct {
 
 typedef struct {
     int participate_num;
-    int* part_top;
     uint16_t* index_table;
-    int* top_loc_len;
-    int** top_path_label;
-    int** top_loc_label;
+    vector<int> top_loc_len;
+    vector<vector<int> > top_path_label;
+    vector<vector<int> > top_loc_label;
 } topo_dic_infor;
 
 int Rand(int i){return rand()%i;}
@@ -47,6 +47,7 @@ class Fc_topo_all_route{
         void search_path(int root, node_path_infor* node_infor);
         void path_infor_gene(void);
         void display_all_path(void);
+        void build_search_dic(void);
 };
 
 int Fc_topo_all_route::change_base(int basic){
@@ -220,6 +221,15 @@ void Fc_topo_all_route::display_all_path(void){
     }
 }
 
+void Fc_topo_all_route::build_search_dic(void){
+    topo_dic = new topo_dic_infor[switches];
+    for(int i = 0; i < switches; i++){
+        topo_dic[i].index_table = new uint16_t[switches];
+    }
+    
+}
+
+
 
 int main(){
     int switches = 5;
@@ -232,6 +242,6 @@ int main(){
     Fc_topo_all_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     fc_test.fc_topo_gene();
     fc_test.path_infor_gene();
-    fc_test.display_all_path();
+    fc_test.build_search_dic();
     return 0;
 }
