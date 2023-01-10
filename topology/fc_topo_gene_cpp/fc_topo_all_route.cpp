@@ -1,16 +1,24 @@
 #include <iostream>
 #include <algorithm>
+#include <unordered_map>
 #include <queue>
 #include <cmath>
 using namespace std;
 
-typedef struct
-{   
+typedef struct {   
     int** path_infor;
     int* path_len;
     int path_num;
 } node_path_infor;
 
+typedef struct {
+    int participate_num;
+    int* part_top;
+    uint16_t* index_table;
+    int* top_loc_len;
+    int** top_path_label;
+    int** top_loc_label;
+} topo_dic_infor;
 
 int Rand(int i){return rand()%i;}
 
@@ -29,6 +37,7 @@ class Fc_topo_all_route{
         int* topo_index;
 
         node_path_infor* all_path_infor;
+        topo_dic_infor* topo_dic;
 
         Fc_topo_all_route(int switches, int hosts, int ports, int* vir_layer_degree, int layer_num, int is_random, int random_seed):
         switches(switches), hosts(hosts), ports(ports), vir_layer_degree(vir_layer_degree), layer_num(layer_num),is_random(is_random), random_seed(random_seed){}
@@ -210,6 +219,7 @@ void Fc_topo_all_route::display_all_path(void){
         }
     }
 }
+
 
 int main(){
     int switches = 5;
