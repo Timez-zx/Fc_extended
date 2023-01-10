@@ -14,7 +14,7 @@ typedef struct {
 
 typedef struct {
     int participate_num;
-    uint16_t* index_table;
+    int* index_table;
     vector<int> top_loc_len;
     vector<vector<int> > top_path_label;
     vector<vector<int> > top_loc_label;
@@ -224,9 +224,38 @@ void Fc_topo_all_route::display_all_path(void){
 void Fc_topo_all_route::build_search_dic(void){
     topo_dic = new topo_dic_infor[switches];
     for(int i = 0; i < switches; i++){
-        topo_dic[i].index_table = new uint16_t[switches];
+        topo_dic[i].index_table = new int[switches];
+        memset(topo_dic[i].index_table, 0xff, switches*4);
+        topo_dic[i].participate_num = 0;
     }
-    
+
+    for(int i = 0; i < switches; i++){
+        for(int j = 0; j < all_path_infor[i].path_num; j++){
+            for(int k = 0; k < all_path_infor[i].path_len[j]; k++){
+                int node = all_path_infor[i].path_infor[j][k];
+                if(node != i){
+                    if(topo_dic[node].index_table[i] == -1){
+                        topo_dic[node].index_table[i] = topo_dic[node].participate_num;
+                        vector<int> path_label;
+                        vector<int> loc_label;
+                        path_label.push_back(j);
+                        topo_dic[node].top_path_label.push_back(path_label);
+                        loc_label.push_back(k);
+                        topo_dic[node].top_loc_label.push_back(loc_label);
+                        topo_dic[node].top_loc_len.push_back(1);
+                        topo_dic[node].participate_num++;
+                    }
+                    else{
+                        int temp_index = topo_dic[node].index_table[i];
+                        topo_dic[node].top_path_label[temp_index].push_back(j);
+                        topo_dic[node].top_loc_label[temp_index].push_back(k);
+                        topo_dic[node].top_loc_len[temp_index]++;
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 
