@@ -192,6 +192,11 @@ void Fc_topo_all_route::path_infor_gene(void){
             }
         }
     }
+    delete[] node_infor.path_len;
+    for(int i = 0; i < max_path; i++){
+        delete[] node_infor.path_infor[i];
+    }
+    delete[] node_infor.path_infor;
 }
 
 void Fc_topo_all_route::display_all_path(void){
