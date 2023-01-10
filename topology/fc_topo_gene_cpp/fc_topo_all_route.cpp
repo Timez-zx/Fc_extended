@@ -4,6 +4,14 @@
 #include <cmath>
 using namespace std;
 
+typedef struct
+{   
+    int** path_infor;
+    int* path_len;
+    int path_num;
+} node_path_infor;
+
+
 int Rand(int i){return rand()%i;}
 
 class Fc_topo_all_route{
@@ -20,12 +28,16 @@ class Fc_topo_all_route{
         int* bipart_degree;
         int* topo_index;
 
+        node_path_infor* all_path_infor;
+
         Fc_topo_all_route(int switches, int hosts, int ports, int* vir_layer_degree, int layer_num, int is_random, int random_seed):
         switches(switches), hosts(hosts), ports(ports), vir_layer_degree(vir_layer_degree), layer_num(layer_num),is_random(is_random), random_seed(random_seed){}
         // generate topology
         int  change_base(int basic);
         void fc_topo_gene(void);
-        void search_path(int root);
+        void search_path(int root, node_path_infor* node_infor);
+        void path_infor_gene(void);
+        void display_all_path(void);
 };
 
 int Fc_topo_all_route::change_base(int basic){
@@ -112,52 +124,37 @@ void Fc_topo_all_route::fc_topo_gene(void){
     delete[] degrees;
 }
 
-void Fc_topo_all_route::search_path(int root){
-    int remain_degree = vir_layer_degree[layer_num-1];
-    int max_path = 1;
-    max_path *= remain_degree + 1;
-    for(int i = layer_num-2; i > 0; i--){
-        remain_degree = vir_layer_degree[i] - remain_degree;
-        max_path *= remain_degree + 1;
-    }
-    cout << max_path << endl;
-
-    int** root_path = new int*[max_path];
-    int* path_len = new int[max_path + 1];
+void Fc_topo_all_route::search_path(int root, node_path_infor* node_infor){
     int layer_root, layer_degree, temp_path_num;
     int basic = 0;
-    int node, flag, drop_num = 0;
+    int node, flag;
 
-    path_len[max_path] = 1;
-    for(int i = 0; i < max_path; i++){
-        root_path[i] = new int[layer_num];
-    }
-    root_path[0][0] = root;
-    path_len[0] = 1;
-
+    node_infor->path_num = 1;
+    node_infor->path_infor[0][0] = root;
+    node_infor->path_len[0] = 1;
     for(int i = 0; i < layer_num - 1; i++){
         layer_degree = bipart_degree[i];
-        temp_path_num = path_len[max_path];
+        temp_path_num = node_infor->path_num;
         for(int j = 0; j < temp_path_num; j++){
-            layer_root = root_path[j][i];
+            layer_root = node_infor->path_infor[j][i];
             for(int k = 0; k < layer_degree; k++){
                 node = topo_index[basic + layer_degree*layer_root + k];
                 if((i != layer_num - 2) | (node != layer_root)){
                     flag = 0;
-                    for(int len = 0; len < path_len[j]; len++){
-                        if(root_path[j][len] == node)
+                    for(int len = 0; len < node_infor->path_len[j]; len++){
+                        if(node_infor->path_infor[j][len] == node)
                             flag = 1;
                     }
                     if((!flag) | (node == layer_root)){
-                        if(path_len[j] == i + 1){
-                            root_path[j][i+1] = node;
-                            path_len[j]++;
+                        if(node_infor->path_len[j] == i + 1){
+                            node_infor->path_infor[j][i+1] = node;
+                            node_infor->path_len[j]++;
                         }
                         else{
-                            memcpy(root_path[path_len[max_path]], root_path[j], 4*(i+1));
-                            root_path[path_len[max_path]][i+1] = node;
-                            path_len[path_len[max_path]] = (i+1) + 1;
-                            path_len[max_path]++;
+                            memcpy(node_infor->path_infor[node_infor->path_num], node_infor->path_infor[j], 4*(i+1));
+                            node_infor->path_infor[node_infor->path_num][i+1] = node;
+                            node_infor->path_len[node_infor->path_num] = (i+1) + 1;
+                            node_infor->path_num++;
                         }
                     }
                 }
@@ -165,26 +162,61 @@ void Fc_topo_all_route::search_path(int root){
         }
         basic += layer_degree*switches;
     }
-    for(int i = 0; i < path_len[max_path]; i++){
-        for(int j = 0; j < path_len[i]; j++){
-            cout << root_path[i][j] << " "; 
-        }
-        cout << endl;
-        cout << path_len[i] << endl;
+}
+
+void Fc_topo_all_route::path_infor_gene(void){
+    int remain_degree = vir_layer_degree[layer_num-1];
+    int max_path = 1;
+    max_path *= remain_degree + 1;
+    for(int i = layer_num-2; i > 0; i--){
+        remain_degree = vir_layer_degree[i] - remain_degree;
+        max_path *= remain_degree + 1;
     }
-    cout << path_len[max_path] << endl;
+    node_path_infor node_infor;
+    node_infor.path_len = new int[max_path];
+    node_infor.path_infor = new int*[max_path];
+    for(int i = 0; i < max_path; i++){
+        node_infor.path_infor[i] = new int[layer_num];
+    }
+    all_path_infor = new node_path_infor[switches];
+    for(int i = 0; i < switches; i++){
+        search_path(i, &node_infor);
+        all_path_infor[i].path_infor = new int*[node_infor.path_num];
+        all_path_infor[i].path_len = new int[node_infor.path_num];
+        all_path_infor[i].path_num = node_infor.path_num;
+        for(int j = 0; j < node_infor.path_num; j++){
+            all_path_infor[i].path_len[j] = node_infor.path_len[j];
+            all_path_infor[i].path_infor[j] = new int[node_infor.path_len[j]];
+            for(int k = 0; k < node_infor.path_len[j]; k++){
+                all_path_infor[i].path_infor[j][k] = node_infor.path_infor[j][k];
+            }
+        }
+    }
+}
+
+void Fc_topo_all_route::display_all_path(void){
+    for(int i = 0; i < switches; i++){
+        cout << all_path_infor[i].path_num << endl;
+        for(int j = 0; j < all_path_infor[i].path_num; j++){
+            for(int k = 0; k < all_path_infor[i].path_len[j]; k++){
+                cout << all_path_infor[i].path_infor[j][k] << " ";
+            }
+            cout << endl;
+        }
+    }
 }
 
 int main(){
-    int switches = 3;
+    int switches = 5;
     int hosts = 24;
     int ports = 36;
-    int vir_layer_degree[] = {2, 5, 4, 1};
+    int vir_layer_degree[] = {2, 4, 4, 2};
     int layer_num = 4;
     int is_random = 0;
     int random_seed = 1;
     Fc_topo_all_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     fc_test.fc_topo_gene();
-    fc_test.search_path(1);
+    fc_test.path_infor_gene();
+    fc_test.display_all_path();
     return 0;
 }
