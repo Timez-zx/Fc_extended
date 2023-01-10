@@ -15,6 +15,7 @@ typedef struct {
 typedef struct {
     int participate_num;
     int* index_table;
+    vector<int> participate;
     vector<int> top_loc_len;
     vector<vector<int> > top_path_label;
     vector<vector<int> > top_loc_label;
@@ -236,8 +237,11 @@ void Fc_topo_all_route::build_search_dic(void){
                 if(node != i){
                     if(topo_dic[node].index_table[i] == -1){
                         topo_dic[node].index_table[i] = topo_dic[node].participate_num;
+                        topo_dic[node].participate.push_back(i);
                         vector<int> path_label;
+                        path_label.clear();
                         vector<int> loc_label;
+                        loc_label.clear();
                         path_label.push_back(j);
                         topo_dic[node].top_path_label.push_back(path_label);
                         loc_label.push_back(k);
@@ -247,14 +251,26 @@ void Fc_topo_all_route::build_search_dic(void){
                     }
                     else{
                         int temp_index = topo_dic[node].index_table[i];
-                        topo_dic[node].top_path_label[temp_index].push_back(j);
-                        topo_dic[node].top_loc_label[temp_index].push_back(k);
-                        topo_dic[node].top_loc_len[temp_index]++;
+                        int len = topo_dic[node].top_loc_len[temp_index];
+                        if(j != topo_dic[node].top_path_label[temp_index][len-1]){
+                            topo_dic[node].top_path_label[temp_index].push_back(j);
+                            topo_dic[node].top_loc_label[temp_index].push_back(k);
+                            topo_dic[node].top_loc_len[temp_index]++;
+                        }
                     }
                 }
             }
         }
     }
+
+    for (int i = 0; i < topo_dic[4].participate_num; i++)
+    {
+        cout << topo_dic[4].participate[i] << endl;
+        for(int j = 0; j <  topo_dic[4].top_loc_len[i]; j++){
+            cout << topo_dic[4].top_path_label[i][j] << " " << topo_dic[4].top_loc_label[i][j] << endl;
+        }
+    }
+    
 
 }
 
@@ -271,6 +287,7 @@ int main(){
     Fc_topo_all_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     fc_test.fc_topo_gene();
     fc_test.path_infor_gene();
+    // fc_test.display_all_path();
     fc_test.build_search_dic();
     return 0;
 }
