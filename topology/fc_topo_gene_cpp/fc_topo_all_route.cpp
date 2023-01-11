@@ -47,6 +47,7 @@ class Fc_topo_all_route{
         void display_all_path(void);
         void build_search_dic(void);
         void display_dic(int index);
+        void find_route_path(int src, int dst);
 };
 
 int Fc_topo_all_route::change_base(int basic){
@@ -269,6 +270,14 @@ void Fc_topo_all_route::display_dic(int index){
     }
 }
 
+void Fc_topo_all_route::find_route_path(int src, int dst){
+    vector<vector<int> > route_path;
+    int temp_index = topo_dic[dst].index_table[src];
+    
+    if(temp_index > 0){
+
+    }
+}
 
 
 int main(){
