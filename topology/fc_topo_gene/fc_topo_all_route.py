@@ -356,30 +356,31 @@ class Fc_topo_all_route():
         
 
 if __name__ == "__main__":
-    switches = 3000
-    hosts = 24
-    ports = 54
-    vir_layer_degree = [5,10,10,5]
-    is_random = 1
-    random_seed = 3
-
-    # switches = 5
+    # switches = 3000
     # hosts = 24
-    # ports = 36
-    # vir_layer_degree = [2,4,4,2]
+    # ports = 54
+    # vir_layer_degree = [5,10,10,5]
     # is_random = 1
     # random_seed = 3
+
+    switches = 5
+    hosts = 24
+    ports = 36
+    vir_layer_degree = [2,4,4,2]
+    is_random = 0
+    random_seed = 3
     fc_demo = Fc_topo_all_route(switches, hosts, ports, vir_layer_degree, is_random, random_seed)
     fc_demo.fc_topo_gene()
     fc_demo.route_infor_generate()
-    thread_num = 8
-    if_report = 1
-    report_num = 10000
-    if_save = 1
-    save_batch_size = 10000
+    print(fc_demo.all_path[1])
+    # thread_num = 8
+    # if_report = 1
+    # report_num = 10000
+    # if_save = 1
+    # save_batch_size = 10000
     # mac 使用used作为参考：0.6比较合适
     # linux 直接使用buffer\cache作为参考：0.3对于32G大概是10G
-    clear_rate = 0.3
-    fc_demo.route_gene(thread_num, if_report, report_num, if_save, save_batch_size, clear_rate)
+    # clear_rate = 0.3
+    # fc_demo.route_gene(thread_num, if_report, report_num, if_save, save_batch_size, clear_rate)
     # read_batch_size = 100000
     # fc_demo.route_read(read_batch_size, 8900000)
