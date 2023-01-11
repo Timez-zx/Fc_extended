@@ -1,6 +1,5 @@
 #include <iostream>
 #include <algorithm>
-#include <unordered_map>
 #include <queue>
 #include <cmath>
 #include <vector>
@@ -13,10 +12,8 @@ typedef struct {
 } node_path_infor;
 
 typedef struct {
-    int participate_num;
     int* index_table;
     vector<int> participate;
-    vector<int> top_loc_len;
     vector<vector<int> > top_path_label;
     vector<vector<int> > top_loc_label;
 } topo_dic_infor;
@@ -49,6 +46,7 @@ class Fc_topo_all_route{
         void path_infor_gene(void);
         void display_all_path(void);
         void build_search_dic(void);
+        void display_dic(int index);
 };
 
 int Fc_topo_all_route::change_base(int basic){
@@ -227,7 +225,6 @@ void Fc_topo_all_route::build_search_dic(void){
     for(int i = 0; i < switches; i++){
         topo_dic[i].index_table = new int[switches];
         memset(topo_dic[i].index_table, 0xff, switches*4);
-        topo_dic[i].participate_num = 0;
     }
 
     for(int i = 0; i < switches; i++){
@@ -236,7 +233,7 @@ void Fc_topo_all_route::build_search_dic(void){
                 int node = all_path_infor[i].path_infor[j][k];
                 if(node != i){
                     if(topo_dic[node].index_table[i] == -1){
-                        topo_dic[node].index_table[i] = topo_dic[node].participate_num;
+                        topo_dic[node].index_table[i] = topo_dic[node].participate.size();
                         topo_dic[node].participate.push_back(i);
                         vector<int> path_label;
                         path_label.clear();
@@ -246,32 +243,30 @@ void Fc_topo_all_route::build_search_dic(void){
                         topo_dic[node].top_path_label.push_back(path_label);
                         loc_label.push_back(k);
                         topo_dic[node].top_loc_label.push_back(loc_label);
-                        topo_dic[node].top_loc_len.push_back(1);
-                        topo_dic[node].participate_num++;
                     }
                     else{
                         int temp_index = topo_dic[node].index_table[i];
-                        int len = topo_dic[node].top_loc_len[temp_index];
+                        int len = topo_dic[node].top_loc_label[temp_index].size();
                         if(j != topo_dic[node].top_path_label[temp_index][len-1]){
                             topo_dic[node].top_path_label[temp_index].push_back(j);
                             topo_dic[node].top_loc_label[temp_index].push_back(k);
-                            topo_dic[node].top_loc_len[temp_index]++;
                         }
                     }
                 }
             }
         }
     }
+}
 
-    for (int i = 0; i < topo_dic[4].participate_num; i++)
+void Fc_topo_all_route::display_dic(int index){
+    for (int i = 0; i < topo_dic[index].participate.size(); i++)
     {
-        cout << topo_dic[4].participate[i] << endl;
-        for(int j = 0; j <  topo_dic[4].top_loc_len[i]; j++){
-            cout << topo_dic[4].top_path_label[i][j] << " " << topo_dic[4].top_loc_label[i][j] << endl;
+        cout << topo_dic[index].participate[i] << endl;
+        for(int j = 0; j <  topo_dic[index].top_loc_label[i].size(); j++){
+            cout << topo_dic[index].top_path_label[i][j] << "-" << topo_dic[index].top_loc_label[i][j] << " ";
         }
+        cout << endl;
     }
-    
-
 }
 
 
@@ -289,5 +284,6 @@ int main(){
     fc_test.path_infor_gene();
     // fc_test.display_all_path();
     fc_test.build_search_dic();
+    fc_test.display_dic(0);
     return 0;
 }
