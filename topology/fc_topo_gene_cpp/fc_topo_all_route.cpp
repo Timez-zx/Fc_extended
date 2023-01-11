@@ -1,5 +1,7 @@
 #include <iostream>
 #include <algorithm>
+#include <unordered_set>
+#include <set>
 #include <queue>
 #include <cmath>
 #include <vector>
@@ -17,6 +19,7 @@ typedef struct {
     vector<vector<int> > top_path_label;
     vector<vector<int> > top_loc_label;
 } topo_dic_infor;
+
 
 int Rand(int i){return rand()%i;}
 
@@ -47,7 +50,7 @@ class Fc_topo_all_route{
         void display_all_path(void);
         void build_search_dic(void);
         void display_dic(int index);
-        void find_route_path(int src, int dst);
+        void extract_route_path(int src, int dst);
 };
 
 int Fc_topo_all_route::change_base(int basic){
@@ -270,13 +273,90 @@ void Fc_topo_all_route::display_dic(int index){
     }
 }
 
-void Fc_topo_all_route::find_route_path(int src, int dst){
-    vector<vector<int> > route_path;
-    int temp_index = topo_dic[dst].index_table[src];
-    
-    if(temp_index > 0){
+void Fc_topo_all_route::extract_route_path(int src, int dst){
+    vector<vector<int> > route_node_path;
+    set<vector<int> > temp_node_path;
+    vector<vector<int> > temp_vec;
 
+    int temp_index_src = topo_dic[dst].index_table[src];
+    if(temp_index_src >= 0){
+        vector<int> path_label = topo_dic[dst].top_path_label[temp_index_src];
+        vector<int> loc_label = topo_dic[dst].top_loc_label[temp_index_src];
+        for(int i = 0; i < path_label.size(); i++){
+            vector<int> node_path;
+            int *path = all_path_infor[src].path_infor[path_label[i]];
+            int loc = loc_label[i];
+            node_path.push_back(path[loc]);
+            node_path.push_back(layer_num - loc);
+            loc--;
+            while(path[loc] != src){
+                node_path.push_back(path[loc]);
+                node_path.push_back(layer_num - loc);
+                loc--;
+            }
+            node_path.push_back(path[loc]);
+            node_path.push_back(layer_num - loc);
+            temp_node_path.insert(node_path);
+        }
+        temp_vec.assign(temp_node_path.begin(), temp_node_path.end());
+        route_node_path.insert(route_node_path.end(), temp_vec.begin(), temp_vec.end());
+        temp_node_path.clear();
+        temp_vec.clear();
     }
+
+    int temp_index_dst = topo_dic[src].index_table[dst];
+    if(temp_index_dst >= 0){
+        vector<int> path_label = topo_dic[src].top_path_label[temp_index_dst];
+        vector<int> loc_label = topo_dic[src].top_loc_label[temp_index_dst];
+        for(int i = 0; i < path_label.size(); i++){
+            vector<int> node_path;
+            int *path = all_path_infor[dst].path_infor[path_label[i]];
+            int loc = loc_label[i];
+            node_path.push_back(path[loc]);
+            node_path.push_back(layer_num - loc);
+            loc--;
+            while(path[loc] != src){
+                node_path.push_back(path[loc]);
+                node_path.push_back(layer_num - loc);
+                loc--;
+            }
+            node_path.push_back(path[loc]);
+            node_path.push_back(layer_num - loc);
+            temp_node_path.insert(node_path);
+        }
+        temp_vec.assign(temp_node_path.begin(), temp_node_path.end());
+        route_node_path.insert(route_node_path.end(), temp_vec.begin(), temp_vec.end());
+        temp_node_path.clear();
+        temp_vec.clear();
+    }
+
+    vector<int> src_part = topo_dic[src].participate;
+    vector<int> dst_part = topo_dic[dst].participate;
+    unordered_set<int> inter_part;
+    for(int i = 0; i < src_part.size(); i++){
+        inter_part.insert(src_part[i]);
+    }
+    for(int i = 0; i < dst_part.size(); i++){
+        inter_part.insert(dst_part[i]);
+    }
+    vector<int> inter;
+    inter.insert(inter.end(), inter_part.begin(), inter_part.end());
+
+    for(int i = 0; i < inter.size(); i++){
+        temp_index_src = topo_dic[src].index_table[inter[i]];
+        vector<int> src_inter_path = topo_dic[src].top_path_label[temp_index_src];
+        vector<int> src_inter_loc = topo_dic[src].top_loc_label[temp_index_src];
+        temp_index_dst = topo_dic[dst].index_table[inter[i]];
+        vector<int> dst_inter_path = topo_dic[dst].top_path_label[temp_index_dst];
+        vector<int> dst_inter_loc = topo_dic[dst].top_loc_label[temp_index_dst];
+    }
+
+
+
+
+
+
+
 }
 
 
@@ -293,6 +373,7 @@ int main(){
     fc_test.path_infor_gene();
     // fc_test.display_all_path();
     fc_test.build_search_dic();
-    fc_test.display_dic(0);
+    fc_test.display_dic(2);
+
     return 0;
 }
