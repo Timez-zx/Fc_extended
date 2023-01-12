@@ -6,6 +6,8 @@
 #include <cmath>
 #include <vector>
 #include <ctime>
+#include <thread>
+#include <cstring>
 using namespace std;
 
 typedef struct {   
@@ -434,20 +436,20 @@ void Fc_topo_all_route::extract_route_path(int src, int dst){
 
 
 int main(){
-    int switches = 5000;
-    int hosts = 24;
-    int ports = 64;
-    int vir_layer_degree[] = {7, 13, 13, 7};
-    int layer_num = 4;
-    int is_random = 0;
-    int random_seed = 1;
-    Fc_topo_all_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-    fc_test.fc_topo_gene();
-    fc_test.path_infor_gene();
-    // fc_test.display_all_path();
-    fc_test.build_search_dic();
-    // fc_test.display_dic(2);
-    fc_test.extract_route_path(1, 50);
-
+    // int switches = 5000;
+    // int hosts = 24;
+    // int ports = 64;
+    // int vir_layer_degree[] = {7, 13, 13, 7};
+    // int layer_num = 4;
+    // int is_random = 0;
+    // int random_seed = 1;
+    // Fc_topo_all_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    // fc_test.fc_topo_gene();
+    // fc_test.path_infor_gene();
+    // // fc_test.display_all_path();
+    // fc_test.build_search_dic();
+    // // fc_test.display_dic(2);
+    // fc_test.extract_route_path(1, 50);
+    cout << thread::hardware_concurrency() << endl;
     return 0;
 }
