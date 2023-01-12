@@ -5,7 +5,7 @@
 #include <queue>
 #include <cmath>
 #include <vector>
-#include <ctime>
+#include <sys/time.h>
 #include <thread>
 #include <cstring>
 using namespace std;
@@ -54,8 +54,8 @@ class Fc_topo_all_route{
         void build_search_dic(void);
         void display_dic(int index);
         void extract_route_path(int src, int dst);
-        void thread_route(vector<int*> route_pairs);
-        void pthread_for_all_route(int thread_num);
+        void thread_route(vector<int*> route_pairs, bool if_report, int report_inter);
+        void pthread_for_all_route(int thread_num, bool if_report, int report_inter);
 };
 
 int Fc_topo_all_route::change_base(int basic){
@@ -435,13 +435,20 @@ void Fc_topo_all_route::extract_route_path(int src, int dst){
     }
 }
 
-void Fc_topo_all_route::thread_route(vector<int*> route_pairs) {
+void Fc_topo_all_route::thread_route(vector<int*> route_pairs, bool if_report, int report_inter) {
+    int count = 0;
     for(int i = 0; i < route_pairs.size(); i++){
         extract_route_path(route_pairs[i][0], route_pairs[i][1]);
+        if(if_report){
+            count++;
+            if(count % report_inter == 0){
+                cout << "The thread " << this_thread::get_id() << " " <<count/double(route_pairs.size()) << endl;
+            }
+        }
     }
 }
 
-void Fc_topo_all_route::pthread_for_all_route(int thread_num){
+void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, int report_inter){
     int total_pairs = switches*(switches-1)/2;
     int average = ceil(total_pairs/thread_num);
     int count = 0;
@@ -451,11 +458,13 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num){
         vector<int*> pairs;
         thread_pairs.push_back(pairs);
     }
-
+    int *temp = new int[2];
     for(int i = 0; i < switches; i++){
         for (int j = i+1; j < switches; j++)
         {
-            int temp[2] = {i, j};
+            temp = new int[2];
+            temp[0] = i;
+            temp[1] = j;
             thread_pairs[allo_index].push_back(temp);
             if(count < average)
                 count++;
@@ -468,7 +477,7 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num){
 
     thread* th = new thread[thread_num];
     for(int i = 0; i < thread_num; i++){
-        th[i] = thread(&Fc_topo_all_route::thread_route, this, thread_pairs[i]);
+        th[i] = thread(&Fc_topo_all_route::thread_route, this, thread_pairs[i], if_report, report_inter);
     }
     for(int i = 0; i < thread_num; i++)
         th[i].join();
@@ -488,7 +497,14 @@ int main(){
     // fc_test.display_all_path();
     fc_test.build_search_dic();
     // fc_test.display_dic(2);
-    fc_test.pthread_for_all_route(8);
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
+
+    bool if_report = true;
+    int report_inter = 50000;
+    fc_test.pthread_for_all_route(8, if_report, report_inter);
+    gettimeofday(&end, NULL);
+    cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     // fc_test.extract_route_path(1, 50);
     return 0;
 }
