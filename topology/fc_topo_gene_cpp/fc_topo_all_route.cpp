@@ -54,6 +54,8 @@ class Fc_topo_all_route{
         void build_search_dic(void);
         void display_dic(int index);
         void extract_route_path(int src, int dst);
+        void thread_route(vector<int*> route_pairs);
+        void pthread_for_all_route(int thread_num);
 };
 
 int Fc_topo_all_route::change_base(int basic){
@@ -431,25 +433,62 @@ void Fc_topo_all_route::extract_route_path(int src, int dst){
         temp_node_path.clear();
         temp_vec.clear();
     }
-
 }
 
+void Fc_topo_all_route::thread_route(vector<int*> route_pairs) {
+    for(int i = 0; i < route_pairs.size(); i++){
+        extract_route_path(route_pairs[i][0], route_pairs[i][1]);
+    }
+}
+
+void Fc_topo_all_route::pthread_for_all_route(int thread_num){
+    int total_pairs = switches*(switches-1)/2;
+    int average = ceil(total_pairs/thread_num);
+    int count = 0;
+    int allo_index = 0;
+    vector<vector<int*> > thread_pairs;
+    for(int i = 0; i < thread_num; i++){
+        vector<int*> pairs;
+        thread_pairs.push_back(pairs);
+    }
+
+    for(int i = 0; i < switches; i++){
+        for (int j = i+1; j < switches; j++)
+        {
+            int temp[2] = {i, j};
+            thread_pairs[allo_index].push_back(temp);
+            if(count < average)
+                count++;
+            else{
+                count = 0;
+                allo_index++;
+            }
+        } 
+    }
+
+    thread* th = new thread[thread_num];
+    for(int i = 0; i < thread_num; i++){
+        th[i] = thread(&thread_route, this, thread_pairs[i]);
+    }
+    for(int i = 0; i < thread_num; i++)
+        th[i].join();
+}
 
 int main(){
-    // int switches = 5000;
-    // int hosts = 24;
-    // int ports = 64;
-    // int vir_layer_degree[] = {7, 13, 13, 7};
-    // int layer_num = 4;
-    // int is_random = 0;
-    // int random_seed = 1;
-    // Fc_topo_all_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-    // fc_test.fc_topo_gene();
-    // fc_test.path_infor_gene();
-    // // fc_test.display_all_path();
-    // fc_test.build_search_dic();
-    // // fc_test.display_dic(2);
+    int switches = 5000;
+    int hosts = 24;
+    int ports = 64;
+    int vir_layer_degree[] = {7, 13, 13, 7};
+    int layer_num = 4;
+    int is_random = 0;
+    int random_seed = 1;
+    Fc_topo_all_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    fc_test.fc_topo_gene();
+    fc_test.path_infor_gene();
+    // fc_test.display_all_path();
+    fc_test.build_search_dic();
+    // fc_test.display_dic(2);
+    fc_test.pthread_for_all_route(8);
     // fc_test.extract_route_path(1, 50);
-    cout << thread::hardware_concurrency() << endl;
     return 0;
 }
