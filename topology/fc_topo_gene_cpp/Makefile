@@ -1,4 +1,4 @@
-CFLAGS= -O3
+CFLAGS= -O3 -P -std=c++11
 FILENAME=fc_topo_all_route.cpp
 OUT=fc_topo_all_route
 

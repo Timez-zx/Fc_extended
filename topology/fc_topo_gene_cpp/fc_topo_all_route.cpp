@@ -468,7 +468,7 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num){
 
     thread* th = new thread[thread_num];
     for(int i = 0; i < thread_num; i++){
-        th[i] = thread(&thread_route, this, thread_pairs[i]);
+        th[i] = thread(&Fc_topo_all_route::thread_route, this, thread_pairs[i]);
     }
     for(int i = 0; i < thread_num; i++)
         th[i].join();
