@@ -53,7 +53,7 @@ class Fc_topo_all_route{
         void display_all_path(void);
         void build_search_dic(void);
         void display_dic(int index);
-        void extract_route_path(int src, int dst);
+        void extract_route_path(int src, int dst, bool if_display);
         void thread_route(vector<int*> route_pairs, bool if_report, int report_inter);
         void pthread_for_all_route(int thread_num, bool if_report, int report_inter);
 };
@@ -278,7 +278,7 @@ void Fc_topo_all_route::display_dic(int index){
     }
 }
 
-void Fc_topo_all_route::extract_route_path(int src, int dst){
+void Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display){
     vector<vector<int> > route_node_path;
     set<vector<int> > temp_node_path;
     vector<vector<int> > temp_vec;
@@ -433,12 +433,21 @@ void Fc_topo_all_route::extract_route_path(int src, int dst){
         temp_node_path.clear();
         temp_vec.clear();
     }
+    if(if_display){
+        cout << route_node_path.size() << endl;
+        for(int i = 0; i < route_node_path.size(); i++){
+            for(int j = 0; j < route_node_path[i].size(); j++){
+                cout << route_node_path[i][j] << " ";
+            }
+            cout<< endl;
+        }
+    }
 }
 
 void Fc_topo_all_route::thread_route(vector<int*> route_pairs, bool if_report, int report_inter) {
     int count = 0;
     for(int i = 0; i < route_pairs.size(); i++){
-        extract_route_path(route_pairs[i][0], route_pairs[i][1]);
+        extract_route_path(route_pairs[i][0], route_pairs[i][1], false);
         if(if_report){
             count++;
             if(count % report_inter == 0){
@@ -484,13 +493,13 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
 }
 
 int main(){
-    int switches = 5000;
+    int switches = 10;
     int hosts = 24;
-    int ports = 64;
-    int vir_layer_degree[] = {5, 10, 10, 10, 5};
-    int layer_num = 5;
-    int is_random = 0;
-    int random_seed = 1;
+    int ports = 36;
+    int vir_layer_degree[] = {2, 4, 4, 2};
+    int layer_num = 4;
+    int is_random = 1;
+    int random_seed = 2;
     Fc_topo_all_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     fc_test.fc_topo_gene();
     fc_test.path_infor_gene();
@@ -498,13 +507,13 @@ int main(){
     fc_test.build_search_dic();
     // fc_test.display_dic(2);
 
-    struct timeval start, end;
-    gettimeofday(&start, NULL);
-    bool if_report = true;
-    int report_inter = 50000;
-    fc_test.pthread_for_all_route(8, if_report, report_inter);
-    gettimeofday(&end, NULL);
-    cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
-    // fc_test.extract_route_path(1, 50);
+    // struct timeval start, end;
+    // gettimeofday(&start, NULL);
+    // bool if_report = true;
+    // int report_inter = 50000;
+    // fc_test.pthread_for_all_route(8, if_report, report_inter);
+    // gettimeofday(&end, NULL);
+    // cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
+    fc_test.extract_route_path(1, 4, true);
     return 0;
 }
