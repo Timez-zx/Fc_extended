@@ -5,6 +5,7 @@
 #include <queue>
 #include <cmath>
 #include <vector>
+#include <ctime>
 using namespace std;
 
 typedef struct {   
@@ -279,11 +280,13 @@ void Fc_topo_all_route::extract_route_path(int src, int dst){
     vector<vector<int> > temp_vec;
 
     int temp_index_src = topo_dic[dst].index_table[src];
+    vector<int> path_label;
+    vector<int> loc_label;
+    vector<int> node_path;
     if(temp_index_src >= 0){
-        vector<int> path_label = topo_dic[dst].top_path_label[temp_index_src];
-        vector<int> loc_label = topo_dic[dst].top_loc_label[temp_index_src];
+        path_label = topo_dic[dst].top_path_label[temp_index_src];
+        loc_label = topo_dic[dst].top_loc_label[temp_index_src];
         for(int i = 0; i < path_label.size(); i++){
-            vector<int> node_path;
             int *path = all_path_infor[src].path_infor[path_label[i]];
             int loc = loc_label[i];
             node_path.push_back(path[loc]);
@@ -297,6 +300,7 @@ void Fc_topo_all_route::extract_route_path(int src, int dst){
             node_path.push_back(path[loc]);
             node_path.push_back(layer_num - loc);
             temp_node_path.insert(node_path);
+            node_path.clear();
         }
         temp_vec.assign(temp_node_path.begin(), temp_node_path.end());
         route_node_path.insert(route_node_path.end(), temp_vec.begin(), temp_vec.end());
@@ -306,16 +310,15 @@ void Fc_topo_all_route::extract_route_path(int src, int dst){
 
     int temp_index_dst = topo_dic[src].index_table[dst];
     if(temp_index_dst >= 0){
-        vector<int> path_label = topo_dic[src].top_path_label[temp_index_dst];
-        vector<int> loc_label = topo_dic[src].top_loc_label[temp_index_dst];
+        path_label = topo_dic[src].top_path_label[temp_index_dst];
+        loc_label = topo_dic[src].top_loc_label[temp_index_dst];
         for(int i = 0; i < path_label.size(); i++){
-            vector<int> node_path;
             int *path = all_path_infor[dst].path_infor[path_label[i]];
             int loc = loc_label[i];
             node_path.push_back(path[loc]);
             node_path.push_back(layer_num - loc);
             loc--;
-            while(path[loc] != src){
+            while(path[loc] != dst){
                 node_path.push_back(path[loc]);
                 node_path.push_back(layer_num - loc);
                 loc--;
@@ -323,6 +326,7 @@ void Fc_topo_all_route::extract_route_path(int src, int dst){
             node_path.push_back(path[loc]);
             node_path.push_back(layer_num - loc);
             temp_node_path.insert(node_path);
+            node_path.clear();
         }
         temp_vec.assign(temp_node_path.begin(), temp_node_path.end());
         route_node_path.insert(route_node_path.end(), temp_vec.begin(), temp_vec.end());
@@ -332,39 +336,108 @@ void Fc_topo_all_route::extract_route_path(int src, int dst){
 
     vector<int> src_part = topo_dic[src].participate;
     vector<int> dst_part = topo_dic[dst].participate;
-    unordered_set<int> inter_part;
-    for(int i = 0; i < src_part.size(); i++){
-        inter_part.insert(src_part[i]);
-    }
-    for(int i = 0; i < dst_part.size(); i++){
-        inter_part.insert(dst_part[i]);
-    }
     vector<int> inter;
-    inter.insert(inter.end(), inter_part.begin(), inter_part.end());
+    set_intersection(src_part.begin(), src_part.end(), dst_part.begin(), dst_part.end(), inserter(inter, inter.begin()));
 
+
+    vector<int> src_inter_path;
+    vector<int> src_inter_loc;
+    vector<int> dst_inter_path;
+    vector<int> dst_inter_loc;
+
+    set<vector<int> > src_valid_set;
+    set<vector<int> > dst_valid_set;
+
+    vector<vector<int> > src_valid_path;
+    vector<vector<int> > dst_valid_path;
+
+    vector<int> temp_path(layer_num+1);
+    int* temp_array;
+
+    vector<int> src_path, dst_path;
     for(int i = 0; i < inter.size(); i++){
         temp_index_src = topo_dic[src].index_table[inter[i]];
-        vector<int> src_inter_path = topo_dic[src].top_path_label[temp_index_src];
-        vector<int> src_inter_loc = topo_dic[src].top_loc_label[temp_index_src];
+        src_inter_path = topo_dic[src].top_path_label[temp_index_src];
+        src_inter_loc = topo_dic[src].top_loc_label[temp_index_src];
         temp_index_dst = topo_dic[dst].index_table[inter[i]];
-        vector<int> dst_inter_path = topo_dic[dst].top_path_label[temp_index_dst];
-        vector<int> dst_inter_loc = topo_dic[dst].top_loc_label[temp_index_dst];
+        dst_inter_path = topo_dic[dst].top_path_label[temp_index_dst];
+        dst_inter_loc = topo_dic[dst].top_loc_label[temp_index_dst];
+        for(int j = 0; j < src_inter_path.size(); j++){
+            temp_array = all_path_infor[inter[i]].path_infor[src_inter_path[j]];
+            memcpy(&temp_path[0], temp_array, (src_inter_loc[j] + 1)*4);
+            memset(&temp_path[src_inter_loc[j]+1], 0, (layer_num - 1 - src_inter_loc[j])*4);
+            temp_path[layer_num] = src_inter_loc[j];
+            if(find(&temp_path[0], &temp_path[src_inter_loc[j] + 1], dst) == &temp_path[src_inter_loc[j] + 1])
+                src_valid_set.insert(temp_path);
+        }
+        src_valid_path.assign(src_valid_set.begin(), src_valid_set.end());
+
+        for(int j = 0; j < dst_inter_path.size(); j++){
+            temp_array = all_path_infor[inter[i]].path_infor[dst_inter_path[j]];
+            memcpy(&temp_path[0], temp_array, (dst_inter_loc[j] + 1)*4);
+            memset(&temp_path[dst_inter_loc[j]+1], 0, (layer_num - 1 - dst_inter_loc[j])*4);
+            temp_path[layer_num] = dst_inter_loc[j];
+            if(find(&temp_path[0], &temp_path[dst_inter_loc[j] + 1], src) == &temp_path[dst_inter_loc[j] + 1])
+                dst_valid_set.insert(temp_path);
+        }
+        dst_valid_path.assign(dst_valid_set.begin(), dst_valid_set.end());
+        for(int src = 0; src < src_valid_path.size(); src++){
+            for(int dst = 0; dst < dst_valid_path.size(); dst++){
+                src_path = src_valid_path[src];
+                dst_path = dst_valid_path[dst];
+                int begin_src = 0;
+                int begin_dst = 0;
+
+                while(src_path[begin_src] == dst_path[begin_dst]){
+                    if(src_path[begin_src] == inter[i]){
+                        begin_src++;
+                        begin_dst++;
+                    }
+                    else
+                        break;
+                }
+                begin_src--;
+                vector<int> pass_node;
+                int pass_flag = 0;
+                for(int k = src_path[layer_num]; k >= begin_src; k--){
+                    node_path.push_back(src_path[k]);
+                    pass_node.push_back(src_path[k]);
+                    node_path.push_back(layer_num - k);
+                }
+                for(int k = begin_dst; k <= dst_path[layer_num]; k++){
+                    if(find(pass_node.begin(), pass_node.end(), dst_path[k]) != pass_node.end()){
+                        pass_flag = 1;
+                        node_path.clear(); 
+                        break;
+                    }
+                    node_path.push_back(dst_path[k]);
+                    node_path.push_back(layer_num - k);
+                }
+                if(pass_flag)
+                    continue;
+                temp_node_path.insert(node_path);
+                node_path.clear(); 
+                
+            }
+        }
+        src_valid_set.clear();
+        src_valid_path.clear();
+        dst_valid_path.clear();
+        dst_valid_set.clear();
+        temp_vec.assign(temp_node_path.begin(), temp_node_path.end());
+        route_node_path.insert(route_node_path.end(), temp_vec.begin(), temp_vec.end());
+        temp_node_path.clear();
+        temp_vec.clear();
     }
-
-
-
-
-
-
 
 }
 
 
 int main(){
-    int switches = 5;
+    int switches = 5000;
     int hosts = 24;
-    int ports = 36;
-    int vir_layer_degree[] = {2, 4, 4, 2};
+    int ports = 64;
+    int vir_layer_degree[] = {7, 13, 13, 7};
     int layer_num = 4;
     int is_random = 0;
     int random_seed = 1;
@@ -373,7 +446,8 @@ int main(){
     fc_test.path_infor_gene();
     // fc_test.display_all_path();
     fc_test.build_search_dic();
-    fc_test.display_dic(2);
+    // fc_test.display_dic(2);
+    fc_test.extract_route_path(1, 50);
 
     return 0;
 }
