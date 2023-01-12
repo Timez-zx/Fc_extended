@@ -434,18 +434,31 @@ void Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display){
         temp_vec.clear();
     }
     if(if_display){
-        set<vector<int> > statis;
         cout << route_node_path.size() << endl;
         int count = 0;
         for(int i = 0; i < route_node_path.size(); i++){
             for(int j = 0; j < route_node_path[i].size(); j++){
-                // cout << route_node_path[i][j] << " ";
+                cout << route_node_path[i][j] << " ";
                 count++;
             }
             cout << endl;
         }
         cout<< count <<endl;
     }
+
+    set<vector<int> > graph_infor;
+    vector<vector<int> > graph_infor_vec;
+    for(int i = 0; i < route_node_path.size(); i++){
+        for(int j = 0; j < route_node_path[i].size()-3; j += 2){
+            vector<int> temp(4);
+            temp[0] = route_node_path[i][j];
+            temp[1] = route_node_path[i][j+1];
+            temp[2] = route_node_path[i][j+2];
+            temp[3] = route_node_path[i][j+3];
+            graph_infor.insert(temp);
+        }
+    }
+    graph_infor_vec.assign(graph_infor.begin(), graph_infor.end());
 }
 
 void Fc_topo_all_route::thread_route(vector<int*> route_pairs, bool if_report, int report_inter) {
@@ -511,13 +524,12 @@ int main(){
     fc_test.build_search_dic();
     // fc_test.display_dic(2);
 
-    // struct timeval start, end;
-    // gettimeofday(&start, NULL);
-    // bool if_report = true;
-    // int report_inter = 50000;
-    // fc_test.pthread_for_all_route(8, if_report, report_inter);
-    // gettimeofday(&end, NULL);
-    // cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
-    fc_test.extract_route_path(1, 5, true);
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
+    bool if_report = true;
+    int report_inter = 50000;
+    fc_test.pthread_for_all_route(8, if_report, report_inter);
+    gettimeofday(&end, NULL);
+    cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     return 0;
 }
