@@ -528,7 +528,7 @@ int main(){
     gettimeofday(&start, NULL);
     bool if_report = true;
     int report_inter = 50000;
-    fc_test.pthread_for_all_route(8, if_report, report_inter);
+    fc_test.pthread_for_all_route(16, if_report, report_inter);
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     return 0;
