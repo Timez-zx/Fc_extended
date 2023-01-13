@@ -354,11 +354,11 @@ class Fc_topo_all_route():
         
 
 if __name__ == "__main__":
-    switches = 5000
+    switches = 10
     hosts = 24
-    ports = 64
-    vir_layer_degree = [7,13,13,7]
-    is_random = 1
+    ports = 40
+    vir_layer_degree = [2,4,4,4,2]
+    is_random = 0
     random_seed = 3
 
     # switches = 5
@@ -370,12 +370,12 @@ if __name__ == "__main__":
     fc_demo = Fc_topo_all_route(switches, hosts, ports, vir_layer_degree, is_random, random_seed)
     fc_demo.fc_topo_gene()
     fc_demo.route_infor_generate()
-    thread_num = 8
-    if_report = 1
-    report_num = 10000
-    if_save = 1
-    save_batch_size = 10000
-    clear_rate = 0.05
-    fc_demo.route_gene(thread_num, if_report, report_num, if_save, save_batch_size, clear_rate)
+    # thread_num = 8
+    # if_report = 1
+    # report_num = 10000
+    # if_save = 1
+    # save_batch_size = 10000
+    # clear_rate = 0.05
+    # fc_demo.route_gene(thread_num, if_report, report_num, if_save, save_batch_size, clear_rate)
     # read_batch_size = 100000
     # fc_demo.route_read(read_batch_size, 8900000)
