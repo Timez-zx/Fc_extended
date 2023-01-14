@@ -508,8 +508,9 @@ vector<vector<int> > Fc_topo_all_route::extract_route_path(int src, int dst, boo
 
 void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label, bool if_report, int report_inter, bool if_store, int store_num, string store_file) {
     int count = 0;
-    if(if_store)
+    if(if_store){
         vector<vector<vector<int> > > store_graph_info(store_num);
+    }
     for(int i = 0; i < route_pairs.size(); i++){
         vector<vector<int> > temp_infor = extract_route_path(route_pairs[i][0], route_pairs[i][1], false);
         if(if_report){
@@ -555,7 +556,6 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
             cmd += "all_graph_infor";
             int temp = system(cmd.c_str());
         }
-        file_dir_name += "all_graph_infor/";
         file_dir_name += "sw";
         file_dir_name += to_string(switches);
         file_dir_name += "_vir";
@@ -563,8 +563,9 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
             file_dir_name += to_string(vir_layer_degree[i]);
         file_dir_name += "_rand";
         file_dir_name += to_string(is_random*random_seed);
-        if(access(file_dir_name.c_str(), 0)){
+        if(access(("all_graph_infor/" + file_dir_name).c_str(), 0)){
             string cmd("mkdir ");
+            cmd += "all_graph_infor/";
             cmd += file_dir_name;
             int temp = system(cmd.c_str());
         }
