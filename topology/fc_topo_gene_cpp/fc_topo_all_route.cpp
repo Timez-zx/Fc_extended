@@ -553,8 +553,9 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
         if(access("all_graph_infor", 0)){
             string cmd("mkdir ");
             cmd += "all_graph_infor";
-            system(cmd.c_str());
+            int temp = system(cmd.c_str());
         }
+        file_dir_name += "all_graph_infor/";
         file_dir_name += "sw";
         file_dir_name += to_string(switches);
         file_dir_name += "_vir";
@@ -564,9 +565,8 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
         file_dir_name += to_string(is_random*random_seed);
         if(access(file_dir_name.c_str(), 0)){
             string cmd("mkdir ");
-            cmd += "all_graph_infor/";
             cmd += file_dir_name;
-            system(cmd.c_str());
+            int temp = system(cmd.c_str());
         }
     }
 
