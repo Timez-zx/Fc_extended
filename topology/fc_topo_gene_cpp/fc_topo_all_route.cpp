@@ -1,5 +1,4 @@
 #include <iostream>
-#include <filesystem>
 #include <algorithm>
 #include <unordered_set>
 #include <set>
@@ -551,8 +550,11 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
 
     string file_dir_name("");
     if(if_store){
-        if(access("all_graph_infor", 0))
-            std::__fs::filesystem::create_directory("all_graph_infor");
+        if(access("all_graph_infor", 0)){
+            string cmd("mkdir ");
+            cmd += "all_graph_infor";
+            system(cmd.c_str());
+        }
         file_dir_name += "sw";
         file_dir_name += to_string(switches);
         file_dir_name += "_vir";
@@ -560,8 +562,12 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
             file_dir_name += to_string(vir_layer_degree[i]);
         file_dir_name += "_rand";
         file_dir_name += to_string(is_random*random_seed);
-        if(access(file_dir_name.c_str(), 0))
-            std::__fs::filesystem::create_directory("all_graph_infor/" + file_dir_name);
+        if(access(file_dir_name.c_str(), 0)){
+            string cmd("mkdir ");
+            cmd += "all_graph_infor/";
+            cmd += file_dir_name;
+            system(cmd.c_str());
+        }
     }
 
     thread* th = new thread[thread_num];
