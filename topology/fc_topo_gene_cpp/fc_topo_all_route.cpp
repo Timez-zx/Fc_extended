@@ -1,4 +1,5 @@
 #include <iostream>
+#include <filesystem>
 #include <algorithm>
 #include <unordered_set>
 #include <set>
@@ -8,6 +9,9 @@
 #include <sys/time.h>
 #include <thread>
 #include <cstring>
+#include <pthread.h>
+#include <unistd.h>
+#include <string>
 using namespace std;
 
 typedef struct {   
@@ -55,9 +59,9 @@ class Fc_topo_all_route{
         void display_all_path(void);
         void build_search_dic(void);
         void display_dic(int index);
-        void extract_route_path(int src, int dst, bool if_display);
-        void thread_route(vector<int*> route_pairs, bool if_report, int report_inter);
-        void pthread_for_all_route(int thread_num, bool if_report, int report_inter);
+        vector<vector<int> > extract_route_path(int src, int dst, bool if_display);
+        void thread_route(vector<int*> route_pairs, int thread_label, bool if_report, int report_inter, bool if_store, int store_num, string store_file);
+        void pthread_for_all_route(int thread_num, bool if_report, int report_inter, bool if_store, int store_num);
 };
 
 Fc_topo_all_route::~Fc_topo_all_route(){
@@ -319,7 +323,7 @@ void Fc_topo_all_route::display_dic(int index){
     }
 }
 
-void Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display){
+vector<vector<int> > Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display){
     vector<vector<int> > route_node_path;
     set<vector<int> > temp_node_path;
     vector<vector<int> > temp_vec;
@@ -500,22 +504,25 @@ void Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display){
         }
     }
     graph_infor_vec.assign(graph_infor.begin(), graph_infor.end());
+    return graph_infor_vec;
 }
 
-void Fc_topo_all_route::thread_route(vector<int*> route_pairs, bool if_report, int report_inter) {
+void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label, bool if_report, int report_inter, bool if_store, int store_num, string store_file) {
     int count = 0;
+    if(if_store)
+        vector<vector<vector<int> > > store_graph_info(store_num);
     for(int i = 0; i < route_pairs.size(); i++){
-        extract_route_path(route_pairs[i][0], route_pairs[i][1], false);
+        vector<vector<int> > temp_infor = extract_route_path(route_pairs[i][0], route_pairs[i][1], false);
         if(if_report){
             count++;
             if(count % report_inter == 0){
-                cout << "The thread " << this_thread::get_id() << " " <<count/double(route_pairs.size()) << endl;
+                cout << "The thread " << thread_label << " " <<count/double(route_pairs.size()) << endl;
             }
         }
     }
 }
 
-void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, int report_inter){
+void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, int report_inter, bool if_store, int store_num){
     int total_pairs = switches*(switches-1)/2;
     int average = ceil(total_pairs/thread_num);
     int count = 0;
@@ -542,9 +549,23 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
         } 
     }
 
+    string file_dir_name("");
+    if(if_store){
+        file_dir_name += "sw";
+        file_dir_name += to_string(switches);
+        file_dir_name += "_vir";
+        for(int i = 0; i < layer_num; i++)
+            file_dir_name += to_string(vir_layer_degree[i]);
+        file_dir_name += "_rand";
+        file_dir_name += to_string(is_random*random_seed);
+        if(access(file_dir_name.c_str(), 0)){
+            std::__fs::filesystem::create_directory("all_graph_infor/" + file_dir_name);
+        }
+    }
+
     thread* th = new thread[thread_num];
     for(int i = 0; i < thread_num; i++){
-        th[i] = thread(&Fc_topo_all_route::thread_route, this, thread_pairs[i], if_report, report_inter);
+        th[i] = thread(&Fc_topo_all_route::thread_route, this, thread_pairs[i], i, if_report, report_inter, if_store, store_num, file_dir_name);
     }
     for(int i = 0; i < thread_num; i++)
         th[i].join();
@@ -569,7 +590,9 @@ int main(){
     gettimeofday(&start, NULL);
     bool if_report = true;
     int report_inter = 30000;
-    fc_test.pthread_for_all_route(8, if_report, report_inter);
+    bool if_store = true;
+    int store_num = 30000;
+    fc_test.pthread_for_all_route(8, if_report, report_inter, if_store, store_num);
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     return 0;
