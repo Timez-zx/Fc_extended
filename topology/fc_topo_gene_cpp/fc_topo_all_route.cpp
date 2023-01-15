@@ -506,20 +506,20 @@ uint Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display, ui
     graph_infor_vec.assign(graph_infor.begin(), graph_infor.end());
     uint data_count = 0;
     uint temp = src;
-    return_graph[data_count] = temp << 8;
+    return_graph[data_count] = temp;
     temp = dst;
-    return_graph[data_count] += temp;
+    return_graph[data_count] += temp << 16;
     data_count++;
     for(int i = 0; i < graph_infor_vec.size(); i++){
         temp = graph_infor_vec[i][0];
-        return_graph[data_count] = temp << 8;
+        return_graph[data_count] = temp;
         temp = graph_infor_vec[i][1];
-        return_graph[data_count] += temp;
+        return_graph[data_count]  += temp << 16;
         data_count++;
         temp = graph_infor_vec[i][2];
-        return_graph[data_count] = temp << 8;
+        return_graph[data_count] = temp;
         temp = graph_infor_vec[i][3];
-        return_graph[data_count] += temp;
+        return_graph[data_count] += temp << 16;
         data_count++;
     }
     return data_count;
@@ -546,7 +546,7 @@ void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label,
         }
         if(if_store){
             uint *temp_data = new uint[data_num];
-            memcpy(temp_infor, temp_data, sizeof(uint)*data_num);
+            memcpy(temp_data, temp_infor, sizeof(uint)*data_num);
             store_graph_info[store_count] = temp_data;
             store_info_len.push_back(data_num);
             store_count++;
@@ -565,6 +565,7 @@ void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label,
     }
     if(if_store){
         for(int j = 0; j < store_count; j++){
+            fwrite(&store_info_len[j], sizeof(uint), 1, ofs);
             fwrite(store_graph_info[j], sizeof(uint), store_info_len[j], ofs);
             delete[] store_graph_info[j];
         }
@@ -634,10 +635,10 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
 }
 
 int main(){
-    int switches = 1000;
+    int switches = 10;
     int hosts = 24;
-    int ports = 64;
-    int vir_layer_degree[] = {7, 13, 13, 7};
+    int ports = 36;
+    int vir_layer_degree[] = {2, 4, 4, 2};
     int layer_num = 4;
     int is_random = 0;
     int random_seed = 2;
@@ -653,10 +654,13 @@ int main(){
     bool if_report = true;
     int report_inter = 30000;
     bool if_store = true;
-    fc_test.pthread_for_all_route(8, if_report, report_inter, if_store);
+    fc_test.pthread_for_all_route(1, if_report, report_inter, if_store);
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
-
+    FILE* ifs = fopen("all_graph_infor/sw10_vir2442_rand0/sw10_vir2442_rand00", "r");
+    uint16_t data[100];
+    fread(data, 2, 100, ifs);
+    cout << data[3] << endl;
     
     return 0;
 }
