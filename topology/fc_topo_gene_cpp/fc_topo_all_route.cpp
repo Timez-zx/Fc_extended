@@ -660,7 +660,7 @@ int main(){
     FILE* ifs = fopen("all_graph_infor/sw10_vir2442_rand0/sw10_vir2442_rand00", "r");
     uint16_t data[100];
     fread(data, 2, 100, ifs);
-    cout << data[3] << endl;
+    cout << data[0] << endl;
     
     return 0;
 }
