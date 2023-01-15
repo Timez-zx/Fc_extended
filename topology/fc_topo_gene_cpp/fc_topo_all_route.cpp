@@ -1,4 +1,5 @@
 #include <iostream>
+#include<fstream>
 #include <algorithm>
 #include <unordered_set>
 #include <set>
@@ -58,9 +59,9 @@ class Fc_topo_all_route{
         void display_all_path(void);
         void build_search_dic(void);
         void display_dic(int index);
-        vector<vector<int> > extract_route_path(int src, int dst, bool if_display);
-        void thread_route(vector<int*> route_pairs, int thread_label, bool if_report, int report_inter, bool if_store, int store_num, string store_file);
-        void pthread_for_all_route(int thread_num, bool if_report, int report_inter, bool if_store, int store_num);
+        uint extract_route_path(int src, int dst, bool if_display, uint* return_graph);
+        void thread_route(vector<int*> route_pairs, int thread_label, bool if_report, int report_inter, bool if_store, string store_file);
+        void pthread_for_all_route(int thread_num, bool if_report, int report_inter, bool if_store);
 };
 
 Fc_topo_all_route::~Fc_topo_all_route(){
@@ -322,7 +323,7 @@ void Fc_topo_all_route::display_dic(int index){
     }
 }
 
-vector<vector<int> > Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display){
+uint Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display, uint* return_graph){
     vector<vector<int> > route_node_path;
     set<vector<int> > temp_node_path;
     vector<vector<int> > temp_vec;
@@ -503,26 +504,79 @@ vector<vector<int> > Fc_topo_all_route::extract_route_path(int src, int dst, boo
         }
     }
     graph_infor_vec.assign(graph_infor.begin(), graph_infor.end());
-    return graph_infor_vec;
+    uint data_count = 0;
+    uint temp = src;
+    return_graph[data_count] = temp << 8;
+    temp = dst;
+    return_graph[data_count] += temp;
+    data_count++;
+    for(int i = 0; i < graph_infor_vec.size(); i++){
+        temp = graph_infor_vec[i][0];
+        return_graph[data_count] = temp << 8;
+        temp = graph_infor_vec[i][1];
+        return_graph[data_count] += temp;
+        data_count++;
+        temp = graph_infor_vec[i][2];
+        return_graph[data_count] = temp << 8;
+        temp = graph_infor_vec[i][3];
+        return_graph[data_count] += temp;
+        data_count++;
+    }
+    return data_count;
 }
 
-void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label, bool if_report, int report_inter, bool if_store, int store_num, string store_file) {
+void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label, bool if_report, int report_inter, bool if_store, string store_file) {
     int count = 0;
+    int store_count = 0;
+    uint* temp_infor = new uint[switches*10*4];
+    FILE* ofs;
+    uint** store_graph_info = new uint*[report_inter];
+    vector<uint> store_info_len;
     if(if_store){
-        vector<vector<vector<int> > > store_graph_info(store_num);
+        string file_path("all_graph_infor/" + store_file + "/" + store_file + to_string(thread_label));
+        ofs = fopen(file_path.c_str(), "w");
     }
     for(int i = 0; i < route_pairs.size(); i++){
-        vector<vector<int> > temp_infor = extract_route_path(route_pairs[i][0], route_pairs[i][1], false);
+        uint data_num  = extract_route_path(route_pairs[i][0], route_pairs[i][1], false, temp_infor);
         if(if_report){
             count++;
             if(count % report_inter == 0){
                 cout << "The thread " << thread_label << " " <<count/double(route_pairs.size()) << endl;
             }
         }
+        if(if_store){
+            uint *temp_data = new uint[data_num];
+            memcpy(temp_infor, temp_data, sizeof(uint)*data_num);
+            store_graph_info[store_count] = temp_data;
+            store_info_len.push_back(data_num);
+            store_count++;
+            if(store_count == report_inter) {
+                for(int j = 0; j < report_inter; j++){
+                    fwrite(&store_info_len[j], sizeof(uint), 1, ofs);
+                    fwrite(store_graph_info[j], sizeof(uint), store_info_len[j], ofs);
+                    delete[] store_graph_info[j];
+                    store_graph_info[j] = NULL;
+                }
+                fflush(ofs);
+                store_info_len.clear();
+                store_count = 0;
+            }
+        }
     }
+    if(if_store){
+        for(int j = 0; j < store_count; j++){
+            fwrite(store_graph_info[j], sizeof(uint), store_info_len[j], ofs);
+            delete[] store_graph_info[j];
+        }
+        fclose(ofs);
+    }
+    delete[] temp_infor;
+    temp_infor = NULL;
+    delete[] store_graph_info;
+    store_graph_info = NULL;
 }
 
-void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, int report_inter, bool if_store, int store_num){
+void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, int report_inter, bool if_store){
     int total_pairs = switches*(switches-1)/2;
     int average = ceil(total_pairs/thread_num);
     int count = 0;
@@ -573,7 +627,7 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
 
     thread* th = new thread[thread_num];
     for(int i = 0; i < thread_num; i++){
-        th[i] = thread(&Fc_topo_all_route::thread_route, this, thread_pairs[i], i, if_report, report_inter, if_store, store_num, file_dir_name);
+        th[i] = thread(&Fc_topo_all_route::thread_route, this, thread_pairs[i], i, if_report, report_inter, if_store, file_dir_name);
     }
     for(int i = 0; i < thread_num; i++)
         th[i].join();
@@ -599,9 +653,10 @@ int main(){
     bool if_report = true;
     int report_inter = 30000;
     bool if_store = true;
-    int store_num = 30000;
-    fc_test.pthread_for_all_route(8, if_report, report_inter, if_store, store_num);
+    fc_test.pthread_for_all_route(8, if_report, report_inter, if_store);
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
+
+    
     return 0;
 }
