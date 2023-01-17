@@ -1,6 +1,8 @@
 #include "fc_topo_all_route.h"
 
+
 int Rand(int i){return rand()%i;}
+
 
 Fc_topo_all_route::~Fc_topo_all_route(){
     if(bipart_degree){
@@ -37,9 +39,9 @@ Fc_topo_all_route::~Fc_topo_all_route(){
         }   
         delete[] topo_dic;
         topo_dic = NULL;
-    }
-    
+    }   
 }
+
 
 int Fc_topo_all_route::change_base(int basic){
     int new_basic;
@@ -49,6 +51,7 @@ int Fc_topo_all_route::change_base(int basic){
         new_basic = basic - 1;
     return new_basic;
 }
+
 
 void Fc_topo_all_route::fc_topo_gene(void){
     int sw_ports = ports - hosts;
@@ -125,6 +128,7 @@ void Fc_topo_all_route::fc_topo_gene(void){
     delete[] degrees;
 }
 
+
 void Fc_topo_all_route::search_path(int root, node_path_infor* node_infor){
     int layer_root, layer_degree, temp_path_num;
     int basic = 0;
@@ -165,6 +169,7 @@ void Fc_topo_all_route::search_path(int root, node_path_infor* node_infor){
     }
 }
 
+
 void Fc_topo_all_route::path_infor_gene(void){
     int remain_degree = vir_layer_degree[layer_num-1];
     int max_path = 1;
@@ -200,6 +205,7 @@ void Fc_topo_all_route::path_infor_gene(void){
     delete[] node_infor.path_infor;
 }
 
+
 void Fc_topo_all_route::display_all_path(void){
     for(int i = 0; i < switches; i++){
         cout << all_path_infor[i].path_num << endl;
@@ -211,6 +217,7 @@ void Fc_topo_all_route::display_all_path(void){
         }
     }
 }
+
 
 void Fc_topo_all_route::build_search_dic(void){
     topo_dic = new topo_dic_infor[switches];
@@ -250,6 +257,7 @@ void Fc_topo_all_route::build_search_dic(void){
     }
 }
 
+
 void Fc_topo_all_route::display_dic(int index){
     for (int i = 0; i < topo_dic[index].participate.size(); i++)
     {
@@ -260,6 +268,7 @@ void Fc_topo_all_route::display_dic(int index){
         cout << endl;
     }
 }
+
 
 uint Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display, uint* return_graph){
     vector<vector<int> > route_node_path;
@@ -325,22 +334,16 @@ uint Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display, ui
     vector<int> dst_part = topo_dic[dst].participate;
     vector<int> inter;
     set_intersection(src_part.begin(), src_part.end(), dst_part.begin(), dst_part.end(), inserter(inter, inter.begin()));
-
-
     vector<int> src_inter_path;
     vector<int> src_inter_loc;
     vector<int> dst_inter_path;
     vector<int> dst_inter_loc;
-
     set<vector<int> > src_valid_set;
     set<vector<int> > dst_valid_set;
-
     vector<vector<int> > src_valid_path;
     vector<vector<int> > dst_valid_path;
-
     vector<int> temp_path(layer_num+1);
     int* temp_array;
-
     vector<int> src_path, dst_path;
     for(int i = 0; i < inter.size(); i++){
         temp_index_src = topo_dic[src].index_table[inter[i]];
@@ -458,6 +461,7 @@ uint Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display, ui
     return data_count;
 }
 
+
 void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label, bool if_report, int report_inter, bool if_store, string store_file) {
     int count = 0;
     int store_count = 0;
@@ -510,6 +514,7 @@ void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label,
     store_graph_info = NULL;
 }
 
+
 void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, int report_inter, bool if_store){
     int total_pairs = switches*(switches-1)/2;
     int average = ceil(total_pairs/thread_num);
@@ -558,7 +563,6 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
             int temp = system(cmd.c_str());
         }
     }
-
     thread* th = new thread[thread_num];
     for(int i = 0; i < thread_num; i++){
         th[i] = thread(&Fc_topo_all_route::thread_route, this, thread_pairs[i], i, if_report, report_inter, if_store, file_dir_name);
