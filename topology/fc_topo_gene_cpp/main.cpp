@@ -25,8 +25,8 @@ int main(){
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     // FILE* ifs = fopen("all_graph_infor/sw1000_vir713137_rand0/sw1000_vir713137_rand00", "r");
-    // uint16_t data[100];
-    // fread(data, 2, 100, ifs);
+    // uint16_t data[1000];
+    // fread(data, 2, 1000, ifs);
     // cout << data[0] << endl;
     // fclose(ifs);
     return 0;
