@@ -511,14 +511,9 @@ uint Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display, ui
     return_graph[data_count] += temp << 16;
     data_count++;
     for(int i = 0; i < graph_infor_vec.size(); i++){
-        temp = graph_infor_vec[i][0];
+        temp = graph_infor_vec[i][1]*10000 + graph_infor_vec[i][0];
         return_graph[data_count] = temp;
-        temp = graph_infor_vec[i][1];
-        return_graph[data_count]  += temp << 16;
-        data_count++;
-        temp = graph_infor_vec[i][2];
-        return_graph[data_count] = temp;
-        temp = graph_infor_vec[i][3];
+        temp = graph_infor_vec[i][3]*10000 + graph_infor_vec[i][2];
         return_graph[data_count] += temp << 16;
         data_count++;
     }
@@ -658,9 +653,9 @@ int main(){
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     // FILE* ifs = fopen("all_graph_infor/sw1000_vir713137_rand0/sw1000_vir713137_rand00", "r");
-    // uint16_t data[1000];
-    // fread(data, 2, 1000, ifs);
-    // cout << data[687] << endl;
-    
+    // uint16_t data[100];
+    // fread(data, 2, 100, ifs);
+    // cout << data[0] << endl;
+    // fclose(ifs);
     return 0;
 }
