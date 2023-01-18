@@ -282,16 +282,17 @@ uint Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display, ui
         for(int i = 0; i < path_label.size(); i++){
             int *path = all_path_infor[src].path_infor[path_label[i]];
             int loc = loc_label[i];
-            node_path.push_back(path[loc]);
             node_path.push_back(layer_num - loc);
+            node_path.push_back(path[loc]);
             loc--;
             while(path[loc] != src){
-                node_path.push_back(path[loc]);
                 node_path.push_back(layer_num - loc);
+                node_path.push_back(path[loc]);
                 loc--;
             }
-            node_path.push_back(path[loc]);
             node_path.push_back(layer_num - loc);
+            node_path.push_back(path[loc]);
+            reverse(node_path.begin(), node_path.end());
             temp_node_path.insert(node_path);
             node_path.clear();
         }
