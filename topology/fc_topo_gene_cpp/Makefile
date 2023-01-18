@@ -1,5 +1,5 @@
 CFLAGS_M= -O3 -P -std=c++17
-CFLAGS_U= -O3 -P -std=c++17 -static
+CFLAGS_U= -O3 -P -std=c++17 
 FILENAME=fc_topo_all_route.cpp fc_edge_disjoin_route.cpp main.cpp
 OUT=main
 
@@ -14,10 +14,10 @@ ORTOOL_INCLUDE_U=$(ORTOOL_UBUNTU)/include/
 CLEAN_PATH=./all_graph_infor/*
 
 default: $(FILENAME)
-	g++  $(CFLAGS_M) $(FILENAME) -o $(OUT) -I $(ORTOOL_INCLUDE_M) -L $(ORTOOL_LIB_M)  -lortools
+	g++  $(CFLAGS_M) $(FILENAME) -o $(OUT) -I $(ORTOOL_INCLUDE_M) -L $(ORTOOL_LIB_M)  -lortools -lpthread
 
 Ubuntu: $(FILENAME)
-	g++  $(CFLAGS_U) $(FILENAME) -o $(OUT) -I $(ORTOOL_INCLUDE_U) -L $(ORTOOL_LIB_U) 
+	g++  $(CFLAGS_U) $(FILENAME) -o $(OUT) -I $(ORTOOL_INCLUDE_U) -L $(ORTOOL_LIB_U) -lortools -lpthread
 
 clean:
 	$(RM) $(OUT)
