@@ -1,4 +1,5 @@
-CFLAGS= -O3 -P -std=c++11
+CFLAGS_M= -O3 -P -std=c++17
+CFLAGS_U= -O3 -P -std=c++17 -static
 FILENAME=fc_topo_all_route.cpp fc_edge_disjoin_route.cpp main.cpp
 OUT=main
 ORTOOL_MAC=/Users/zhangxiao/Documents/lab/Rdma-cbd/fc_extend/or-tools
@@ -10,10 +11,10 @@ ORTOOL_LIB_U=$(ORTOOL_UBUNTU)/lib/
 ORTOOL_INCLUDE_U=$(ORTOOL_UBUNTU)/include/
 
 default: $(FILENAME)
-	g++  $(CFLAGS) $(FILENAME) -o $(OUT) -I $(ORTOOL_INCLUDE_M) -L $(ORTOOL_LIB_M) -lortools -lpthread
+	g++  $(CFLAGS_M) $(FILENAME) -o $(OUT) -I $(ORTOOL_INCLUDE_M) -L $(ORTOOL_LIB_M) 
 
 Ubuntu: $(FILENAME)
-	g++  $(CFLAGS) $(FILENAME) -o $(OUT) -I $(ORTOOL_INCLUDE_U) -L $(ORTOOL_LIB_U) -lortools -lpthread
+	g++  $(CFLAGS_U) $(FILENAME) -o $(OUT) -I $(ORTOOL_INCLUDE_U) -L $(ORTOOL_LIB_U) 
 
 clean:
 	$(RM) $(OUT)

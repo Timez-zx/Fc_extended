@@ -1,9 +1,6 @@
 #include "fc_topo_all_route.h"
 
 
-int Rand(int i){return rand()%i;}
-
-
 Fc_topo_all_route::~Fc_topo_all_route(){
     if(bipart_degree){
         delete[] bipart_degree;
@@ -88,7 +85,7 @@ void Fc_topo_all_route::fc_topo_gene(void){
         basic = switches - 1;
         if(is_random){
             srand(random_seed);
-            random_shuffle(switch_array, switch_array+switches-1, Rand);
+            shuffle(switch_array, switch_array+switches-1, default_random_engine(random_seed));
         }
         for(int j = 0; j < switches; j++){
             src = switch_array[j];

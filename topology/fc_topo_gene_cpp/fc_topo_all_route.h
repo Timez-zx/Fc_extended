@@ -6,6 +6,7 @@
 #include <cmath>
 #include <vector>
 #include <thread>
+#include <random>
 #include <cstring>
 #include <pthread.h>
 #include <unistd.h>
@@ -25,7 +26,6 @@ typedef struct {
     vector<vector<int> > top_loc_label;
 } topo_dic_infor;
 
-int Rand(int i);
 
 class Fc_topo_all_route{
     public:
