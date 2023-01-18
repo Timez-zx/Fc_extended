@@ -44,26 +44,36 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
 
         for(int i = 0; i < read_num; i++){
             operations_research::SimpleMinCostFlow min_cost_flow;
+            min_cost_flow.AddArcWithCapacityAndUnitCost(vir_src, vir_dst, INT32_MAX, -0xfffff);
             src = edge_infor[i][0];
             dst = edge_infor[i][1];
+            for(int j = 1; j <= layer_num; j++){
+                min_cost_flow.AddArcWithCapacityAndUnitCost(vir_src, j*10000+src, INT32_MAX, 0);
+                if(j == layer_num)
+                    min_cost_flow.AddArcWithCapacityAndUnitCost(j*10000+dst, vir_dst, INT32_MAX, 0);
+                else
+                    min_cost_flow.AddArcWithCapacityAndUnitCost((j*10000+dst)*-1, vir_dst, INT32_MAX, 0);
+            }
             for(int j = 2; j < edge_num[count]; j += 2){
                 node1 = edge_infor[i][j];
                 node2 = edge_infor[i][j+1];
                 sw1 = node1%10000;
                 sw2 = node2%10000;
-                if(node2 > node1){
-
+                if(node2 < node1){
+                    node2 *= -1;
+                    if(node1 < layer_num*10000)
+                        node1 *= -1;
                 }
-
-
+                if(sw1 != sw2)
+                    min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, 1, 1);
+                else
+                    min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, INT32_MAX, 0);
             }
+            min_cost_flow.Solve();
             count++;
         }
-
-
-
-        
         pairs_num -= read_num;
+        cout << pairs_num << endl;
     }
 
     for(int i = 0; i < batch_num; i++){

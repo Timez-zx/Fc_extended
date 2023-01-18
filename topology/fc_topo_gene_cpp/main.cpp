@@ -16,16 +16,16 @@ int main(){
     fc_test.build_search_dic();
     // fc_test.display_dic(2);
 
-    // struct timeval start, end;
-    // gettimeofday(&start, NULL);
-    // bool if_report = true;
-    // int report_inter = 30000;
-    // bool if_store = true;
-    // fc_test.pthread_for_all_route(8, if_report, report_inter, if_store);
-    // gettimeofday(&end, NULL);
-    // cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
+    bool if_report = true;
+    int report_inter = 30000;
+    bool if_store = true;
+    fc_test.pthread_for_all_route(8, if_report, report_inter, if_store);
+    gettimeofday(&end, NULL);
+    cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
 
-    fc_test.find_edge_disjoin_route(8, 0, 10000, "sw1000_vir713137_rand0");
+    // fc_test.find_edge_disjoin_route(8, 0, 10000, "sw1000_vir713137_rand0");
     // FILE* ifs = fopen("all_graph_infor/sw1000_vir713137_rand0/sw1000_vir713137_rand00", "r");
     // uint16_t data[1000];
     // fread(data, 2, 1000, ifs);
