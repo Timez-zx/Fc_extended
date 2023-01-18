@@ -464,11 +464,14 @@ void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label,
     int store_count = 0;
     uint* temp_infor = new uint[switches*10*4];
     FILE* ofs;
+    FILE* ofs_len;
     uint** store_graph_info = new uint*[report_inter];
     vector<uint> store_info_len;
     if(if_store){
         string file_path("all_graph_infor/" + store_file + "/" + store_file + to_string(thread_label));
+        string len_path(file_path + "_num");
         ofs = fopen(file_path.c_str(), "w");
+        ofs_len = fopen(len_path.c_str(), "w");
     }
     for(int i = 0; i < route_pairs.size(); i++){
         uint data_num  = extract_route_path(route_pairs[i][0], route_pairs[i][1], false, temp_infor);
@@ -485,8 +488,8 @@ void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label,
             store_info_len.push_back(data_num);
             store_count++;
             if(store_count == report_inter) {
+                fwrite(&store_info_len[0], sizeof(uint), store_count, ofs_len);
                 for(int j = 0; j < report_inter; j++){
-                    fwrite(&store_info_len[j], sizeof(uint), 1, ofs);
                     fwrite(store_graph_info[j], sizeof(uint), store_info_len[j], ofs);
                     delete[] store_graph_info[j];
                     store_graph_info[j] = NULL;
@@ -498,12 +501,13 @@ void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label,
         }
     }
     if(if_store){
+        fwrite(&store_info_len[0], sizeof(uint), store_count, ofs_len);
         for(int j = 0; j < store_count; j++){
-            fwrite(&store_info_len[j], sizeof(uint), 1, ofs);
             fwrite(store_graph_info[j], sizeof(uint), store_info_len[j], ofs);
             delete[] store_graph_info[j];
         }
         fclose(ofs);
+        fclose(ofs_len);
     }
     delete[] temp_infor;
     temp_infor = NULL;
