@@ -95,8 +95,9 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
         }
         pairs_num -= read_num;
         cout << pairs_num << endl;
+        break;
     }
-    cout << average_num/float(average) << endl;
+    cout << average_num/float(batch_num) << endl;
     for(int i = 0; i < batch_num; i++){
         delete[] edge_infor[i];
         edge_infor[i] = NULL;
