@@ -33,6 +33,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
     int node1, node2;
     int sw1, sw2;
     int average_num = 0;
+    int min_path_num = 1000;
     while(pairs_num > 0){
         if(pairs_num >= batch_num)
             read_num = batch_num;
@@ -93,11 +94,13 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
             count++;
             int min_cost = min_cost_flow.OptimalCost()*(-1)/10000+1;
             average_num += min_cost;
+            if(min_cost < min_path_num){
+                min_path_num = min_cost;
+            }
 
         }
         pairs_num -= read_num;
-        cout << pairs_num << endl;
-        break;
+        cout << min_path_num << endl;
     }
     cout << average_num/float(batch_num) << endl;
     for(int i = 0; i < batch_num; i++){
