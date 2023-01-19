@@ -460,7 +460,7 @@ uint Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display, ui
 }
 
 
-void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label, bool if_report, int report_inter, bool if_store, string store_file) {
+void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label, bool if_report, int report_inter, bool if_store, string store_file, bool store_part) {
     int count = 0;
     int store_count = 0;
     uint* temp_infor = new uint[switches*10*4];
@@ -498,6 +498,8 @@ void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label,
                 fflush(ofs);
                 store_info_len.clear();
                 store_count = 0;
+                if(store_part)
+                    break;
             }
         }
     }
@@ -517,7 +519,7 @@ void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label,
 }
 
 
-void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, int report_inter, bool if_store){
+void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, int report_inter, bool if_store, bool store_part){
     int total_pairs = switches*(switches-1)/2;
     int average = ceil(total_pairs/thread_num);
     int count = 0;
@@ -567,7 +569,7 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
     }
     thread* th = new thread[thread_num];
     for(int i = 0; i < thread_num; i++){
-        th[i] = thread(&Fc_topo_all_route::thread_route, this, thread_pairs[i], i, if_report, report_inter, if_store, file_dir_name);
+        th[i] = thread(&Fc_topo_all_route::thread_route, this, thread_pairs[i], i, if_report, report_inter, if_store, file_dir_name, store_part);
     }
     for(int i = 0; i < thread_num; i++)
         th[i].join();

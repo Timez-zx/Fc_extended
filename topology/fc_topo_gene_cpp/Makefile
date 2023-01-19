@@ -14,10 +14,10 @@ ORTOOL_INCLUDE_U=$(ORTOOL_UBUNTU)/include/
 CLEAN_PATH=./all_graph_infor/*
 
 default: $(FILENAME)
-	g++  $(CFLAGS_M) $(FILENAME) -o $(OUT) -I $(ORTOOL_INCLUDE_M) -L $(ORTOOL_LIB_M)  -lortools -lpthread
-
-Ubuntu: $(FILENAME)
 	g++  $(CFLAGS_U) $(FILENAME) -o $(OUT) -I $(ORTOOL_INCLUDE_U) -L $(ORTOOL_LIB_U) -lortools -lpthread
+
+MAC: $(FILENAME)
+	g++  $(CFLAGS_M) $(FILENAME) -o $(OUT) -I $(ORTOOL_INCLUDE_M) -L $(ORTOOL_LIB_M)  -lortools -lpthread
 
 clean:
 	$(RM) $(OUT)

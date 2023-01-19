@@ -1,12 +1,14 @@
 #include "fc_edge_disjoin_route.h"
 
-void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_label, int batch_num, string read_file){
+void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_label, int batch_num, string read_file, bool store_part){
     int total_pairs = switches*(switches-1)/2;
     int average = ceil(total_pairs/float(thread_num));
     int pairs_num = average;
     if(thread_label == thread_num - 1){
         pairs_num = total_pairs - (thread_num-1)*average;
     }
+    if(store_part)
+        pairs_num = batch_num;
     string file_path("all_graph_infor/" + read_file + "/" + read_file + to_string(thread_label));
     string len_path(file_path + "_num");
     FILE* ifs = fopen(file_path.c_str(), "r");
@@ -32,7 +34,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
     int sw1, sw2;
     int average_num = 0;
     while(pairs_num > 0){
-        if(pairs_num > batch_num)
+        if(pairs_num >= batch_num)
             read_num = batch_num;
         else
             read_num = pairs_num;
