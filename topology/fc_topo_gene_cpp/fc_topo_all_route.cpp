@@ -67,14 +67,15 @@ void Fc_topo_all_route::fc_topo_gene(void){
         switch_array[i] = i;
     }
     int remain_degree = vir_layer_degree[layer_num-1];
+  
     total_degree += remain_degree + 1;
     for(int i = layer_num-2; i > 0; i--){
         remain_degree = vir_layer_degree[i] - remain_degree;
         total_degree += remain_degree + 1;
     }
     topo_index = new int[switches*total_degree];
-    int topo_count = 0;
 
+    int index_basic = 0;
     for(int i = layer_num - 1; i > 0; i--){
         degree = vir_layer_degree[i] - initial_sub;
         bipart_degree[bipart_count] = degree + 1;
@@ -89,8 +90,7 @@ void Fc_topo_all_route::fc_topo_gene(void){
         }
         for(int j = 0; j < switches; j++){
             src = switch_array[j];
-            topo_index[topo_count] = src;
-            topo_count++;
+            topo_index[index_basic+src*(degree+1)] = src;
             for(int k = 0; k < degree; k++){
                 if(basic == j){
                     remains.push(j);
@@ -114,11 +114,11 @@ void Fc_topo_all_route::fc_topo_gene(void){
                 else
                     basic = change_base(basic);
                 degrees[dst]--;
-                topo_index[topo_count] = dst;
-                topo_count++;
+                topo_index[index_basic+src*(degree+1)+k+1] = dst;
             }
         }
         initial_sub = degree;
+        index_basic += (degree+1)*switches;
     }
     bipart_degree[bipart_count] = 0;
     delete[] switch_array;
@@ -359,6 +359,7 @@ uint Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display, ui
                 src_valid_set.insert(temp_path);
         }
         src_valid_path.assign(src_valid_set.begin(), src_valid_set.end());
+     
 
         for(int j = 0; j < dst_inter_path.size(); j++){
             temp_array = all_path_infor[inter[i]].path_infor[dst_inter_path[j]];
@@ -369,12 +370,14 @@ uint Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display, ui
                 dst_valid_set.insert(temp_path);
         }
         dst_valid_path.assign(dst_valid_set.begin(), dst_valid_set.end());
+     
         for(int src = 0; src < src_valid_path.size(); src++){
             for(int dst = 0; dst < dst_valid_path.size(); dst++){
                 src_path = src_valid_path[src];
                 dst_path = dst_valid_path[dst];
                 int begin_src = 0;
                 int begin_dst = 0;
+          
 
                 while(src_path[begin_src] == dst_path[begin_dst]){
                     if(src_path[begin_src] == inter[i]){
@@ -393,7 +396,7 @@ uint Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display, ui
                     node_path.push_back(layer_num - k);
                 }
                 for(int k = begin_dst; k <= dst_path[layer_num]; k++){
-                    if(find(pass_node.begin(), pass_node.end(), dst_path[k]) != pass_node.end()){
+                    if(find(pass_node.begin(), pass_node.end(), dst_path[k]) != pass_node.end() && dst_path[k] != inter[i]){
                         pass_flag = 1;
                         node_path.clear(); 
                         break;
@@ -442,6 +445,7 @@ uint Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display, ui
             graph_infor.insert(temp);
         }
     }
+
     graph_infor_vec.assign(graph_infor.begin(), graph_infor.end());
     uint data_count = 0;
     uint temp = src;

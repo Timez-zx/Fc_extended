@@ -34,6 +34,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
     int sw1, sw2;
     int average_num = 0;
     int min_path_num = 1000;
+    float average_len = 0;
     while(pairs_num > 0){
         if(pairs_num >= batch_num)
             read_num = batch_num;
@@ -91,8 +92,13 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
                     min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, INT32_MAX, 0);
             }
             int status = min_cost_flow.Solve();
+            int verify = verify_route(src, dst);
             count++;
             int min_cost = min_cost_flow.OptimalCost()*(-1)/10000+1;
+            if(verify != min_cost){
+                cout << src << "->" << dst << ":verify:" << verify << " " << min_cost << endl;
+            }
+            average_len += (min_cost*10000+min_cost_flow.OptimalCost())/float(min_cost);
             average_num += min_cost;
             if(min_cost < min_path_num){
                 min_path_num = min_cost;
@@ -103,11 +109,75 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
         cout << min_path_num << endl;
     }
     cout << average_num/float(batch_num) << endl;
+    cout << average_len/float(batch_num) << endl;
     for(int i = 0; i < batch_num; i++){
         delete[] edge_infor[i];
         edge_infor[i] = NULL;
     }
     fclose(ifs);
     fclose(ifs_len);
+}
+
+
+int Fc_edge_disjoin_route::verify_route(int src, int dst){
+    operations_research::SimpleMinCostFlow min_cost_flow;
+    int vir_src = switches;
+    int vir_dst = switches+1;
+    min_cost_flow.AddArcWithCapacityAndUnitCost(vir_dst, vir_src, 10000, -10000);
+
+    int degree;
+    int node1, node2;
+    int basic = 0;
+    for(int i = 0; i < layer_num - 1; i++){
+        degree = bipart_degree[i];
+        for(int j = 0; j < switches; j++){
+
+            for (int k = 0; k < degree; k++)
+            {
+                if(i == 0){
+                    node1 = j + 10000*(layer_num-i);
+                    node2 = topo_index[basic+j*degree+k] + 10000*(layer_num-i-1) + 1e5;
+                    if(j == topo_index[basic+j*degree+k])
+                        min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, INT32_MAX, 0);
+                    else
+                        min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, 1, 1);
+                    node1 = topo_index[basic+j*degree+k] + 10000*(layer_num-i-1);
+                    node2 = j + 10000*(layer_num-i);
+                    if(j == topo_index[basic+j*degree+k])
+                        min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, INT32_MAX, 0);
+                    else
+                        min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, 1, 1); 
+                }
+                else{
+                    node1 = j + 10000*(layer_num-i) + 1e5;
+                    node2 = topo_index[basic+j*degree+k] + 10000*(layer_num-i-1) + 1e5;
+                    if(j == topo_index[basic+j*degree+k])
+                        min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, INT32_MAX, 0);
+                    else
+                        min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, 1, 1);
+                    node1 = topo_index[basic+j*degree+k] + 10000*(layer_num-i-1);
+                    node2 = j + 10000*(layer_num-i);
+                    if(j == topo_index[basic+j*degree+k])
+                        min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, INT32_MAX, 0);
+                    else
+                        min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, 1, 1);   
+                }
+            }
+            
+        }
+        basic += switches*degree;
+    }
+    for(int i = 1; i <= layer_num; i++){
+        min_cost_flow.AddArcWithCapacityAndUnitCost(vir_src, i*10000+src, INT32_MAX, 0);
+        if(i == layer_num)
+            min_cost_flow.AddArcWithCapacityAndUnitCost(i*10000+dst, vir_dst, INT32_MAX, 0);
+            
+        else
+            min_cost_flow.AddArcWithCapacityAndUnitCost(1e5+i*10000+dst, vir_dst, INT32_MAX, 0);
+    }
+    min_cost_flow.Solve();
+    int min_cost = min_cost_flow.OptimalCost()*(-1)/10000+1;
+    return min_cost;
+
 
 }
