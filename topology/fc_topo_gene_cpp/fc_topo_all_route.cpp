@@ -115,8 +115,10 @@ void Fc_topo_all_route::fc_topo_gene(void){
                     basic = change_base(basic);
                 degrees[dst]--;
                 topo_index[index_basic+src*(degree+1)+k+1] = dst;
+                cout << src <<"->" <<dst << endl;
             }
         }
+        cout << endl;
         initial_sub = degree;
         index_basic += (degree+1)*switches;
     }
