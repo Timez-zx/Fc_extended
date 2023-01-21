@@ -93,12 +93,12 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
                 }
             }
             int status = min_cost_flow.Solve();
-            int verify = verify_route(src, dst);
+            // int verify = verify_route(src, dst);
             count++;
             int min_cost = min_cost_flow.OptimalCost()*(-1)/10000+1;
-            if(verify != min_cost){
-                cout << src << "->" << dst << ":verify:" << verify << " " << min_cost << endl;
-            }
+            // if(verify != min_cost){
+            //     cout << src << "->" << dst << ":verify:" << verify << " " << min_cost << endl;
+            // }
             average_len += (min_cost*10000+min_cost_flow.OptimalCost())/float(min_cost);
             average_num += min_cost;
             if(min_cost < min_path_num){
