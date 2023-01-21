@@ -48,7 +48,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
 
         for(int i = 0; i < read_num; i++){
             operations_research::SimpleMinCostFlow min_cost_flow;
-            min_cost_flow.AddArcWithCapacityAndUnitCost(vir_dst, vir_src, 10000, -10000);
+            min_cost_flow.AddArcWithCapacityAndUnitCost(vir_dst, vir_src, INT32_MAX, -10000);
             src = edge_infor[i][0];
             dst = edge_infor[i][1];
             for(int j = 1; j <= layer_num; j++){
@@ -95,7 +95,11 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
             int status = min_cost_flow.Solve();
             // int verify = verify_route(src, dst);
             count++;
-            int min_cost = min_cost_flow.OptimalCost()*(-1)/10000+1;
+            int min_cost = 0;
+            if(status == min_cost_flow.OPTIMAL)
+                min_cost = min_cost_flow.OptimalCost()*(-1)/10000+1;
+            else
+                cout << "error" << endl;
             // if(verify != min_cost){
             //     cout << src << "->" << dst << ":verify:" << verify << " " << min_cost << endl;
             // }
@@ -177,7 +181,11 @@ int Fc_edge_disjoin_route::verify_route(int src, int dst){
             min_cost_flow.AddArcWithCapacityAndUnitCost(1e5+i*10000+dst, vir_dst, INT32_MAX, 0);
     }
     min_cost_flow.Solve();
-    int min_cost = min_cost_flow.OptimalCost()*(-1)/10000+1;
+    int min_cost = 0;
+    if(min_cost_flow.OPTIMAL)
+        min_cost = min_cost_flow.OptimalCost()*(-1)/10000+1;
+    else    
+        cout << "error\n";
     return min_cost;
 
 

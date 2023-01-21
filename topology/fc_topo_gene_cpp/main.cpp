@@ -2,21 +2,21 @@
 #include "fc_edge_disjoin_route.h"
 
 int main(){
-    int switches = 5000;
+    int switches = 3000;
     int hosts = 24;
     int ports = 64;
     int vir_layer_degree[] = {5, 10, 10, 10, 5};
     int layer_num = 5;
     int is_random = 1;
-    int random_seed = 3;
+    int random_seed = 2;
 
-    // int switches = 500;
+    // int switches = 1000;
     // int hosts = 24;
     // int ports = 64;
     // int vir_layer_degree[] = {7, 13, 13, 7};
     // int layer_num = 4;
     // int is_random = 1;
-    // int random_seed = 3;
+    // int random_seed = 2;
 
 
     Fc_edge_disjoin_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
@@ -34,8 +34,8 @@ int main(){
     // bool store_part = true;
     // fc_test.pthread_for_all_route(8, if_report, report_inter, if_store, store_part);
 
-    // fc_test.find_edge_disjoin_route(8, 4, 5000, "sw500_vir713137_rand3", true);
-    fc_test.find_edge_disjoin_route(8, 0, 5000, "sw5000_vir51010105_rand3", true);
+    // fc_test.find_edge_disjoin_route(8, 1, 10000, "sw1000_vir713137_rand2", true);
+    fc_test.find_edge_disjoin_route(8, 7, 100, "sw3000_vir51010105_rand2", true);
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     // FILE* ifs = fopen("all_graph_infor/sw1000_vir713137_rand0/sw1000_vir713137_rand00", "r");
