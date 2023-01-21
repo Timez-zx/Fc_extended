@@ -88,8 +88,9 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
                 if(sw1 != sw2){
                     min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, 1, 1);
                 }
-                else
+                else{
                     min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, INT32_MAX, 0);
+                }
             }
             int status = min_cost_flow.Solve();
             int verify = verify_route(src, dst);

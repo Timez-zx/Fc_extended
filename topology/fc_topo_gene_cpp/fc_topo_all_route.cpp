@@ -115,10 +115,8 @@ void Fc_topo_all_route::fc_topo_gene(void){
                     basic = change_base(basic);
                 degrees[dst]--;
                 topo_index[index_basic+src*(degree+1)+k+1] = dst;
-                cout << src <<"->" <<dst << endl;
             }
         }
-        cout << endl;
         initial_sub = degree;
         index_basic += (degree+1)*switches;
     }
@@ -378,18 +376,18 @@ uint Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display, ui
                 src_path = src_valid_path[src];
                 dst_path = dst_valid_path[dst];
                 int begin_src = 0;
-                int begin_dst = 0;
+                int begin_dst = 1;
           
 
-                while(src_path[begin_src] == dst_path[begin_dst]){
-                    if(src_path[begin_src] == inter[i]){
-                        begin_src++;
-                        begin_dst++;
-                    }
-                    else
-                        break;
-                }
-                begin_src--;
+                // while(src_path[begin_src] == dst_path[begin_dst]){
+                //     if(src_path[begin_src] == inter[i]){
+                //         begin_src++;
+                //         begin_dst++;
+                //     }
+                //     else
+                //         break;
+                // }
+                // begin_src--;
                 vector<int> pass_node;
                 int pass_flag = 0;
                 for(int k = src_path[layer_num]; k >= begin_src; k--){
@@ -438,12 +436,13 @@ uint Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display, ui
     set<vector<int> > graph_infor;
     vector<vector<int> > graph_infor_vec;
     for(int i = 0; i < route_node_path.size(); i++){
-        for(int j = 0; j < route_node_path[i].size()-3; j += 2){
-            vector<int> temp(4);
-            temp[0] = route_node_path[i][j];
-            temp[1] = route_node_path[i][j+1];
-            temp[2] = route_node_path[i][j+2];
-            temp[3] = route_node_path[i][j+3];
+        for(int j = 0; j < route_node_path[i].size()-2; j += 2){
+            vector<int> temp;
+            temp.clear();
+            temp.push_back(route_node_path[i][j]);
+            temp.push_back(route_node_path[i][j+1]);
+            temp.push_back(route_node_path[i][j+2]);
+            temp.push_back(route_node_path[i][j+3]);
             graph_infor.insert(temp);
         }
     }
