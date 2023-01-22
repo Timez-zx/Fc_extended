@@ -74,8 +74,18 @@ void Fc_topo_all_route::fc_topo_gene(void){
         total_degree += remain_degree + 1;
     }
     topo_index = new int[switches*total_degree];
+    // vector<vector<int> > port_infor;
+    // for(int i = 0; i < switches; i++){
+    //     vector<int> temp;
+    //     temp.clear();
+    //     for(int j = 1; j <= sw_ports; j++)
+    //         temp.push_back(j);
+    //     port_infor.push_back(temp);
+    // }
+
 
     int index_basic = 0;
+    int total_count = 0;
     for(int i = layer_num - 1; i > 0; i--){
         degree = vir_layer_degree[i] - initial_sub;
         bipart_degree[bipart_count] = degree + 1;
@@ -115,9 +125,21 @@ void Fc_topo_all_route::fc_topo_gene(void){
                     basic = change_base(basic);
                 degrees[dst]--;
                 topo_index[index_basic+src*(degree+1)+k+1] = dst;
+                // int src_port = port_infor[src][0];
+                // int dst_port = port_infor[dst][0];
+                // int count = 1;
+                // while(dst_port <= total_count+degree){
+                //     dst_port = port_infor[dst][count];
+                //     count++;
+                // }
+                // port_infor[dst].erase(port_infor[dst].begin()+count-1,port_infor[dst].begin()+count);
+                // port_infor[src].erase(port_infor[src].begin(), port_infor[src].begin()+1);
+                // cout << src << " " << dst << " " << src_port << " " << dst_port << endl;
+                // cout << dst << " " << src << " " << dst_port << " " << src_port << endl;
             }
         }
         initial_sub = degree;
+        total_count += degree*2;
         index_basic += (degree+1)*switches;
     }
     bipart_degree[bipart_count] = 0;

@@ -9,6 +9,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
     }
     if(store_part)
         pairs_num = batch_num;
+    int pairs = pairs_num;
     string file_path("all_graph_infor/" + read_file + "/" + read_file + to_string(thread_label));
     string len_path(file_path + "_num");
     FILE* ifs = fopen(file_path.c_str(), "r");
@@ -111,10 +112,16 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
 
         }
         pairs_num -= read_num;
-        cout << min_path_num << endl;
+        cout << pairs_num << endl;
     }
-    cout << average_num/float(batch_num) << endl;
-    cout << average_len/float(batch_num) << endl;
+    if(store_part){
+        cout << average_num/float(batch_num) << endl;
+        cout << average_len/float(batch_num) << endl;
+    }
+    else{
+        cout << average_num/float(pairs) << endl;
+        cout << average_len/float(pairs) << endl;        
+    }
     for(int i = 0; i < batch_num; i++){
         delete[] edge_infor[i];
         edge_infor[i] = NULL;
