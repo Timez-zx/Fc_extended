@@ -78,14 +78,14 @@ void Fc_topo_all_route::fc_topo_gene(void){
     // for(int i = 0; i < switches; i++){
     //     vector<int> temp;
     //     temp.clear();
-    //     for(int j = 1; j <= sw_ports; j++)
+    //     for(int j = ports-1; j >= hosts; j--)
     //         temp.push_back(j);
     //     port_infor.push_back(temp);
     // }
 
 
     int index_basic = 0;
-    int total_count = 0;
+    int total_count = ports - 1;
     for(int i = layer_num - 1; i > 0; i--){
         degree = vir_layer_degree[i] - initial_sub;
         bipart_degree[bipart_count] = degree + 1;
@@ -128,7 +128,7 @@ void Fc_topo_all_route::fc_topo_gene(void){
                 // int src_port = port_infor[src][0];
                 // int dst_port = port_infor[dst][0];
                 // int count = 1;
-                // while(dst_port <= total_count+degree){
+                // while(dst_port > total_count - degree){
                 //     dst_port = port_infor[dst][count];
                 //     count++;
                 // }
@@ -139,7 +139,7 @@ void Fc_topo_all_route::fc_topo_gene(void){
             }
         }
         initial_sub = degree;
-        total_count += degree*2;
+        total_count -= degree*2;
         index_basic += (degree+1)*switches;
     }
     bipart_degree[bipart_count] = 0;
