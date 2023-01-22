@@ -27,12 +27,15 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
     for(int i = 0; i < batch_num; i++)
         edge_infor[i] = new uint16_t[max_len*2];
 
+    int total_switches = (2*layer_num-1)*switches;
+
     int count = 0;
     int src, dst;
-    int vir_src = switches;
-    int vir_dst = switches + 1;
+    int vir_src = total_switches;
+    int vir_dst = total_switches + 1;
     int node1, node2;
     int sw1, sw2;
+    int layer1, layer2;
     int average_num = 0;
     int min_path_num = 1000;
     float average_len = 0;
@@ -52,39 +55,36 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
             min_cost_flow.AddArcWithCapacityAndUnitCost(vir_dst, vir_src, INT32_MAX, -10000);
             src = edge_infor[i][0];
             dst = edge_infor[i][1];
-            for(int j = 1; j <= layer_num; j++){
-                min_cost_flow.AddArcWithCapacityAndUnitCost(vir_src, j*10000+src, INT32_MAX, 0);
-                if(j == layer_num)
-                    min_cost_flow.AddArcWithCapacityAndUnitCost(10000*j+dst, vir_dst, INT32_MAX, 0);
+            for(int j = 0; j < layer_num; j++){
+                min_cost_flow.AddArcWithCapacityAndUnitCost(vir_src, j*switches+src, INT32_MAX, 0);
+                if(j == layer_num - 1)
+                    min_cost_flow.AddArcWithCapacityAndUnitCost((layer_num-1)*switches+dst, vir_dst, INT32_MAX, 0);
                 else
-                    min_cost_flow.AddArcWithCapacityAndUnitCost(1e4*layer_num+10000*j+dst, vir_dst, INT32_MAX, 0);
+                    min_cost_flow.AddArcWithCapacityAndUnitCost((layer_num+j)*switches+dst, vir_dst, INT32_MAX, 0);
             }
 
-            for(int j = 1; j < layer_num; j++){
-                min_cost_flow.AddArcWithCapacityAndUnitCost(j*10000+src, (j+1)*10000+src,INT32_MAX, 0);
-                min_cost_flow.AddArcWithCapacityAndUnitCost(j*10000+dst, (j+1)*10000+dst,INT32_MAX, 0);
+            for(int j = 0; j < layer_num-1; j++){
+                min_cost_flow.AddArcWithCapacityAndUnitCost(j*switches+src, (j+1)*switches+src,INT32_MAX, 0);
+                min_cost_flow.AddArcWithCapacityAndUnitCost(j*switches+dst, (j+1)*switches+dst,INT32_MAX, 0);
             }
 
-            for(int j = layer_num; j > 1; j--){
-                if(j == layer_num){
-                    min_cost_flow.AddArcWithCapacityAndUnitCost(j*10000+src, 1e4*layer_num + (j-1)*10000+src, INT32_MAX, 0);
-                    min_cost_flow.AddArcWithCapacityAndUnitCost(j*10000+dst, 1e4*layer_num + (j-1)*10000+dst, INT32_MAX, 0);
-                }
-                else{
-                    min_cost_flow.AddArcWithCapacityAndUnitCost(1e4*layer_num + j*10000+src, 1e4*layer_num + (j-1)*10000+src,INT32_MAX, 0);
-                    min_cost_flow.AddArcWithCapacityAndUnitCost(1e4*layer_num + j*10000+dst, 1e4*layer_num + (j-1)*10000+dst,INT32_MAX, 0); 
-                }
+            for(int j = 0; j < layer_num-1; j++){
+                min_cost_flow.AddArcWithCapacityAndUnitCost((layer_num+j-1)*switches+src, (layer_num+j)*switches+src, INT32_MAX, 0);
+                min_cost_flow.AddArcWithCapacityAndUnitCost((layer_num+j-1)*switches+dst, (layer_num+j)*switches+dst, INT32_MAX, 0);
             }
 
             for(int j = 2; j < edge_num[count]*2; j += 2){
                 node1 = edge_infor[i][j];
                 node2 = edge_infor[i][j+1];
                 sw1 = node1%10000;
+                layer1 = node1/10000;
                 sw2 = node2%10000;
+                layer2 = node2/10000;
+                node1 = (layer1-1)*switches+sw1;
+                node2 = (layer2-1)*switches+sw2;
                 if(node2 < node1){
-                    node2 += 1e4*layer_num;
-                    if(node1 < layer_num*10000)
-                        node1 += 1e4*layer_num;
+                    node1 += (layer_num-layer1)*2*switches;
+                    node2 += (layer_num-layer2)*2*switches;
                 }
                 if(sw1 != sw2){
                     min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, 1, 1);
