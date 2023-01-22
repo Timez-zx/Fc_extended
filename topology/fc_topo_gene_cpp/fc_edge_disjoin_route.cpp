@@ -57,7 +57,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
                 if(j == layer_num)
                     min_cost_flow.AddArcWithCapacityAndUnitCost(10000*j+dst, vir_dst, INT32_MAX, 0);
                 else
-                    min_cost_flow.AddArcWithCapacityAndUnitCost(1e5+10000*j+dst, vir_dst, INT32_MAX, 0);
+                    min_cost_flow.AddArcWithCapacityAndUnitCost(1e4*layer_num+10000*j+dst, vir_dst, INT32_MAX, 0);
             }
 
             for(int j = 1; j < layer_num; j++){
@@ -67,12 +67,12 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
 
             for(int j = layer_num; j > 1; j--){
                 if(j == layer_num){
-                    min_cost_flow.AddArcWithCapacityAndUnitCost(j*10000+src, 1e5 + (j-1)*10000+src, INT32_MAX, 0);
-                    min_cost_flow.AddArcWithCapacityAndUnitCost(j*10000+dst, 1e5 + (j-1)*10000+dst, INT32_MAX, 0);
+                    min_cost_flow.AddArcWithCapacityAndUnitCost(j*10000+src, 1e4*layer_num + (j-1)*10000+src, INT32_MAX, 0);
+                    min_cost_flow.AddArcWithCapacityAndUnitCost(j*10000+dst, 1e4*layer_num + (j-1)*10000+dst, INT32_MAX, 0);
                 }
                 else{
-                    min_cost_flow.AddArcWithCapacityAndUnitCost(1e5 + j*10000+src, 1e5 + (j-1)*10000+src,INT32_MAX, 0);
-                    min_cost_flow.AddArcWithCapacityAndUnitCost(1e5 + j*10000+dst, 1e5 + (j-1)*10000+dst,INT32_MAX, 0); 
+                    min_cost_flow.AddArcWithCapacityAndUnitCost(1e4*layer_num + j*10000+src, 1e4*layer_num + (j-1)*10000+src,INT32_MAX, 0);
+                    min_cost_flow.AddArcWithCapacityAndUnitCost(1e4*layer_num + j*10000+dst, 1e4*layer_num + (j-1)*10000+dst,INT32_MAX, 0); 
                 }
             }
 
@@ -82,9 +82,9 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
                 sw1 = node1%10000;
                 sw2 = node2%10000;
                 if(node2 < node1){
-                    node2 += 1e5;
+                    node2 += 1e4*layer_num;
                     if(node1 < layer_num*10000)
-                        node1 += 1e5;
+                        node1 += 1e4*layer_num;
                 }
                 if(sw1 != sw2){
                     min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, 1, 1);
@@ -148,7 +148,7 @@ int Fc_edge_disjoin_route::verify_route(int src, int dst){
             {
                 if(i == 0){
                     node1 = j + 10000*(layer_num-i);
-                    node2 = topo_index[basic+j*degree+k] + 10000*(layer_num-i-1) + 1e5;
+                    node2 = topo_index[basic+j*degree+k] + 10000*(layer_num-i-1) + 1e4*layer_num;
                     if(j == topo_index[basic+j*degree+k])
                         min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, INT32_MAX, 0);
                     else
@@ -161,8 +161,8 @@ int Fc_edge_disjoin_route::verify_route(int src, int dst){
                         min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, 1, 1); 
                 }
                 else{
-                    node1 = j + 10000*(layer_num-i) + 1e5;
-                    node2 = topo_index[basic+j*degree+k] + 10000*(layer_num-i-1) + 1e5;
+                    node1 = j + 10000*(layer_num-i) + 1e4*layer_num;
+                    node2 = topo_index[basic+j*degree+k] + 10000*(layer_num-i-1) + 1e4*layer_num;
                     if(j == topo_index[basic+j*degree+k])
                         min_cost_flow.AddArcWithCapacityAndUnitCost(node1, node2, INT32_MAX, 0);
                     else
@@ -185,7 +185,7 @@ int Fc_edge_disjoin_route::verify_route(int src, int dst){
             min_cost_flow.AddArcWithCapacityAndUnitCost(i*10000+dst, vir_dst, INT32_MAX, 0);
             
         else
-            min_cost_flow.AddArcWithCapacityAndUnitCost(1e5+i*10000+dst, vir_dst, INT32_MAX, 0);
+            min_cost_flow.AddArcWithCapacityAndUnitCost(1e4*layer_num+i*10000+dst, vir_dst, INT32_MAX, 0);
     }
     min_cost_flow.Solve();
     int min_cost = 0;
