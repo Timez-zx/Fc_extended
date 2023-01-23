@@ -96,7 +96,7 @@ void Fc_topo_all_route::fc_topo_gene(void){
         basic = switches - 1;
         if(is_random){
             srand(random_seed);
-            shuffle(switch_array, switch_array+switches-1, default_random_engine(random_seed));
+            shuffle(switch_array, switch_array+switches, default_random_engine(random_seed));
         }
         for(int j = 0; j < switches; j++){
             src = switch_array[j];
@@ -136,8 +136,10 @@ void Fc_topo_all_route::fc_topo_gene(void){
                 // port_infor[src].erase(port_infor[src].begin(), port_infor[src].begin()+1);
                 // cout << src << " " << dst << " " << src_port << " " << dst_port << endl;
                 // cout << dst << " " << src << " " << dst_port << " " << src_port << endl;
+                // cout << src << "->" << dst << endl;
             }
         }
+        // cout << endl;
         initial_sub = degree;
         total_count -= degree*2;
         index_basic += (degree+1)*switches;
