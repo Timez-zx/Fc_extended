@@ -38,11 +38,11 @@ class Fc_topo_all_route{
         int is_random;
         int random_seed;
 
-        int* bipart_degree;
-        int* topo_index;
+        int* bipart_degree=NULL;
+        int* topo_index=NULL;
 
-        node_path_infor* all_path_infor;
-        topo_dic_infor* topo_dic;
+        node_path_infor* all_path_infor=NULL;
+        topo_dic_infor* topo_dic=NULL;
 
         Fc_topo_all_route(int switches, int hosts, int ports, int* vir_layer_degree, int layer_num, int is_random, int random_seed):
         switches(switches), hosts(hosts), ports(ports), vir_layer_degree(vir_layer_degree), layer_num(layer_num),is_random(is_random), random_seed(random_seed){}

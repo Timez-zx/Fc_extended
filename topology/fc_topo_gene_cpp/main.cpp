@@ -34,7 +34,7 @@ int main(){
     // bool store_part = true;
     // fc_test.pthread_for_all_route(8, if_report, report_inter, if_store, store_part);
 
-    // fc_test.find_edge_disjoin_route_fast(8, 1, 10000, "sw500_vir713137_rand2", true);
+    fc_test.find_edge_disjoin_route_fast(8, 7, 10000, "sw500_vir713137_rand2", true);
     // fc_test.find_edge_disjoin_route_fast(8, 2, 10000, "sw5000_vir51010105_rand2", true);
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
