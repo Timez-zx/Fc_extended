@@ -160,6 +160,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
 
     int total_switches = (2*layer_num-1)*switches;
     int reverse_index_table[total_switches+2];
+    vector<int> index_table;
     memset(reverse_index_table, 0xff, sizeof(int)*(total_switches+2));
     int index_count = 0;
     int count = 0;
@@ -167,8 +168,10 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
     int vir_src = total_switches;
     int vir_dst = total_switches + 1;
     reverse_index_table[vir_src] = index_count;
+    index_table.push_back(vir_src);
     index_count++;
     reverse_index_table[vir_dst] = index_count;
+    index_table.push_back(vir_dst);
     index_count++;
 
     int node1, node2;
@@ -196,14 +199,17 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
             for(int j = 0; j < layer_num; j++){
                 reverse_index_table[j*switches+src] = index_count;
                 min_cost_flow.AddArcWithCapacityAndUnitCost(reverse_index_table[vir_src], index_count, INT32_MAX, 0);
+                index_table.push_back(j*switches+src);
                 index_count++;
                 if(j == layer_num - 1){
                     reverse_index_table[(layer_num-1)*switches+dst] = index_count;
                     min_cost_flow.AddArcWithCapacityAndUnitCost(index_count, reverse_index_table[vir_dst], INT32_MAX, 0);
+                    index_table.push_back((layer_num-1)*switches+dst);
                 }
                 else{
                     reverse_index_table[(layer_num+j)*switches+dst] = index_count;
                     min_cost_flow.AddArcWithCapacityAndUnitCost(index_count, reverse_index_table[vir_dst], INT32_MAX, 0);
+                    index_table.push_back((layer_num+j)*switches+dst);
                 }
                 index_count++;
             }
@@ -214,10 +220,12 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                 node2 = (j+1)*switches+dst;
                 if(reverse_index_table[node1] == -1){
                     reverse_index_table[node1] = index_count;
+                    index_table.push_back(node1);
                     index_count++;
                 }
                 if(reverse_index_table[node2] == -1){
                     reverse_index_table[node2] = index_count;
+                    index_table.push_back(node2);
                     index_count++;
                 }
                 min_cost_flow.AddArcWithCapacityAndUnitCost(reverse_index_table[node1],reverse_index_table[node2],INT32_MAX, 0);
@@ -228,10 +236,12 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                 node2 = (layer_num+j)*switches+src;
                 if(reverse_index_table[node1] == -1){
                     reverse_index_table[node1] = index_count;
+                    index_table.push_back(node1);
                     index_count++;
                 }
                 if(reverse_index_table[node2] == -1){
                     reverse_index_table[node2] = index_count;
+                    index_table.push_back(node2);
                     index_count++;
                 }
                 min_cost_flow.AddArcWithCapacityAndUnitCost(reverse_index_table[node1],reverse_index_table[node2], INT32_MAX, 0);
@@ -253,10 +263,12 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                 }
                 if(reverse_index_table[node1] == -1){
                     reverse_index_table[node1] = index_count;
+                    index_table.push_back(node1);
                     index_count++;
                 }
                 if(reverse_index_table[node2] == -1){
                     reverse_index_table[node2] = index_count;
+                    index_table.push_back(node2);
                     index_count++;
                 }
                 if(sw1 != sw2){
@@ -267,16 +279,13 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                 }
             }
             int status = min_cost_flow.Solve();
-            // int verify = verify_route(src, dst);
             count++;
             int min_cost = 0;
-            if(status == min_cost_flow.OPTIMAL)
+            if(status == min_cost_flow.OPTIMAL){
                 min_cost = min_cost_flow.OptimalCost()*(-1)/10000+1;
+            }
             else
                 cout << "error" << endl;
-            // if(verify != min_cost){
-            //     cout << src << "->" << dst << ":verify:" << verify << " " << min_cost << endl;
-            // }
             average_len += (min_cost*10000+min_cost_flow.OptimalCost())/float(min_cost);
             average_num += min_cost;
             if(min_cost < min_path_num){
@@ -284,6 +293,9 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
             }
             memset(reverse_index_table, 0xff, sizeof(int)*total_switches);
             index_count = 2;
+            index_table.clear();
+            index_table.push_back(vir_src);
+            index_table.push_back(vir_dst);
         }
         pairs_num -= read_num;
         cout << pairs_num << endl;
@@ -368,6 +380,4 @@ int Fc_edge_disjoin_route::verify_route(int src, int dst){
     else    
         cout << "error\n";
     return min_cost;
-
-
 }
