@@ -36,13 +36,13 @@ int main(){
 
     struct timeval start, end;
     gettimeofday(&start, NULL);
-    // bool if_report = true;
-    // int report_inter = 45;
-    // bool if_store = true;
-    // bool store_part = true;
-    // fc_test.pthread_for_all_route(1, if_report, report_inter, if_store, store_part);
+    bool if_report = true;
+    int report_inter = 45;
+    bool if_store = true;
+    bool store_part = true;
+    fc_test.pthread_for_all_route(1, if_report, report_inter, if_store, store_part);
 
-    fc_test.find_edge_disjoin_route_fast(1, 0, 10, "sw10_vir2442_rand1", true);
+    fc_test.find_edge_disjoin_route_fast(1, 0, 45, "sw10_vir2442_rand1", true);
     // fc_test.find_edge_disjoin_route_fast(8, 2, 10000, "sw500_vir713137_rand7", true);
     // fc_test.find_edge_disjoin_route_fast(8, 2, 10000, "sw2000_vir51010105_rand2", true);
     gettimeofday(&end, NULL);

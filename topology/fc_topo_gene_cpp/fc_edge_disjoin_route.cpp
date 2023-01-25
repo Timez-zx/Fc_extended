@@ -96,18 +96,18 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route(int thread_num, int thread_l
             int status = min_cost_flow.Solve();
             // int verify = verify_route(src, dst);
             count++;
-            int min_cost = 0;
+            int max_flow = 0;
             if(status == min_cost_flow.OPTIMAL)
-                min_cost = min_cost_flow.OptimalCost()*(-1)/10000+1;
+                max_flow = min_cost_flow.Flow(0);
             else
                 cout << "error" << endl;
-            // if(verify != min_cost){
-            //     cout << src << "->" << dst << ":verify:" << verify << " " << min_cost << endl;
+            // if(verify != max_flow){
+            //     cout << src << "->" << dst << ":verify:" << verify << " " << max_flow << endl;
             // }
-            average_len += (min_cost*10000+min_cost_flow.OptimalCost())/float(min_cost);
-            average_num += min_cost;
-            if(min_cost < min_path_num){
-                min_path_num = min_cost;
+            average_len += (max_flow*10000+min_cost_flow.OptimalCost())/float(max_flow);
+            average_num += max_flow;
+            if(max_flow< min_path_num){
+                min_path_num = max_flow;
             }
 
         }
@@ -280,16 +280,19 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
             }
             int status = min_cost_flow.Solve();
             count++;
-            int min_cost = 0;
+            int max_flow = 0;
             if(status == min_cost_flow.OPTIMAL){
-                min_cost = min_cost_flow.OptimalCost()*(-1)/10000+1;
+                max_flow = min_cost_flow.Flow(0);
+                // for(int i = 0; i < min_cost_flow.NumArcs(); i++){
+                //     cout << index_table[min_cost_flow.Tail(i)] << "->" << index_table[min_cost_flow.Head(i)] << "  :" << min_cost_flow.Flow(i) << endl;
+                // }
             }
             else
                 cout << "error" << endl;
-            average_len += (min_cost*10000+min_cost_flow.OptimalCost())/float(min_cost);
-            average_num += min_cost;
-            if(min_cost < min_path_num){
-                min_path_num = min_cost;
+            average_len += (max_flow*10000+min_cost_flow.OptimalCost())/float(max_flow);
+            average_num += max_flow;
+            if(max_flow < min_path_num){
+                min_path_num = max_flow;
             }
             memset(reverse_index_table, 0xff, sizeof(int)*total_switches);
             index_count = 2;
@@ -374,10 +377,10 @@ int Fc_edge_disjoin_route::verify_route(int src, int dst){
             min_cost_flow.AddArcWithCapacityAndUnitCost(1e4*layer_num+i*10000+dst, vir_dst, INT32_MAX, 0);
     }
     min_cost_flow.Solve();
-    int min_cost = 0;
+    int max_flow = 0;
     if(min_cost_flow.OPTIMAL)
-        min_cost = min_cost_flow.OptimalCost()*(-1)/10000+1;
+        max_flow = min_cost_flow.Flow(0);
     else    
         cout << "error\n";
-    return min_cost;
+    return max_flow;
 }
