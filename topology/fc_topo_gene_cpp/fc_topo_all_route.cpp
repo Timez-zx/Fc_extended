@@ -150,12 +150,52 @@ void Fc_topo_all_route::fc_topo_gene(void){
 }
 
 
+vector<int> Fc_topo_all_route::gene_rand(int min,int max,int num)
+{
+    int rnd;
+    vector<int> diff;
+    vector<int> tmp;//存储剩余的数
+    //初始化
+    for(int i = min;i < max+1 ; i++ )
+    {
+        tmp.push_back(i);
+    }
+    for(int i = 0 ; i < num ; i++)
+    {
+        do{
+            rnd = min+rand()%(max-min+1);
+     
+        }while(tmp.at(rnd-min)==-1);
+        diff.push_back(rnd);
+        tmp.at(rnd-min) = -1;
+    }
+    return diff;
+}
+
+
 void Fc_topo_all_route::fc_topo_gene_1v1(void){
     int sw_ports = ports - hosts;
     if(sw_ports + 1 > switches){
         printf("Few switches and too many ports, keeping 1 link between switches is hard, please use fc_topo_gene\n");
         exit(1);
     }
+    vector<vector<int> > sw_poss_connect;
+    vector<vector<int> > sw_connect;
+    vector<int> port_remain;
+    for(int i = 0; i < switches; i++){
+        vector<int> temp;
+        vector<int> infor;
+        sw_connect.push_back(infor);
+        port_remain.push_back(sw_ports);
+        for(int j = 0; j < switches; j++){
+            if(i != j)
+                temp.push_back(j);
+        }
+        sw_poss_connect.push_back(temp);
+    }
+
+    if(is_random)
+        srand(random_seed);
     
 
 }

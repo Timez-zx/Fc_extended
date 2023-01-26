@@ -51,6 +51,7 @@ class Fc_topo_all_route{
         // generate topology
         int  change_base(int basic);
         void fc_topo_gene(void);
+        vector<int> gene_rand(int min, int max, int num);
         void fc_topo_gene_1v1(void);
         void search_path(int root, node_path_infor* node_infor);
         void path_infor_gene(void);
