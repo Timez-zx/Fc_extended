@@ -300,7 +300,11 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                         heads[min_cost_flow.Tail(j)] = edges_count++;
                     }
                 }
-                dfs(heads, visited, edges, edges_count, 0, 1);
+                for(int j = 0; j < max_flow; j++){
+                    dfs(heads, visited, edges, edges_count, 0, 1);
+                    memset(visited, 0, sizeof(int)*MAX_NUM);
+                    cout << 0 << endl;
+                }
             }
             else
                 cout << "error" << endl;
@@ -346,22 +350,21 @@ void Fc_edge_disjoin_route::dfs(int* head, int* visited, Edge* edge, int edge_co
     //     }
     // }
     visited[src] = 1;
-    for(int i = head[src]; i != -1; edge[i].next){
+    for(int i = head[src]; i != -1; i = edge[i].next){
         if(edge[i].weight == 0)
             continue;
         if(!visited[edge[i].to]){
             if(edge[i].to == dst){
                 edge[i].weight--;
+                cout << dst << " ";
                 return;
             }
             else{
                 dfs(head, visited, edge, edge_count, edge[i].to, dst);
+                cout << edge[i].to << " ";
                 edge[i].weight--;
                 return;
             }
-        }
-        else{
-            continue;
         }
     }
 
