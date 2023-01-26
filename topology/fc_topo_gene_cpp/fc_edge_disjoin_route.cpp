@@ -189,6 +189,10 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
     memset(heads, 0xff, sizeof(int)*MAX_NUM);
     memset(edges, 0xff, sizeof(Edge)*MAX_NUM);
 
+    int status, max_flow;
+    int path_len, real_len;
+    uint16_t* path_route = new uint16_t[2*layer_num+1];
+
     while(pairs_num > 0){
         if(pairs_num >= batch_num)
             read_num = batch_num;
@@ -287,9 +291,9 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                     min_cost_flow.AddArcWithCapacityAndUnitCost(reverse_index_table[node1],reverse_index_table[node2], INT32_MAX, 0);
                 }
             }
-            int status = min_cost_flow.Solve();
+            status = min_cost_flow.Solve();
             count++;
-            int max_flow = 0;
+            max_flow = 0;
             if(status == min_cost_flow.OPTIMAL){
                 max_flow = min_cost_flow.Flow(0);
                 for(int j = 1; j < min_cost_flow.NumArcs(); j++){
@@ -300,12 +304,19 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                         heads[min_cost_flow.Tail(j)] = edges_count++;
                     }
                 }
+                real_len = 0;
                 for(int j = 0; j < max_flow; j++){
-                    vector<int> path_route;
-                    dfs(heads, visited, edges, 0, 1, &path_route);
-                    path_route.push_back(0);
+                    path_len = dfs(heads, visited, edges, 0, 1, path_route);
+                    for(int k = path_len - 1; k >= 0; k--){
+                        real_len++;
+                        cout << index_table[path_route[k]] << " ";
+                        if(index_table[path_route[k]]%switches == dst)
+                            break;
+                    }
+                    cout << endl;
+                    cout << real_len << endl;
                     memset(visited, 0, sizeof(int)*MAX_NUM);
-                    path_route.clear();
+                    real_len = 0;
                 }
             }
             else
@@ -345,7 +356,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
 }
 
 
-void Fc_edge_disjoin_route::dfs(int* head, int* visited, Edge* edge, int src, int dst, vector<int>* store_path){
+int Fc_edge_disjoin_route::dfs(int* head, int* visited, Edge* edge, int src, int dst, uint16_t* store_path){
     visited[src] = 1;
     for(int i = head[src]; i != -1; i = edge[i].next){
         if(edge[i].weight == 0)
@@ -353,17 +364,18 @@ void Fc_edge_disjoin_route::dfs(int* head, int* visited, Edge* edge, int src, in
         if(!visited[edge[i].to]){
             if(edge[i].to == dst){
                 edge[i].weight--;
-                (*store_path).push_back(dst);
-                return;
+                store_path[0] = dst;
+                return 1;
             }
             else{
-                dfs(head, visited, edge, edge[i].to, dst, store_path);
-                (*store_path).push_back(edge[i].to);
+                int temp_len = dfs(head, visited, edge, edge[i].to, dst, store_path);
+                store_path[temp_len] = edge[i].to;
                 edge[i].weight--;
-                return;
+                return ++temp_len;
             }
         }
     }
+    return 0;
 }
 
 
