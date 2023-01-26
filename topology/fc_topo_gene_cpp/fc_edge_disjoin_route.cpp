@@ -180,6 +180,13 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
     int average_num = 0;
     int min_path_num = 1000;
     float average_len = 0;
+
+    Edge edges[MAX_NUM];
+    int heads[MAX_NUM];
+    int edges_count = 0;
+    memset(heads, 0xff, sizeof(int)*MAX_NUM);
+    memset(edges, 0xff, sizeof(Edge)*MAX_NUM);
+
     while(pairs_num > 0){
         if(pairs_num >= batch_num)
             read_num = batch_num;
@@ -283,9 +290,19 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
             int max_flow = 0;
             if(status == min_cost_flow.OPTIMAL){
                 max_flow = min_cost_flow.Flow(0);
-                // for(int i = 0; i < min_cost_flow.NumArcs(); i++){
-                //     cout << index_table[min_cost_flow.Tail(i)] << "->" << index_table[min_cost_flow.Head(i)] << "  :" << min_cost_flow.Flow(i) << endl;
-                // }
+                for(int j = 1; j < min_cost_flow.NumArcs(); j++){
+                    if(min_cost_flow.Flow(j) > 0){
+                        edges[edges_count].weight = min_cost_flow.Flow(j);
+                        edges[edges_count].to = min_cost_flow.Head(j);
+                        edges[edges_count].next = heads[min_cost_flow.Tail(j)];
+                        heads[min_cost_flow.Tail(j)] = edges_count++;
+                    }
+                }
+                for(int j = 0; j <= edges_count; j++){
+                    for(int k = heads[j]; k != -1; k=edges[k].next){
+                        cout << j << "->" << edges[k].to << ":" << edges[k].weight << endl;
+                    }
+                }
             }
             else
                 cout << "error" << endl;
@@ -299,6 +316,9 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
             index_table.clear();
             index_table.push_back(vir_src);
             index_table.push_back(vir_dst);
+            edges_count = 0;
+            memset(heads, 0xff, sizeof(int)*MAX_NUM);
+            memset(edges, 0xff, sizeof(Edge)*MAX_NUM);
         }
         pairs_num -= read_num;
         cout << pairs_num << endl;

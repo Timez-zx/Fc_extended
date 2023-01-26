@@ -1,6 +1,14 @@
 #include "fc_topo_all_route.h"
 #include "ortools/graph/min_cost_flow.h"
 
+const int MAX_NUM = 10000;
+
+struct Edge
+{
+    int next;
+    int to;
+    int weight;
+};
 
 class Fc_edge_disjoin_route: public Fc_topo_all_route{
     public:
