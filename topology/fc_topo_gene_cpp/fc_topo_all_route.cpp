@@ -150,6 +150,17 @@ void Fc_topo_all_route::fc_topo_gene(void){
 }
 
 
+void Fc_topo_all_route::fc_topo_gene_1v1(void){
+    int sw_ports = ports - hosts;
+    if(sw_ports + 1 > switches){
+        printf("Few switches and too many ports, keeping 1 link between switches is hard, please use fc_topo_gene\n");
+        exit(1);
+    }
+    
+
+}
+
+
 void Fc_topo_all_route::search_path(int root, node_path_infor* node_infor){
     int layer_root, layer_degree, temp_path_num;
     int basic = 0;
