@@ -305,11 +305,6 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                     memset(visited, 0, sizeof(int)*MAX_NUM);
                     cout << 0 << endl;
                 }
-                // for(int j = 0; j <= edges_count; j++){
-                //     for(int k = heads[j]; k != -1; k=edges[k].next){
-                //         cout << j << "->" << edges[k].to << ":" << edges[k].weight << endl;
-                //     }
-                // }
             }
             else
                 cout << "error" << endl;
