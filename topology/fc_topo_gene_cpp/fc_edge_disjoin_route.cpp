@@ -301,10 +301,15 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                     }
                 }
                 for(int j = 0; j < max_flow; j++){
-                    dfs(heads, visited, edges, edges_count, 0, 1);
+                    dfs(heads, visited, edges, 0, 1);
                     memset(visited, 0, sizeof(int)*MAX_NUM);
                     cout << 0 << endl;
                 }
+                // for(int j = 0; j <= edges_count; j++){
+                //     for(int k = heads[j]; k != -1; k=edges[k].next){
+                //         cout << j << "->" << edges[k].to << ":" << edges[k].weight << endl;
+                //     }
+                // }
             }
             else
                 cout << "error" << endl;
@@ -343,12 +348,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
 }
 
 
-void Fc_edge_disjoin_route::dfs(int* head, int* visited, Edge* edge, int edge_count, int src, int dst){
-    // for(int j = 0; j <= edge_count; j++){
-    //     for(int k = head[j]; k != -1; k=edge[k].next){
-    //         cout << j << "->" << edge[k].to << ":" << edge[k].weight << endl;
-    //     }
-    // }
+void Fc_edge_disjoin_route::dfs(int* head, int* visited, Edge* edge, int src, int dst){
     visited[src] = 1;
     for(int i = head[src]; i != -1; i = edge[i].next){
         if(edge[i].weight == 0)
@@ -360,7 +360,7 @@ void Fc_edge_disjoin_route::dfs(int* head, int* visited, Edge* edge, int edge_co
                 return;
             }
             else{
-                dfs(head, visited, edge, edge_count, edge[i].to, dst);
+                dfs(head, visited, edge, edge[i].to, dst);
                 cout << edge[i].to << " ";
                 edge[i].weight--;
                 return;
