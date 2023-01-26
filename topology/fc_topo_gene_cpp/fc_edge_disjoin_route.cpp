@@ -182,8 +182,10 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
     float average_len = 0;
 
     Edge edges[MAX_NUM];
+    int visited[MAX_NUM];
     int heads[MAX_NUM];
     int edges_count = 0;
+    memset(visited, 0, sizeof(int)*MAX_NUM);
     memset(heads, 0xff, sizeof(int)*MAX_NUM);
     memset(edges, 0xff, sizeof(Edge)*MAX_NUM);
 
@@ -298,11 +300,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                         heads[min_cost_flow.Tail(j)] = edges_count++;
                     }
                 }
-                for(int j = 0; j <= edges_count; j++){
-                    for(int k = heads[j]; k != -1; k=edges[k].next){
-                        cout << j << "->" << edges[k].to << ":" << edges[k].weight << endl;
-                    }
-                }
+                dfs(heads, visited, edges, edges_count, 0, 1);
             }
             else
                 cout << "error" << endl;
@@ -318,6 +316,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
             index_table.push_back(vir_dst);
             edges_count = 0;
             memset(heads, 0xff, sizeof(int)*MAX_NUM);
+            memset(visited, 0x00, sizeof(int)*MAX_NUM);
             memset(edges, 0xff, sizeof(Edge)*MAX_NUM);
         }
         pairs_num -= read_num;
@@ -337,6 +336,37 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
     }
     fclose(ifs);
     fclose(ifs_len);
+}
+
+
+void Fc_edge_disjoin_route::dfs(int* head, int* visited, Edge* edge, int edge_count, int src, int dst){
+    // for(int j = 0; j <= edge_count; j++){
+    //     for(int k = head[j]; k != -1; k=edge[k].next){
+    //         cout << j << "->" << edge[k].to << ":" << edge[k].weight << endl;
+    //     }
+    // }
+    visited[src] = 1;
+    for(int i = head[src]; i != -1; edge[i].next){
+        if(edge[i].weight == 0)
+            continue;
+        if(!visited[edge[i].to]){
+            if(edge[i].to == dst){
+                edge[i].weight--;
+                return;
+            }
+            else{
+                dfs(head, visited, edge, edge_count, edge[i].to, dst);
+                edge[i].weight--;
+                return;
+            }
+        }
+        else{
+            continue;
+        }
+    }
+
+
+
 }
 
 

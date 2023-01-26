@@ -19,5 +19,6 @@ class Fc_edge_disjoin_route: public Fc_topo_all_route{
         void find_edge_disjoin_route(int thread_num ,int thread_label, int batch_num, string read_file, bool store_part);
         void find_edge_disjoin_route_fast(int thread_num ,int thread_label, int batch_num, string read_file, bool store_part);
         int verify_route(int src, int dst);
+        void dfs(int* head, int* visited, Edge* edge, int edge_count, int src, int dst);
         
 };      
