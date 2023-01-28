@@ -180,6 +180,7 @@ void Fc_topo_all_route::fc_topo_gene_1v1(void){
         exit(1);
     }
     vector<vector<int> > sw_poss_connect;
+    vector<int> poss_connect_num;
     vector<vector<int> > sw_connect;
     vector<int> port_remain;
     for(int i = 0; i < switches; i++){
@@ -187,6 +188,7 @@ void Fc_topo_all_route::fc_topo_gene_1v1(void){
         vector<int> infor;
         sw_connect.push_back(infor);
         port_remain.push_back(sw_ports);
+        poss_connect_num.push_back(switches-1);
         for(int j = 0; j < switches; j++){
             if(i != j)
                 temp.push_back(j);
@@ -196,7 +198,80 @@ void Fc_topo_all_route::fc_topo_gene_1v1(void){
 
     if(is_random)
         srand(random_seed);
-    
+    int *remain_port = new int[switches];
+    for(int i = 0; i < switches; i++){
+        remain_port[i] = sw_ports;
+        vector<int> port_link = gene_rand(0, poss_connect_num[i] - 1, port_remain[i]);
+        for(int j = 0; j < port_link.size(); j++){
+            sw_connect[i].push_back(sw_poss_connect[i][port_link[j]]);
+            port_remain[i]--;
+            sw_connect[sw_poss_connect[i][port_link[j]]].push_back(i);
+            port_remain[sw_poss_connect[i][port_link[j]]]--;
+            poss_connect_num[sw_poss_connect[i][port_link[j]]]--;
+            remove(sw_poss_connect[sw_poss_connect[i][port_link[j]]].begin(), sw_poss_connect[sw_poss_connect[i][port_link[j]]].end(), i);
+        }
+    }
+
+    for(int i = 0; i < switches; i++){
+        for(int j = 0; j < sw_connect[i].size(); j++){
+            cout << sw_connect[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+
+    bipart_degree = new int[layer_num];
+
+    int total_degree = 0;
+    int remain_degree = vir_layer_degree[layer_num-1];
+    total_degree += remain_degree + 1;
+    for(int i = layer_num-2; i > 0; i--){
+        remain_degree = vir_layer_degree[i] - remain_degree;
+        total_degree += remain_degree + 1;
+    }
+    topo_index = new int[switches*total_degree];
+    int* degrees = new int[switches];
+    int* remain_degrees = new int[switches];
+
+    int initial_sub = 0;
+    int index_basic = 0;
+    int bipart_count = 0;
+    int degree,index_count;
+    int src, dst;
+
+    for(int i = layer_num - 1; i > 0; i--){
+        degree = vir_layer_degree[i] - initial_sub;
+        bipart_degree[bipart_count] = degree + 1;
+        bipart_count++;
+        for(int j = 0; j < switches; j++){
+            degrees[j] = degree;
+            remain_degrees[j] = degree*sw_ports;
+        }
+        for(int j = 0; j < switches; j++){
+            src = j;
+            topo_index[index_basic+src*(degree+1)] = src;
+            for(int k = 0; k < degree; k++){
+                index_count = 0;
+                dst = sw_connect[j][index_count];
+                while(degrees[dst] == 0){
+                    dst = sw_connect[j][++index_count];
+                }
+                remove(sw_connect[j].begin(), sw_connect[j].begin()+remain_port[j], dst);
+                topo_index[index_basic+src*(degree+1)+k+1] = dst;
+                remove(sw_connect[dst].begin(), sw_connect[dst].begin()+remain_port[dst], j);
+                cout << src << "->" << dst << endl;
+                degrees[dst]--;
+                remain_port[j]--;
+                remain_port[dst]--;
+            }
+        }
+        cout << endl;
+        initial_sub = degree;
+        index_basic += (degree+1)*switches;
+    }
+    bipart_degree[bipart_count] = 0;
+
+
 
 }
 

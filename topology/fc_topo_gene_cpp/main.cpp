@@ -18,13 +18,13 @@ int main(){
     // int is_random = 1;
     // int random_seed = 7;
 
-    int switches = 13;
+    int switches = 5;
     int hosts = 24;
-    int ports = 36;
-    int vir_layer_degree[] = {2, 4, 4, 2};
-    int layer_num = 4;
+    int ports = 28;
+    int vir_layer_degree[] = {1, 2, 1};
+    int layer_num = 3;
     int is_random = 1;
-    int random_seed = 1;
+    int random_seed = 2;
 
     Fc_edge_disjoin_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     fc_test.fc_topo_gene_1v1();
