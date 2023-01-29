@@ -60,8 +60,9 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
     memset(edges, 0xff, sizeof(Edge)*MAX_NUM);
 
     int status, max_flow;
-    int path_len, real_len;
+    int path_len, real_len, last_store = -1;
     uint16_t* path_route = new uint16_t[2*layer_num+1];
+    uint16_t* real_path_route = new uint16_t[2*layer_num+1];
 
     while(pairs_num > 0){
         if(pairs_num >= batch_num)
@@ -128,7 +129,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                     index_count++;
                 }
                 min_cost_flow.AddArcWithCapacityAndUnitCost(reverse_index_table[node1],reverse_index_table[node2], INT32_MAX, 0);
-                min_cost_flow.AddArcWithCapacityAndUnitCost(reverse_index_table[(layer_num+j-1)*switches+dst], reverse_index_table[(layer_num+j)*switches+dst], INT32_MAX, 0);
+                // min_cost_flow.AddArcWithCapacityAndUnitCost(reverse_index_table[(layer_num+j-1)*switches+dst], reverse_index_table[(layer_num+j)*switches+dst], INT32_MAX, 0);
             }
 
             for(int j = 2; j < edge_num[count]*2; j += 2){
@@ -174,19 +175,26 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                         heads[min_cost_flow.Tail(j)] = edges_count++;
                     }
                 }
-                real_len = 0;
                 for(int j = 0; j < max_flow; j++){
+                    real_len = 0;
                     path_len = dfs(heads, visited, edges, 0, 1, path_route);
                     for(int k = path_len - 1; k >= 0; k--){
-                        real_len++;
-                        cout << index_table[path_route[k]] << " ";
-                        if(index_table[path_route[k]]%switches == dst)
-                            break;
+                        if(index_table[path_route[k]]%switches != index_table[path_route[k-1]]%switches){
+                            if(last_store != index_table[path_route[k]]){
+                                real_path_route[real_len++] = index_table[path_route[k]];
+                                cout << real_path_route[real_len-1] << " ";
+                            }
+                            real_path_route[real_len++] = index_table[path_route[k-1]];
+                            last_store = index_table[path_route[k-1]];
+                            cout << real_path_route[real_len-1] << " ";
+                            if(index_table[path_route[k-1]]%switches == dst){
+                                break;
+                            }
+                        }
                     }
                     cout << endl;
                     cout << real_len << endl;
                     memset(visited, 0, sizeof(int)*MAX_NUM);
-                    real_len = 0;
                 }
             }
             else
