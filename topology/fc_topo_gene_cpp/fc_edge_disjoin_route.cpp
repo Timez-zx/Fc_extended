@@ -21,7 +21,12 @@ void Fc_edge_disjoin_route::find_all_route(int thread_num, int batch_num){
         cmd += file_dir_name;
         int temp = system(cmd.c_str());
     }
-    
+    thread* th = new thread[thread_num];
+    for(int i = 0; i < thread_num; i++){
+        th[i] = thread(&Fc_edge_disjoin_route::find_edge_disjoin_route_fast, this, thread_num, i, batch_num, file_dir_name, false);
+    }
+    for(int i = 0; i < thread_num; i++)
+        th[i].join();
 
 }
 
