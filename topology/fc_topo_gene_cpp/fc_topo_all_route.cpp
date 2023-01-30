@@ -477,9 +477,9 @@ uint Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display, ui
     return_graph[data_count] += temp << 16;
     data_count++;
     for(int i = 0; i < graph_infor_vec.size(); i++){
-        temp = graph_infor_vec[i][1]*10000 + graph_infor_vec[i][0];
+        temp = (graph_infor_vec[i][1]-1)*switches + graph_infor_vec[i][0];
         return_graph[data_count] = temp;
-        temp = graph_infor_vec[i][3]*10000 + graph_infor_vec[i][2];
+        temp = (graph_infor_vec[i][3]-1)*switches + graph_infor_vec[i][2];
         return_graph[data_count] += temp << 16;
         data_count++;
     }

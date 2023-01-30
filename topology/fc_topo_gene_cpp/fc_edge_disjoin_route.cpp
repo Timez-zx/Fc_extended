@@ -179,15 +179,15 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
             for(int j = 2; j < edge_num[count]*2; j += 2){
                 node1 = edge_infor[i][j];
                 node2 = edge_infor[i][j+1];
-                sw1 = node1%10000;
-                layer1 = node1/10000;
-                sw2 = node2%10000;
-                layer2 = node2/10000;
-                node1 = (layer1-1)*switches+sw1;
-                node2 = (layer2-1)*switches+sw2;
+                sw1 = node1%switches;
+                layer1 = node1/switches;
+                sw2 = node2%switches;
+                layer2 = node2/switches;
+                node1 = layer1*switches+sw1;
+                node2 = layer2*switches+sw2;
                 if(node2 < node1){
-                    node1 += (layer_num-layer1)*2*switches;
-                    node2 += (layer_num-layer2)*2*switches;
+                    node1 += (layer_num-layer1-1)*2*switches;
+                    node2 += (layer_num-layer2-1)*2*switches;
                 }
                 if(reverse_index_table[node1] == -1){
                     reverse_index_table[node1] = index_count;
