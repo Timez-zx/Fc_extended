@@ -264,7 +264,6 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                 }
                 pair_len[i] = single_pair_len;
                 memcpy(pair_route[i], single_pair_route, sizeof(uint16_t)*single_pair_len);
-
             }
             else
                 cout << "error" << endl;
