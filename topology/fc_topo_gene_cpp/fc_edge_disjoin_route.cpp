@@ -262,15 +262,15 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
         for(int i = 0; i < read_num; i++)
             fwrite(pair_route[i], sizeof(uint16_t), pair_len[i], ofs);
         pairs_num -= read_num;
-        cout << pairs_num << endl;
+        cout << "Thread "<< thread_label << " left: "<< pairs_num/float(pairs) << endl;
     }
     if(store_part){
-        cout << average_num/float(batch_num) << endl;
-        cout << average_len/float(batch_num) << endl;
+        cout << "The average length for thread "<< thread_label << ": "<< average_num/float(batch_num) << endl;
+        cout << "The average length for thread "<< thread_label << ": "<< average_len/float(batch_num) << endl;
     }
     else{
-        cout << average_num/float(pairs) << endl;
-        cout << average_len/float(pairs) << endl;        
+        cout << "The average length for thread "<< thread_label << ": " << average_num/float(pairs) << endl;
+        cout << "The average length for thread "<< thread_label << ": " << average_len/float(pairs) << endl;        
     }
     for(int i = 0; i < batch_num; i++){
         delete[] edge_infor[i];
