@@ -28,6 +28,31 @@ void Fc_edge_disjoin_route::find_all_route(int thread_num, int batch_num){
     for(int i = 0; i < thread_num; i++)
         th[i].join();
 
+    string file_path("all_graph_route/" + file_dir_name + "/" + file_dir_name);
+    string len_path(file_path + "_num"); 
+    int state;
+    FILE* ofs = fopen(file_path.c_str(), "w");
+    FILE* ofs_len = fopen(len_path.c_str(), "w");
+    fclose(ofs);
+    fclose(ofs_len);
+    for(int i = 0; i < thread_num; i++){
+        string in_file_path("all_graph_route/" + file_dir_name + "/" + file_dir_name + to_string(i));
+        string in_len_path(in_file_path + "_num");
+        string cmd1("cat ");
+        string cmd2("cat ");
+        cmd1 += in_file_path;
+        cmd1 += " >> ";
+        cmd1 += file_path;
+        cmd2 += in_len_path;
+        cmd2 += " >> ";
+        cmd2 += len_path;
+        state = system(cmd1.c_str());
+        state = system(cmd2.c_str());
+        cmd1 = "rm " + in_file_path;
+        cmd2 = "rm " + in_len_path;
+        state = system(cmd1.c_str());
+        state = system(cmd2.c_str());
+    }
 }
 
 
