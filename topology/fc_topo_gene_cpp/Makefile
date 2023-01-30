@@ -11,7 +11,7 @@ ORTOOL_UBUNTU=~/or-tools
 ORTOOL_LIB_U=$(ORTOOL_UBUNTU)/lib/
 ORTOOL_INCLUDE_U=$(ORTOOL_UBUNTU)/include/
 
-CLEAN_PATH=./all_graph_infor/*
+CLEAN_PATH=./all_graph_infor/*  ./all_graph_route/* 
 
 default: $(FILENAME)
 	g++  $(CFLAGS_U) $(FILENAME) -o $(OUT) -I $(ORTOOL_INCLUDE_U) -L $(ORTOOL_LIB_U) -lortools -lpthread
