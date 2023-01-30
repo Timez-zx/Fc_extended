@@ -1,6 +1,31 @@
 #include "fc_edge_disjoin_route.h"
 
 
+void Fc_edge_disjoin_route::find_all_route(int thread_num, int batch_num){
+    if(access("all_graph_route", 0)){
+        string cmd("mkdir ");
+        cmd += "all_graph_route";
+        int temp = system(cmd.c_str());
+    }
+    string file_dir_name("");
+    file_dir_name += "sw";
+    file_dir_name += to_string(switches);
+    file_dir_name += "_vir";
+    for(int i = 0; i < layer_num; i++)
+        file_dir_name += to_string(vir_layer_degree[i]);
+    file_dir_name += "_rand";
+    file_dir_name += to_string(is_random*random_seed);
+    if(access(("all_graph_route/" + file_dir_name).c_str(), 0)){
+        string cmd("mkdir ");
+        cmd += "all_graph_route/";
+        cmd += file_dir_name;
+        int temp = system(cmd.c_str());
+    }
+    
+
+}
+
+
 void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thread_label, int batch_num, string read_file, bool store_part){
     int total_pairs = switches*(switches-1)/2;
     int average = ceil(total_pairs/float(thread_num));
