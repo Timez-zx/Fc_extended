@@ -401,8 +401,6 @@ uint Fc_topo_all_route::extract_route_path(int src, int dst, bool if_display, ui
                 dst_path = dst_valid_path[dst];
                 int begin_src = 0;
                 int begin_dst = 1;
-          
-
                 // while(src_path[begin_src] == dst_path[begin_dst]){
                 //     if(src_path[begin_src] == inter[i]){
                 //         begin_src++;

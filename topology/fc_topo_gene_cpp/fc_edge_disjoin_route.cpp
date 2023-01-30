@@ -16,6 +16,11 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
     FILE* ifs = fopen(file_path.c_str(), "r");
     FILE* ifs_len = fopen(len_path.c_str(), "r");
 
+    string out_file_path("all_graph_route/" + read_file + "/" + read_file + to_string(thread_label));
+    string out_len_path(out_file_path + "_num");
+    FILE* ofs = fopen(out_file_path.c_str(), "w");
+    FILE* ofs_len = fopen(out_len_path.c_str(), "w");
+
     int read_num;
     uint edge_num[pairs_num];
     int temp = fread(edge_num, 4, pairs_num, ifs_len);
@@ -223,7 +228,9 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
             memset(visited, 0x00, sizeof(int)*MAX_NUM);
             memset(edges, 0xff, sizeof(Edge)*MAX_NUM);
         }
-
+        fwrite(pair_len, sizeof(uint16_t), read_num, ofs_len);
+        for(int i = 0; i < read_num; i++)
+            fwrite(pair_route[i], sizeof(uint16_t), pair_len[i], ofs);
         pairs_num -= read_num;
         cout << pairs_num << endl;
     }
@@ -238,8 +245,17 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
     for(int i = 0; i < batch_num; i++){
         delete[] edge_infor[i];
         edge_infor[i] = NULL;
+        delete[] pair_route[i];
+        pair_route[i] = NULL;
     }
+    delete[] path_route;
+    delete[] real_path_route;
+    delete[] pair_len;
+    delete[] pair_route;
+    delete[] single_pair_route;
     fclose(ifs);
+    fclose(ofs);
+    fclose(ofs_len);
     fclose(ifs_len);
 }
 

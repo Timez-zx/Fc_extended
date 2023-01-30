@@ -42,7 +42,7 @@ int main(){
     bool store_part = true;
     fc_test.pthread_for_all_route(1, if_report, report_inter, if_store, store_part);
 
-    fc_test.find_edge_disjoin_route_fast(1, 0, 10, "sw10_vir2442_rand2", true);
+    fc_test.find_edge_disjoin_route_fast(1, 0, 10, "sw10_vir2442_rand2", false);
     // fc_test.find_edge_disjoin_route_fast(8, 2, 10000, "sw500_vir713137_rand7", true);
     // fc_test.find_edge_disjoin_route_fast(8, 2, 10000, "sw2000_vir51010105_rand2", true);
     gettimeofday(&end, NULL);
