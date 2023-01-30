@@ -129,7 +129,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                     index_count++;
                 }
                 min_cost_flow.AddArcWithCapacityAndUnitCost(reverse_index_table[node1],reverse_index_table[node2], INT32_MAX, 0);
-                // min_cost_flow.AddArcWithCapacityAndUnitCost(reverse_index_table[(layer_num+j-1)*switches+dst], reverse_index_table[(layer_num+j)*switches+dst], INT32_MAX, 0);
+                min_cost_flow.AddArcWithCapacityAndUnitCost(reverse_index_table[(layer_num+j-1)*switches+dst], reverse_index_table[(layer_num+j)*switches+dst], INT32_MAX, 0);
             }
 
             for(int j = 2; j < edge_num[count]*2; j += 2){
