@@ -64,6 +64,15 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
     uint16_t* path_route = new uint16_t[2*layer_num+1];
     uint16_t* real_path_route = new uint16_t[2*layer_num+1];
 
+    uint16_t *pair_len = new uint16_t[batch_num];
+    uint16_t **pair_route = new uint16_t*[batch_num];
+    for(int i = 0; i < batch_num; i++)
+        pair_route[i] = new uint16_t[(2*layer_num+1)*200];
+    
+    uint16_t single_pair_len;
+    uint16_t *single_pair_route = new uint16_t[(2*layer_num+1)*200];
+     
+
     while(pairs_num > 0){
         if(pairs_num >= batch_num)
             read_num = batch_num;
@@ -175,27 +184,27 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                         heads[min_cost_flow.Tail(j)] = edges_count++;
                     }
                 }
+                single_pair_len = 0;
                 for(int j = 0; j < max_flow; j++){
                     real_len = 0;
                     path_len = dfs(heads, visited, edges, 0, 1, path_route);
                     for(int k = path_len - 1; k >= 0; k--){
                         if(index_table[path_route[k]]%switches != index_table[path_route[k-1]]%switches){
-                            if(last_store != index_table[path_route[k]]){
+                            if(last_store != index_table[path_route[k]])
                                 real_path_route[real_len++] = index_table[path_route[k]];
-                                cout << real_path_route[real_len-1] << " ";
-                            }
                             real_path_route[real_len++] = index_table[path_route[k-1]];
                             last_store = index_table[path_route[k-1]];
-                            cout << real_path_route[real_len-1] << " ";
-                            if(index_table[path_route[k-1]]%switches == dst){
+                            if(index_table[path_route[k-1]]%switches == dst)
                                 break;
-                            }
                         }
                     }
-                    cout << endl;
-                    cout << real_len << endl;
+                    memcpy(single_pair_route+single_pair_len, real_path_route, sizeof(uint16_t)*real_len);
+                    single_pair_len += real_len;
                     memset(visited, 0, sizeof(int)*MAX_NUM);
                 }
+                pair_len[i] = single_pair_len;
+                memcpy(pair_route[i], single_pair_route, sizeof(uint16_t)*single_pair_len);
+
             }
             else
                 cout << "error" << endl;
@@ -214,6 +223,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
             memset(visited, 0x00, sizeof(int)*MAX_NUM);
             memset(edges, 0xff, sizeof(Edge)*MAX_NUM);
         }
+
         pairs_num -= read_num;
         cout << pairs_num << endl;
     }
