@@ -76,30 +76,47 @@ void Fc_edge_disjoin_route::find_all_route(int thread_num, int batch_num, bool i
         int basic_count = 1;
         int sw1, sw2;
         int map_count;
+        int layer1, layer2;
+        int new_node1, new_node2;
         for(int i = 0; i < switches*(switches-1)/2; i++){
             node_len = pair_len[2*i+1];
             int count = 0;
             int path_count = 0;
-            cout << node_len << endl;
             while(count < node_len - 1){
                 node1 = pair_infor[basic_len+count];
-                cout << node1 << " ";
                 node2 = pair_infor[basic_len+count+1];
                 sw1 = node1%switches;
                 sw2 = node2%switches;
+                layer1 = node1/switches;
+                layer2 = node2/switches;
                 if(sw1 != sw2){
                     map_count = node1*(2*layer_num-1)*switches+node2;
-
+                    if(path_map_link.find(map_count) == path_map_link.end()){
+                        vector<int> temp = {src*switches+dst, path_count};
+                        path_map_link[map_count] = temp;
+                    }
+                    else{
+                        path_map_link[map_count].push_back(src*switches+dst);
+                        path_map_link[map_count].push_back(path_count);
+                    }
+                    new_node1 = node1 + (layer_num-1-layer1)*2*switches;
+                    new_node2 = node2 + (layer_num-1-layer2)*2*switches;
+                    map_count = new_node2*(2*layer_num-1)*switches+new_node1;
+                    if(path_map_link.find(map_count) == path_map_link.end()){
+                        vector<int> temp = {dst*switches+src, path_count};
+                        path_map_link[map_count] = temp;
+                    }
+                    else{
+                        path_map_link[map_count].push_back(dst*switches+src);
+                        path_map_link[map_count].push_back(path_count);
+                    }
                 }
-                // if(sw2 == dst){
-                //     count++;
-                //     cout << node2 << endl;
-                //     path_count++;
-                // }
+                if(sw2 == dst){
+                    count++;
+                    path_count++;
+                }
                 count++;
             }
-            cout << endl;
-            break;
             dst++;
             if(dst == switches){
                 src = basic_count;
@@ -107,10 +124,7 @@ void Fc_edge_disjoin_route::find_all_route(int thread_num, int batch_num, bool i
             }
             basic_len += node_len;
         }
-
-
-        cout << len_size/2 << endl;
-        cout << file_size/2 << endl;
+        
         fclose(ofs);
         fclose(ofs_len);
     }
