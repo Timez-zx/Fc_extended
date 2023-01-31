@@ -1,7 +1,7 @@
 #include "fc_edge_disjoin_route.h"
 
 
-void Fc_edge_disjoin_route::find_all_route(int thread_num, int batch_num){
+void Fc_edge_disjoin_route::find_all_route(int thread_num, int batch_num, bool if_search_map){
     if(access("all_graph_route", 0)){
         string cmd("mkdir ");
         cmd += "all_graph_route";
@@ -33,8 +33,6 @@ void Fc_edge_disjoin_route::find_all_route(int thread_num, int batch_num){
     int state;
     FILE* ofs = fopen(file_path.c_str(), "w");
     FILE* ofs_len = fopen(len_path.c_str(), "w");
-    fclose(ofs);
-    fclose(ofs_len);
     for(int i = 0; i < thread_num; i++){
         string in_file_path("all_graph_route/" + file_dir_name + "/" + file_dir_name + to_string(i));
         string in_len_path(in_file_path + "_num");
@@ -53,6 +51,71 @@ void Fc_edge_disjoin_route::find_all_route(int thread_num, int batch_num){
         state = system(cmd1.c_str());
         state = system(cmd2.c_str());
     }
+    fclose(ofs);
+    fclose(ofs_len);
+
+    if(if_search_map){
+        FILE* ofs = fopen(file_path.c_str(), "r");
+        FILE* ofs_len = fopen(len_path.c_str(), "r");
+        fseek(ofs_len, 0, SEEK_END);
+        int len_size = ftell(ofs_len);
+        rewind(ofs_len);
+        fseek(ofs, 0, SEEK_END);
+        int file_size = ftell(ofs);
+        rewind(ofs);
+        uint16_t *pair_len = new uint16_t[len_size/2];
+        uint16_t *pair_infor = new uint16_t[file_size/2];
+        state = fread(pair_len, sizeof(uint16_t), len_size/2, ofs_len);
+        state = fread(pair_infor, sizeof(uint16_t), file_size/2, ofs);
+
+        unordered_map<int, vector<int>> path_map_link;
+        int node_len;
+        int basic_len = 0;
+        int node1, node2;
+        int src = 0, dst = 1;
+        int basic_count = 1;
+        int sw1, sw2;
+        int map_count;
+        for(int i = 0; i < switches*(switches-1)/2; i++){
+            node_len = pair_len[2*i+1];
+            int count = 0;
+            int path_count = 0;
+            cout << node_len << endl;
+            while(count < node_len - 1){
+                node1 = pair_infor[basic_len+count];
+                cout << node1 << " ";
+                node2 = pair_infor[basic_len+count+1];
+                sw1 = node1%switches;
+                sw2 = node2%switches;
+                if(sw1 != sw2){
+                    map_count = node1*(2*layer_num-1)*switches+node2;
+
+                }
+                // if(sw2 == dst){
+                //     count++;
+                //     cout << node2 << endl;
+                //     path_count++;
+                // }
+                count++;
+            }
+            cout << endl;
+            break;
+            dst++;
+            if(dst == switches){
+                src = basic_count;
+                dst = ++basic_count;
+            }
+            basic_len += node_len;
+        }
+
+
+        cout << len_size/2 << endl;
+        cout << file_size/2 << endl;
+        fclose(ofs);
+        fclose(ofs_len);
+    }
+
+
 }
 
 
@@ -284,8 +347,9 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
             memset(edges, 0xff, sizeof(Edge)*MAX_NUM);
         }
         fwrite(pair_len, sizeof(uint16_t), read_num*2, ofs_len);
-        for(int i = 0; i < read_num; i++)
-            fwrite(pair_route[i], sizeof(uint16_t), pair_len[i], ofs);
+        for(int i = 0; i < read_num; i++){
+            fwrite(pair_route[i], sizeof(uint16_t), pair_len[2*i+1], ofs);
+        }
         pairs_num -= read_num;
         cout << "Thread "<< thread_label << " left: "<< pairs_num/float(pairs) << endl;
     }
