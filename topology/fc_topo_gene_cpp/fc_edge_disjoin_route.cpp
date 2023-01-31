@@ -124,7 +124,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
     uint16_t* path_route = new uint16_t[2*layer_num+1];
     uint16_t* real_path_route = new uint16_t[2*layer_num+1];
 
-    uint16_t *pair_len = new uint16_t[batch_num];
+    uint16_t *pair_len = new uint16_t[batch_num*2];
     uint16_t **pair_route = new uint16_t*[batch_num];
     for(int i = 0; i < batch_num; i++)
         pair_route[i] = new uint16_t[(2*layer_num+1)*200];
@@ -262,7 +262,8 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                     single_pair_len += real_len;
                     memset(visited, 0, sizeof(int)*MAX_NUM);
                 }
-                pair_len[i] = single_pair_len;
+                pair_len[2*i] = max_flow;
+                pair_len[2*i+1] = single_pair_len;
                 memcpy(pair_route[i], single_pair_route, sizeof(uint16_t)*single_pair_len);
             }
             else
@@ -282,7 +283,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
             memset(visited, 0x00, sizeof(int)*MAX_NUM);
             memset(edges, 0xff, sizeof(Edge)*MAX_NUM);
         }
-        fwrite(pair_len, sizeof(uint16_t), read_num, ofs_len);
+        fwrite(pair_len, sizeof(uint16_t), read_num*2, ofs_len);
         for(int i = 0; i < read_num; i++)
             fwrite(pair_route[i], sizeof(uint16_t), pair_len[i], ofs);
         pairs_num -= read_num;
