@@ -805,9 +805,8 @@ void Fc_topo_all_route::throughput_test(){
     }
     fclose(ofs);
     fclose(ofs_len);
-
-    float flow_matrix[switches][switches];
     float pair_flow = hosts/float(switches-1);
+    float flow_matrix[switches][switches];
     for(int i = 0; i < switches; i++){
         for(int j = 0; j < switches; j++){
             if(i != j)
