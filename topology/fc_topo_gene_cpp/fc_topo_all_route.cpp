@@ -647,7 +647,7 @@ void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label,
 
 void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, int report_inter, bool if_store, bool store_part){
     int total_pairs = switches*(switches-1)/2;
-    int average = ceil(total_pairs/thread_num);
+    int average = ceil(total_pairs/float(thread_num));
     int count = 0;
     int allo_index = 0;
     vector<vector<int*> > thread_pairs;
@@ -663,7 +663,7 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
             temp[0] = i;
             temp[1] = j;
             thread_pairs[allo_index].push_back(temp);
-            if(count < average)
+            if(count < average - 1)
                 count++;
             else{
                 count = 0;
