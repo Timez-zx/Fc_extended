@@ -368,11 +368,11 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
         cout << "Thread "<< thread_label << " left: "<< pairs_num/float(pairs) << endl;
     }
     if(store_part){
-        cout << "The average length for thread "<< thread_label << ": "<< average_num/float(batch_num) << endl;
+        cout << "The average num for thread "<< thread_label << ": "<< average_num/float(batch_num) << endl;
         cout << "The average length for thread "<< thread_label << ": "<< average_len/float(batch_num) << endl;
     }
     else{
-        cout << "The average length for thread "<< thread_label << ": " << average_num/float(pairs) << endl;
+        cout << "The average num for thread "<< thread_label << ": " << average_num/float(pairs) << endl;
         cout << "The average length for thread "<< thread_label << ": " << average_len/float(pairs) << endl;        
     }
     for(int i = 0; i < batch_num; i++){
