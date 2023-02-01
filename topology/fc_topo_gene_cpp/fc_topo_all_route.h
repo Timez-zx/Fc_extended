@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <unordered_set>
+#include <unordered_map>
 #include <set>
 #include <queue>
 #include <cmath>
@@ -11,6 +12,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <string>
+#include "gurobi_c++.h"
 using namespace std;
 
 typedef struct {   
@@ -59,4 +61,6 @@ class Fc_topo_all_route{
         uint extract_route_path(int src, int dst, bool if_display, uint* return_graph);
         void thread_route(vector<int*> route_pairs, int thread_label, bool if_report, int report_inter, bool if_store, string store_file, bool store_part);
         void pthread_for_all_route(int thread_num, bool if_report, int report_inter, bool if_store, bool store_part);
+
+        void throughput_test();
 };
