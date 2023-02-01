@@ -18,7 +18,7 @@ int main(){
     // int is_random = 1;
     // int random_seed = 1;
 
-    int switches = 450;
+    int switches = 90;
     int hosts = 14;
     int ports = 32;
     int vir_layer_degree[] = {2, 4, 4, 5, 3};
@@ -38,13 +38,13 @@ int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
     bool if_report = true;
-    int report_inter = 3000;
+    int report_inter = 5000;
     bool if_store = true;
     bool store_part = false;
-    fc_test.pthread_for_all_route(4, if_report, report_inter, if_store, store_part);
+    fc_test.pthread_for_all_route(8, if_report, report_inter, if_store, store_part);
 
     bool if_search_map = true;
-    fc_test.find_all_route(4, 3000, if_search_map);
+    fc_test.find_all_route(8, 5000, if_search_map);
     fc_test.throughput_test();
         // fc_test.find_edge_disjoin_route_fast(1, 0, 10, "sw10_vir2442_rand2", false);
     // fc_test.find_edge_disjoin_route_fast(8, 2, 10000, "sw500_vir713137_rand7", true);
