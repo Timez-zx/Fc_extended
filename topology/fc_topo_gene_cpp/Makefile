@@ -1,6 +1,6 @@
 CFLAGS_M= -O3 -P -std=c++17
 CFLAGS_U= -O3 -P -std=c++17 
-FILENAME=fc_topo_all_route.cpp fc_edge_disjoin_route.cpp main.cpp
+FILENAME=fc_topo_all_route.cpp fc_edge_disjoin_route.cpp fc_edge_disjoin_cost_route.cpp  main.cpp
 OUT=main
 
 ORTOOL_MAC=/Users/zhangxiao/Documents/lab/Rdma-cbd/fc_extend/or-tools
