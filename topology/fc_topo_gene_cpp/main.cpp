@@ -25,18 +25,19 @@ int main(){
     int vir_layer_degree[] = {3, 6, 6, 3};
     int layer_num = 4;
     int is_random = 1;
-    int random_seed = 4;
+    int random_seed = 6;
 
     // Fc_edge_disjoin_cost_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     Fc_edge_disjoin_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-    // fc_test.fc_topo_gene_1v1();
-    fc_test.fc_topo_gene();
+    fc_test.fc_topo_gene_1v1();
+    // fc_test.fc_topo_gene();
     fc_test.path_infor_gene();
     // fc_test.display_all_path();
     fc_test.build_search_dic();
     // fc_test.display_dic(2);
-    uint* temp = NULL;
-    fc_test.extract_all_path(0, 1, 1, temp);
+    uint16_t* temp = new uint16_t[1000];
+    uint16_t path_num;
+    fc_test.extract_all_path(0, 1, 1, temp, &path_num);
 
 
     struct timeval start, end;

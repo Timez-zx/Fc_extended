@@ -702,7 +702,7 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
 }
 
 
-uint Fc_topo_all_route::extract_all_path(int src, int dst, bool if_display, uint* return_graph){
+uint16_t Fc_topo_all_route::extract_all_path(int src, int dst, bool if_display, uint16_t* return_path, uint16_t *path_num){
     vector<vector<int> > route_node_path;
     set<vector<int> > temp_node_path;
     vector<vector<int> > temp_vec;
@@ -873,6 +873,7 @@ uint Fc_topo_all_route::extract_all_path(int src, int dst, bool if_display, uint
         }
         real_node_path.push_back(node_path);
     }
+
     if(if_display){
         cout << real_node_path.size() << endl;
         int count = 0;
@@ -886,7 +887,14 @@ uint Fc_topo_all_route::extract_all_path(int src, int dst, bool if_display, uint
         cout<< count <<endl;
     }
 
-    uint data_count = 0;
+    *path_num = real_node_path.size();
+    uint16_t data_count = 0;
+    for(int i = 0; i < real_node_path.size(); i++){
+        for(int j = 0; j < real_node_path[i].size(); j++){
+            return_path[data_count+j] = real_node_path[i][j];
+        }
+        data_count += real_node_path[i].size();
+    }
     return data_count;
 }
 
