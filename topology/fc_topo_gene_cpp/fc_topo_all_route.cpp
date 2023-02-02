@@ -851,9 +851,6 @@ void Fc_topo_all_route::throughput_test(){
         cout << e.getMessage() << endl;
     }
 
-
     delete[] pair_len;
     delete[] pair_infor;
-
-
 }
