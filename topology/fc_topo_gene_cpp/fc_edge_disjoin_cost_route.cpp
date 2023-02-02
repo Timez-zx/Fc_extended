@@ -98,6 +98,138 @@ void Fc_edge_disjoin_cost_route::fc_topo_gene(void){
 }
 
 
+void Fc_edge_disjoin_cost_route::fc_topo_gene_1v1(void){
+    int sw_ports = ports - hosts;
+    int bipart_num = layer_num - 1;
+    int degree;
+    int src, dst;
+    int initial_sub = 0;
+    bipart_degree = new int[bipart_num+1];
+    int bipart_count = 0;
+    cost_map = new unordered_map<int,int>[switches];
+    mtx = new mutex[switches];
+
+    int total_degree = 0;
+    int remain_degree = vir_layer_degree[layer_num-1];
+  
+    total_degree += remain_degree + 1;
+    for(int i = layer_num-2; i > 0; i--){
+        remain_degree = vir_layer_degree[i] - remain_degree;
+        total_degree += remain_degree + 1;
+    }
+    topo_index = new int[switches*total_degree];
+    bool vertex_check[switches][switches];
+    for(int i = 0; i < switches; i++)
+        for(int j = 0; j < switches; j++)
+            vertex_check[i][j] = false;
+    
+    vector<vector<int> > poss_connect;
+    int poss_connect_num[switches];
+    for(int i = 0; i < switches; i++){
+        poss_connect_num[i] = switches-1;
+        vector<int> temp;
+        for(int j = 0; j < switches; j++){
+            if(i != j)
+                temp.push_back(j);
+        }
+        poss_connect.push_back(temp);
+    }
+    if(is_random)
+        srand(random_seed);
+
+    int two_count, zero_count;
+    int index_basic = 0;
+    int rand_index;
+    int degrees[switches];
+    int degree_label[switches];
+    int node1, node2;
+    for(int i = layer_num - 1; i > 0; i--){
+        degree = vir_layer_degree[i] - initial_sub;
+        bipart_degree[bipart_count] = degree + 1;
+        bipart_count++;
+        for(int j = 0; j < switches; j++){
+            topo_index[index_basic+j*(degree+1)] = j;
+        }
+        for(int j = 0; j < degree; j++){
+            zero_count = switches;
+            two_count = 0;
+            memset(degrees, 0, sizeof(int)*switches);
+            memset(degree_label, 0, sizeof(int)*switches);
+            vector<int> src_choose(switches);
+            int src_remain = switches;
+            for(int k = 0; k < switches; k++)
+                src_choose[k] = k;
+            src = 0;
+            while(two_count < switches){
+                rand_index = rand()%poss_connect_num[src];
+                dst = poss_connect[src][rand_index];
+                degrees[src]++;
+                degrees[dst]++;
+                if(degrees[src] == 1)
+                    zero_count--;
+                if(degrees[dst] == 1)
+                    zero_count--;
+                if(degrees[src] == 2)
+                    two_count++;
+                if(degrees[dst] == 2)
+                    two_count++;
+                while(vertex_check[src][dst] == true | (two_count+zero_count == switches && zero_count < 3 && src_remain != 1) | degree_label[dst] == 1){
+                    if(degrees[dst] == 2)
+                        two_count--;
+                    if(degrees[dst] == 1)
+                        zero_count++;
+                    degrees[dst]--;
+                    rand_index = rand()%poss_connect_num[src];
+                    dst = poss_connect[src][rand_index];
+                    degrees[dst]++;
+                    if(degrees[dst] == 1)
+                        zero_count--;
+                    if(degrees[dst] == 2)
+                        two_count++;
+                }
+
+                topo_index[index_basic+src*(degree+1)+j+1] = dst;
+                vertex_check[src][dst] = true;
+                vertex_check[dst][src] = true;
+                degree_label[dst] = 1;
+                remove(poss_connect[src].begin(), poss_connect[src].begin()+poss_connect_num[src], dst);
+                remove(poss_connect[dst].begin(), poss_connect[dst].begin()+poss_connect_num[dst], src);
+                poss_connect_num[src] -= 1;
+                poss_connect_num[dst] -= 1;
+
+                node1 = ((layer_num-1-i)*2+i)*switches+src;
+                node2 = ((layer_num-i)*2+i-1)*switches+dst;
+                cost_map[src][node1*switches*(2*layer_num-1)+node2] = 1;
+                node1 = (i-1)*switches+dst;
+                node2 = i*switches+src;
+                cost_map[dst][node1*switches*(2*layer_num-1)+node2] = 1;
+
+                // cout << src << "->" << dst << endl;
+                remove(src_choose.begin(), src_choose.begin()+src_remain, src);
+                src_remain--;
+                int mininum = switches+1;
+                for(int k = 0; k < src_remain; k++){
+                    int temp_count = 0;
+                    for(int m = 0; m < switches; m++){
+                        temp_count += degree_label[m] | vertex_check[src_choose[k]][m];
+                    }
+                    temp_count = switches - temp_count;
+                    if(temp_count <= mininum){
+                        src = src_choose[k];
+                        mininum = temp_count;
+                    }
+                }
+            }
+        }
+        // cout << endl;
+        initial_sub = degree;
+        index_basic += (degree+1)*switches;
+    }
+    bipart_degree[bipart_count] = 0;
+}
+
+
+
 void Fc_edge_disjoin_cost_route::find_all_route(int thread_num, int batch_num, bool if_search_map){
     if(access("all_graph_route", 0)){
         string cmd("mkdir ");

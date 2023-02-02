@@ -311,6 +311,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
             status = min_cost_flow.Solve();
             count++;
             max_flow = 0;
+            int real_flow_count = 0;
             if(status == min_cost_flow.OPTIMAL){
                 max_flow = min_cost_flow.Flow(0);
                 for(int j = 1; j < min_cost_flow.NumArcs(); j++){
@@ -327,13 +328,22 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                     path_len = dfs(heads, visited, edges, 0, 1, path_route);
                     for(int k = path_len - 1; k >= 0; k--){
                         if(index_table[path_route[k]]%switches != index_table[path_route[k-1]]%switches){
-                            if(last_store != index_table[path_route[k]])
+                            if(last_store != index_table[path_route[k]]){
                                 real_path_route[real_len++] = index_table[path_route[k]];
+                            }
                             real_path_route[real_len++] = index_table[path_route[k-1]];
                             last_store = index_table[path_route[k-1]];
                             if(index_table[path_route[k-1]]%switches == dst)
                                 break;
                         }
+                    }
+                    for(int k = 0; k < real_len-1; k++){
+                        node1 = real_path_route[k];
+                        node2 = real_path_route[k+1];
+                        sw1 = node1%switches;
+                        sw2 = node2%switches;
+                        if(sw1 != sw2)
+                            real_flow_count++;
                     }
                     memcpy(single_pair_route+single_pair_len, real_path_route, sizeof(uint16_t)*real_len);
                     single_pair_len += real_len;
@@ -345,7 +355,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
             }
             else
                 cout << "error" << endl;
-            average_len += (max_flow*10000+min_cost_flow.OptimalCost())/float(max_flow);
+            average_len += real_flow_count/float(max_flow);
             average_num += max_flow;
             if(max_flow < min_path_num){
                 min_path_num = max_flow;
