@@ -35,18 +35,16 @@ int main(){
     // fc_test.display_all_path();
     fc_test.build_search_dic();
     // fc_test.display_dic(2);
-    uint16_t* temp = new uint16_t[1000];
-    uint16_t path_num;
-    fc_test.extract_all_path(0, 1, 1, temp, &path_num);
 
 
     struct timeval start, end;
     gettimeofday(&start, NULL);
-    // bool if_report = true;
-    // int report_inter = 5000;
-    // bool if_store = true;
-    // bool store_part = false;
+    bool if_report = true;
+    int report_inter = 5000;
+    bool if_store = true;
+    bool store_part = false;
     // fc_test.pthread_for_all_route(1, if_report, report_inter, if_store, store_part);
+    fc_test.pthread_for_all_path(1, if_report, report_inter, if_store);
 
     // bool if_search_map = true;
     // fc_test.find_all_route(1, 5000, if_search_map);

@@ -899,6 +899,122 @@ uint16_t Fc_topo_all_route::extract_all_path(int src, int dst, bool if_display, 
 }
 
 
+void Fc_topo_all_route::thread_all_path(vector<int*> route_pairs, int thread_label, bool if_report, int report_inter, bool if_store, string store_file) {
+    int count = 0;
+    int store_count = 0;
+    uint16_t* temp_infor = new uint16_t[switches*10*4];
+    FILE* ofs;
+    FILE* ofs_len;
+    uint16_t** store_graph_info = new uint16_t*[report_inter];
+    vector<uint16_t> store_info_len;
+    uint16_t path_num;
+    if(if_store){
+        string file_path("all_graph_route/" + store_file + "/" + store_file + to_string(thread_label));
+        string len_path(file_path + "_num");
+        ofs = fopen(file_path.c_str(), "w");
+        ofs_len = fopen(len_path.c_str(), "w");
+    }
+    for(int i = 0; i < route_pairs.size(); i++){
+        uint16_t data_num  = extract_all_path(route_pairs[i][0], route_pairs[i][1], false, temp_infor, &path_num);
+        if(if_report){
+            count++;
+            if(count % report_inter == 0){
+                cout << "The thread " << thread_label << " " <<count/double(route_pairs.size()) << endl;
+            }
+        }
+        if(if_store){
+            uint16_t *temp_data = new uint16_t[data_num];
+            memcpy(temp_data, temp_infor, sizeof(uint16_t)*data_num);
+            store_graph_info[store_count] = temp_data;
+            store_info_len.push_back(path_num);
+            store_info_len.push_back(data_num);
+            store_count++;
+            if(store_count == report_inter) {
+                fwrite(&store_info_len[0], sizeof(uint16_t), store_count*2, ofs_len);
+                for(int j = 0; j < report_inter; j++){
+                    fwrite(store_graph_info[j], sizeof(uint16_t), store_info_len[2*j+1], ofs);
+                    delete[] store_graph_info[j];
+                    store_graph_info[j] = NULL;
+                }
+                fflush(ofs);
+                store_info_len.clear();
+                store_count = 0;
+            }
+        }
+    }
+    if(if_store){
+        fwrite(&store_info_len[0], sizeof(uint16_t), store_count*2, ofs_len);
+        for(int j = 0; j < store_count; j++){
+            fwrite(store_graph_info[j], sizeof(uint16_t), store_info_len[2*j+1], ofs);
+            delete[] store_graph_info[j];
+        }
+        fclose(ofs);
+        fclose(ofs_len);
+    }
+    delete[] temp_infor;
+    temp_infor = NULL;
+    delete[] store_graph_info;
+    store_graph_info = NULL;
+}
+
+
+void Fc_topo_all_route::pthread_for_all_path(int thread_num, bool if_report, int report_inter, bool if_store){
+    int total_pairs = switches*(switches-1)/2;
+    int average = ceil(total_pairs/float(thread_num));
+    int count = 0;
+    int allo_index = 0;
+    vector<vector<int*> > thread_pairs;
+    for(int i = 0; i < thread_num; i++){
+        vector<int*> pairs;
+        thread_pairs.push_back(pairs);
+    }
+    int *temp = new int[2];
+    for(int i = 0; i < switches; i++){
+        for (int j = i+1; j < switches; j++)
+        {
+            temp = new int[2];
+            temp[0] = i;
+            temp[1] = j;
+            thread_pairs[allo_index].push_back(temp);
+            if(count < average - 1)
+                count++;
+            else{
+                count = 0;
+                allo_index++;
+            }
+        } 
+    }
+
+    string file_dir_name("");
+    if(if_store){
+        if(access("all_graph_route", 0)){
+            string cmd("mkdir ");
+            cmd += "all_graph_route";
+            int temp = system(cmd.c_str());
+        }
+        file_dir_name += "sw";
+        file_dir_name += to_string(switches);
+        file_dir_name += "_vir";
+        for(int i = 0; i < layer_num; i++)
+            file_dir_name += to_string(vir_layer_degree[i]);
+        file_dir_name += "_rand";
+        file_dir_name += to_string(is_random*random_seed);
+        if(access(("all_graph_route/" + file_dir_name).c_str(), 0)){
+            string cmd("mkdir ");
+            cmd += "all_graph_route/";
+            cmd += file_dir_name;
+            int temp = system(cmd.c_str());
+        }
+    }
+    thread* th = new thread[thread_num];
+    for(int i = 0; i < thread_num; i++){
+        th[i] = thread(&Fc_topo_all_route::thread_all_path, this, thread_pairs[i], i, if_report, report_inter, if_store, file_dir_name);
+    }
+    for(int i = 0; i < thread_num; i++)
+        th[i].join();
+}
+
+
 void Fc_topo_all_route::throughput_test(){
     string file_dir_name("");
     file_dir_name += "sw";
