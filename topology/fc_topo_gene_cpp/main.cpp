@@ -21,11 +21,11 @@ int main(){
 
     int switches = 50;
     int hosts = 14;
-    int ports = 32;
-    int vir_layer_degree[] = {3, 6, 6, 3};
-    int layer_num = 4;
+    int ports = 34;
+    int vir_layer_degree[] = {2, 5, 5, 5, 3};
+    int layer_num = 5;
     int is_random = 1;
-    int random_seed = 6;
+    int random_seed = 5;
 
     // Fc_edge_disjoin_cost_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     Fc_edge_disjoin_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
@@ -48,7 +48,7 @@ int main(){
 
     // bool if_search_map = true;
     // fc_test.find_all_route(1, 5000, if_search_map);
-    // fc_test.throughput_test();
+    fc_test.throughput_test();
         // fc_test.find_edge_disjoin_route_fast(1, 0, 10, "sw10_vir2442_rand2", false);
     // fc_test.find_edge_disjoin_route_fast(8, 2, 10000, "sw500_vir713137_rand7", true);
     // fc_test.find_edge_disjoin_route_fast(8, 2, 10000, "sw2000_vir51010105_rand2", true);
