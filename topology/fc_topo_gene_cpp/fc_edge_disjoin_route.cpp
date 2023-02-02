@@ -302,6 +302,7 @@ void Fc_edge_disjoin_route::find_edge_disjoin_route_fast(int thread_num, int thr
                     index_count++;
                 }
                 if(sw1 != sw2){
+                    // edge_disjoint may not be the best
                     min_cost_flow.AddArcWithCapacityAndUnitCost(reverse_index_table[node1],reverse_index_table[node2], 1, 1);
                 }
                 else{

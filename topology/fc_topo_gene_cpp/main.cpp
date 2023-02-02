@@ -25,7 +25,7 @@ int main(){
     int vir_layer_degree[] = {3, 6, 6, 3};
     int layer_num = 4;
     int is_random = 1;
-    int random_seed = 2;
+    int random_seed = 4;
 
     // Fc_edge_disjoin_cost_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     Fc_edge_disjoin_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
