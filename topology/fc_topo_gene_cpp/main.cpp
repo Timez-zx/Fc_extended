@@ -48,7 +48,7 @@ int main(){
 
     // bool if_search_map = true;
     // fc_test.find_all_route(1, 5000, if_search_map);
-    fc_test.throughput_test("ur", 2);
+    fc_test.throughput_test("ws", 2);
         // fc_test.find_edge_disjoin_route_fast(1, 0, 10, "sw10_vir2442_rand2", false);
     // fc_test.find_edge_disjoin_route_fast(8, 2, 10000, "sw500_vir713137_rand7", true);
     // fc_test.find_edge_disjoin_route_fast(8, 2, 10000, "sw2000_vir51010105_rand2", true);

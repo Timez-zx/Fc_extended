@@ -1148,60 +1148,61 @@ void Fc_topo_all_route::throughput_test(string type, int seed){
     float *flow_matrix[switches];
     for(int i = 0; i < switches; i++){
         flow_matrix[i] = new float[switches];
+        memset(flow_matrix[i], 0, sizeof(float)*switches);
     }
     if(type == "aa"){
         float pair_flow = hosts/float(switches-1);
-        for(int i = 0; i < switches; i++){
-            for(int j = 0; j < switches; j++){
+        for(int i = 0; i < switches; i++)
+            for(int j = 0; j < switches; j++)
                 if(i != j)
                     flow_matrix[i][j] = pair_flow;
-            }
-        }
     }
     else if(type == "ur")
         gene_uniform_random(flow_matrix, seed);
+    else if(type == "ws")
+        gene_worse_case(flow_matrix);
   
+    // for(int i = 0; i < switches; i++){
+    //     for(int j = 0; j < switches; j++){
+    //         if(i != j){
+    //             GRBLinExpr constr = 0;
+    //             for (int k = 0; k < path_num[i][j]; k++) 
+    //                 constr += flow_var[i*switches+j][k];
+    //             constr -= throughput * flow_matrix[i][j];
+    //             model.addConstr(constr, GRB_EQUAL, 0);
+    //         }
+    //     }
+    // }  
 
-    for(int i = 0; i < switches; i++){
-        for(int j = 0; j < switches; j++){
-            if(i != j){
-                GRBLinExpr constr = 0;
-                for (int k = 0; k < path_num[i][j]; k++) 
-                    constr += flow_var[i*switches+j][k];
-                constr -= throughput * flow_matrix[i][j];
-                model.addConstr(constr, GRB_EQUAL, 0);
-            }
-        }
-    }  
+    // for(auto &link : path_map_link){
+    //     GRBLinExpr constr = 0;
+    //     for(int i = 0; i < link.second.size()/2; i++){
+    //         constr += flow_var[link.second[2*i]][link.second[2*i+1]];
+    //     }
+    //     model.addConstr(constr, GRB_LESS_EQUAL, 1);
+    // }
+    // cout << "All consts added" << endl;
 
-    for(auto &link : path_map_link){
-        GRBLinExpr constr = 0;
-        for(int i = 0; i < link.second.size()/2; i++){
-            constr += flow_var[link.second[2*i]][link.second[2*i+1]];
-        }
-        model.addConstr(constr, GRB_LESS_EQUAL, 1);
-    }
-    cout << "All consts added" << endl;
-
-    model.setObjective(1 * throughput, GRB_MAXIMIZE);
-    model.set(GRB_IntParam_OutputFlag, 0);
-    double throught_result = 0.0;
-    try {
-        model.optimize();
-        if(model.get(GRB_IntAttr_Status) != GRB_OPTIMAL)
-            cout << "Not optimal " << endl;
-        else{
-            throught_result = model.get(GRB_DoubleAttr_ObjVal);
-            cout << "Throughtput: " << throught_result << endl;
-        }
-    } catch (GRBException e) {
-        cout << "Error code = " << e.getErrorCode() << endl;
-        cout << e.getMessage() << endl;
-    }
+    // model.setObjective(1 * throughput, GRB_MAXIMIZE);
+    // model.set(GRB_IntParam_OutputFlag, 0);
+    // double throught_result = 0.0;
+    // try {
+    //     model.optimize();
+    //     if(model.get(GRB_IntAttr_Status) != GRB_OPTIMAL)
+    //         cout << "Not optimal " << endl;
+    //     else{
+    //         throught_result = model.get(GRB_DoubleAttr_ObjVal);
+    //         cout << "Throughtput: " << throught_result << endl;
+    //     }
+    // } catch (GRBException e) {
+    //     cout << "Error code = " << e.getErrorCode() << endl;
+    //     cout << e.getMessage() << endl;
+    // }
 
     delete[] pair_len;
     delete[] pair_infor;
 }
+
 
 void Fc_topo_all_route::gene_uniform_random(float **flow_matrix, int seed){
     int combination = switches/8;
@@ -1249,4 +1250,9 @@ void Fc_topo_all_route::gene_uniform_random(float **flow_matrix, int seed){
         for(int i = 0; i < switches; i++)
             flow_matrix[i][permu[i]] += rate[k]*hosts;
     }
+}
+
+
+void Fc_topo_all_route::gene_worse_case(float **flow_matrix){
+
 }
