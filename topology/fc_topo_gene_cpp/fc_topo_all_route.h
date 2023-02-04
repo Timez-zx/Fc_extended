@@ -42,6 +42,7 @@ class Fc_topo_all_route{
 
         int* bipart_degree=NULL;
         int* topo_index=NULL;
+        int **bit_map;
 
         node_path_infor* all_path_infor=NULL;
         topo_dic_infor* topo_dic=NULL;
