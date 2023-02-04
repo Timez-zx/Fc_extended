@@ -19,11 +19,11 @@ int main(){
     // int is_random = 1;
     // int random_seed = 1;
 
-    int switches = 150;
+    int switches = 300;
     int hosts = 14;
     int ports = 32;
-    int vir_layer_degree[] = {3, 6, 6, 3};
-    int layer_num = 4;
+    int vir_layer_degree[] = {2, 4, 4, 5, 3};
+    int layer_num = 5;
     int is_random = 1;
     int random_seed = 8;
 
