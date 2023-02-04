@@ -1041,7 +1041,7 @@ void Fc_topo_all_route::pthread_for_all_path(int thread_num, bool if_report, int
 }
 
 
-void Fc_topo_all_route::throughput_test(string type){
+void Fc_topo_all_route::throughput_test(string type, int seed){
     string file_dir_name("");
     file_dir_name += "sw";
     file_dir_name += to_string(switches);
@@ -1159,7 +1159,7 @@ void Fc_topo_all_route::throughput_test(string type){
         }
     }
     else if(type == "ur")
-        gene_uniform_random(flow_matrix);
+        gene_uniform_random(flow_matrix, seed);
   
 
     for(int i = 0; i < switches; i++){
@@ -1203,11 +1203,12 @@ void Fc_topo_all_route::throughput_test(string type){
     delete[] pair_infor;
 }
 
-void Fc_topo_all_route::gene_uniform_random(float **flow_matrix){
+void Fc_topo_all_route::gene_uniform_random(float **flow_matrix, int seed){
     int combination = switches/8;
     int rand_rate[combination];
     float rate[combination];
     int sum = 0;
+    srand(seed);
     for(int i = 0; i < combination; i++){
         rand_rate[i] = rand()%10000;
         sum += rand_rate[i];
@@ -1222,7 +1223,7 @@ void Fc_topo_all_route::gene_uniform_random(float **flow_matrix){
         for(int i = 0; i < switches; i++){
             permu[i] = i;
         }
-        shuffle(permu, permu+switches, default_random_engine(k*random_seed));
+        shuffle(permu, permu+switches, default_random_engine((k+1)*seed));
         int store_same;
         int store_len = 0;
         for(int i = 0; i < switches; i++){
