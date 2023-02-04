@@ -1170,42 +1170,42 @@ void Fc_topo_all_route::throughput_test(string type, int seed){
     else if(type == "ws")
         gene_worse_case(flow_matrix);
   
-    // for(int i = 0; i < switches; i++){
-    //     for(int j = 0; j < switches; j++){
-    //         if(i != j){
-    //             GRBLinExpr constr = 0;
-    //             for (int k = 0; k < path_num[i][j]; k++) 
-    //                 constr += flow_var[i*switches+j][k];
-    //             constr -= throughput * flow_matrix[i][j];
-    //             model.addConstr(constr, GRB_EQUAL, 0);
-    //         }
-    //     }
-    // }  
+    for(int i = 0; i < switches; i++){
+        for(int j = 0; j < switches; j++){
+            if(i != j){
+                GRBLinExpr constr = 0;
+                for (int k = 0; k < path_num[i][j]; k++) 
+                    constr += flow_var[i*switches+j][k];
+                constr -= throughput * flow_matrix[i][j];
+                model.addConstr(constr, GRB_EQUAL, 0);
+            }
+        }
+    }  
 
-    // for(auto &link : path_map_link){
-    //     GRBLinExpr constr = 0;
-    //     for(int i = 0; i < link.second.size()/2; i++){
-    //         constr += flow_var[link.second[2*i]][link.second[2*i+1]];
-    //     }
-    //     model.addConstr(constr, GRB_LESS_EQUAL, 1);
-    // }
-    // cout << "All consts added" << endl;
+    for(auto &link : path_map_link){
+        GRBLinExpr constr = 0;
+        for(int i = 0; i < link.second.size()/2; i++){
+            constr += flow_var[link.second[2*i]][link.second[2*i+1]];
+        }
+        model.addConstr(constr, GRB_LESS_EQUAL, 1);
+    }
+    cout << "All consts added" << endl;
 
-    // model.setObjective(1 * throughput, GRB_MAXIMIZE);
-    // model.set(GRB_IntParam_OutputFlag, 0);
-    // double throught_result = 0.0;
-    // try {
-    //     model.optimize();
-    //     if(model.get(GRB_IntAttr_Status) != GRB_OPTIMAL)
-    //         cout << "Not optimal " << endl;
-    //     else{
-    //         throught_result = model.get(GRB_DoubleAttr_ObjVal);
-    //         cout << "Throughtput: " << throught_result << endl;
-    //     }
-    // } catch (GRBException e) {
-    //     cout << "Error code = " << e.getErrorCode() << endl;
-    //     cout << e.getMessage() << endl;
-    // }
+    model.setObjective(1 * throughput, GRB_MAXIMIZE);
+    model.set(GRB_IntParam_OutputFlag, 0);
+    double throught_result = 0.0;
+    try {
+        model.optimize();
+        if(model.get(GRB_IntAttr_Status) != GRB_OPTIMAL)
+            cout << "Not optimal " << endl;
+        else{
+            throught_result = model.get(GRB_DoubleAttr_ObjVal);
+            cout << "Throughtput: " << throught_result << endl;
+        }
+    } catch (GRBException e) {
+        cout << "Error code = " << e.getErrorCode() << endl;
+        cout << e.getMessage() << endl;
+    }
 
     delete[] pair_len;
     delete[] pair_infor;
@@ -1280,17 +1280,11 @@ void Fc_topo_all_route::gene_worse_case(float **flow_matrix){
 
     string read_file("temp_infor_flow");
     string read_path("worst_flow_infor/" + read_file);
-    FILE* ifs = fopen(file_path.c_str(), "r");
-    for(int i = 0; i < switches; i++)
-        state = fread(flow_matrix[i], sizeof(float), switches, ifs);
-    fclose(ifs);
+    ifstream ifs(read_path.c_str(), ios::in);
     for(int i = 0; i < switches; i++){
         for(int j = 0; j < switches; j++){
-            cout << flow_matrix[i][j] << " ";
+            ifs >> flow_matrix[i][j];
         }
-        cout << endl;
     }
-
-
-
+    ifs.close();
 }

@@ -1,7 +1,7 @@
 import sys
 import networkx as nx
 import numpy as np
-import struct
+import string
 sys.path.append('TUB')
 from topo_repo import topology
 
@@ -31,11 +31,10 @@ def get_worst_flow():
         src = key[0]
         dst = key[1]
         worst_case_tm[src][dst] = tm[key]
-    file = open("worst_flow_infor/temp_infor_flow", "wb")
+    file = open("worst_flow_infor/temp_infor_flow", "w")
     for src in range(switches):
         for dst in range(switches):
-            s1 = struct.pack('f', float(worst_case_tm[src][dst]))
-            file.write(s1)
+            file.write(f"{worst_case_tm[src][dst]} ")
     file.close()
     
     

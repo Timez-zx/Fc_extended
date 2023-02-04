@@ -19,11 +19,11 @@ int main(){
     // int is_random = 1;
     // int random_seed = 1;
 
-    int switches = 50;
+    int switches = 200;
     int hosts = 14;
-    int ports = 32;
-    int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
-    int layer_num = 6;
+    int ports = 40;
+    int vir_layer_degree[] = {5, 8, 8, 5};
+    int layer_num = 4;
     int is_random = 1;
     int random_seed = 8;
 
@@ -44,7 +44,7 @@ int main(){
     bool if_store = true;
     bool store_part = false;
     // fc_test.pthread_for_all_route(1, if_report, report_inter, if_store, store_part);
-    fc_test.pthread_for_all_path(1, if_report, report_inter, if_store);
+    fc_test.pthread_for_all_path(8, if_report, report_inter, if_store);
 
     // bool if_search_map = true;
     // fc_test.find_all_route(1, 5000, if_search_map);
