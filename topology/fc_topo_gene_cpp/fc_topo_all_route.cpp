@@ -1254,5 +1254,9 @@ void Fc_topo_all_route::gene_uniform_random(float **flow_matrix, int seed){
 
 
 void Fc_topo_all_route::gene_worse_case(float **flow_matrix){
-
+    if(access("worst_flow_infor", 0)){
+        string cmd("mkdir ");
+        cmd += "worst_flow_infor";
+        int temp = system(cmd.c_str());
+    }
 }
