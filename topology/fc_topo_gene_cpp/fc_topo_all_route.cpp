@@ -1145,7 +1145,10 @@ void Fc_topo_all_route::throughput_test(string type){
     fclose(ofs);
     fclose(ofs_len);
 
-    float flow_matrix[switches][switches];
+    float *flow_matrix[switches];
+    for(int i = 0; i < switches; i++){
+        flow_matrix[i] = new float[switches];
+    }
     if(type == "aa"){
         float pair_flow = hosts/float(switches-1);
         for(int i = 0; i < switches; i++){
@@ -1155,52 +1158,9 @@ void Fc_topo_all_route::throughput_test(string type){
             }
         }
     }
-    else if(type == "ur"){
-        int combination = switches/8;
-        int rand_rate[combination];
-        float rate[combination];
-        int sum = 0;
-        for(int i = 0; i < combination; i++){
-            rand_rate[i] = rand()%10000;
-            sum += rand_rate[i];
-        }
-        for(int i = 0; i < combination; i++)
-            rate[i] = rand_rate[i]/float(sum);
-        for(int i = 0; i < switches; i++)
-            for(int j = 0; j < switches; j++)
-                flow_matrix[i][j] = 0;
-        for(int k = 0; k < combination; k++){
-            int permu[switches];
-            for(int i = 0; i < switches; i++){
-                permu[i] = i;
-            }
-            shuffle(permu, permu+switches, default_random_engine(k*random_seed));
-            int store_same;
-            int store_len = 0;
-            for(int i = 0; i < switches; i++){
-                if(permu[i] == i){
-                    if(store_len == 0){
-                        store_same = i;
-                        store_len++;
-                    }
-                    else{
-                        permu[i] = store_same;
-                        permu[store_same] = i;
-                        store_len--;
-                    }
-                }
-            }
-            if(store_len == 1){
-                int rand_pick = rand()%switches;
-                while(rand_pick == store_same)
-                    rand_pick = rand()%switches;
-                permu[rand_pick] = store_same;
-                permu[store_same] = rand_pick;
-            }
-            for(int i = 0; i < switches; i++)
-                flow_matrix[i][permu[i]] += rate[k]*hosts;
-        }
-    }
+    else if(type == "ur")
+        gene_uniform_random(flow_matrix);
+  
 
     for(int i = 0; i < switches; i++){
         for(int j = 0; j < switches; j++){
@@ -1241,4 +1201,51 @@ void Fc_topo_all_route::throughput_test(string type){
 
     delete[] pair_len;
     delete[] pair_infor;
+}
+
+void Fc_topo_all_route::gene_uniform_random(float **flow_matrix){
+    int combination = switches/8;
+    int rand_rate[combination];
+    float rate[combination];
+    int sum = 0;
+    for(int i = 0; i < combination; i++){
+        rand_rate[i] = rand()%10000;
+        sum += rand_rate[i];
+    }
+    for(int i = 0; i < combination; i++)
+        rate[i] = rand_rate[i]/float(sum);
+    for(int i = 0; i < switches; i++)
+        for(int j = 0; j < switches; j++)
+            flow_matrix[i][j] = 0;
+    for(int k = 0; k < combination; k++){
+        int permu[switches];
+        for(int i = 0; i < switches; i++){
+            permu[i] = i;
+        }
+        shuffle(permu, permu+switches, default_random_engine(k*random_seed));
+        int store_same;
+        int store_len = 0;
+        for(int i = 0; i < switches; i++){
+            if(permu[i] == i){
+                if(store_len == 0){
+                    store_same = i;
+                    store_len++;
+                }
+                else{
+                    permu[i] = store_same;
+                    permu[store_same] = i;
+                    store_len--;
+                }
+            }
+        }
+        if(store_len == 1){
+            int rand_pick = rand()%switches;
+            while(rand_pick == store_same)
+                rand_pick = rand()%switches;
+            permu[rand_pick] = store_same;
+            permu[store_same] = rand_pick;
+        }
+        for(int i = 0; i < switches; i++)
+            flow_matrix[i][permu[i]] += rate[k]*hosts;
+    }
 }
