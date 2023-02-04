@@ -1274,5 +1274,23 @@ void Fc_topo_all_route::gene_worse_case(float **flow_matrix){
     fwrite(&hosts, sizeof(int), 1, ofs);
     for(int i = 0; i < switches; i++)
         fwrite(bit_map[i], sizeof(int), switches, ofs);
+    fclose(ofs);
+    string cmd("python3 worst_case.py");
+    int state = system(cmd.c_str());
+
+    string read_file("temp_infor_flow");
+    string read_path("worst_flow_infor/" + read_file);
+    FILE* ifs = fopen(file_path.c_str(), "r");
+    for(int i = 0; i < switches; i++)
+        state = fread(flow_matrix[i], sizeof(float), switches, ifs);
+    fclose(ifs);
+    for(int i = 0; i < switches; i++){
+        for(int j = 0; j < switches; j++){
+            cout << flow_matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+
 
 }

@@ -15,7 +15,7 @@ GUROBI_UBUNTU=~/Optimizer/gurobi952/linux64
 GUROBI_LIB_U=$(GUROBI_UBUNTU)/lib/
 GUROBI_INCLUDE_U=$(GUROBI_UBUNTU)/include/
 
-CLEAN_PATH=./all_graph_infor/*  ./all_graph_route/* 
+CLEAN_PATH=./all_graph_infor/*  ./all_graph_route/*  ./worst_flow_infor/*
 
 default: $(FILENAME)
 	g++  $(CFLAGS_U) $(FILENAME) -o $(OUT) -I $(ORTOOL_INCLUDE_U) -I $(GUROBI_INCLUDE_U) -L $(ORTOOL_LIB_U) -L $(GUROBI_LIB_U) -lortools -lpthread -lgurobi_c++ -lgurobi95
