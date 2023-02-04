@@ -1041,7 +1041,7 @@ void Fc_topo_all_route::pthread_for_all_path(int thread_num, bool if_report, int
 }
 
 
-void Fc_topo_all_route::throughput_test(){
+void Fc_topo_all_route::throughput_test(string type){
     string file_dir_name("");
     file_dir_name += "sw";
     file_dir_name += to_string(switches);
@@ -1144,51 +1144,104 @@ void Fc_topo_all_route::throughput_test(){
     }
     fclose(ofs);
     fclose(ofs_len);
-    float pair_flow = hosts/float(switches-1);
-    float flow_matrix[switches][switches];
-    for(int i = 0; i < switches; i++){
-        for(int j = 0; j < switches; j++){
-            if(i != j)
-                flow_matrix[i][j] = pair_flow;
-        }
-    }
 
-    for(int i = 0; i < switches; i++){
-        for(int j = 0; j < switches; j++){
-            if(i != j){
-                GRBLinExpr constr = 0;
-                for (int k = 0; k < path_num[i][j]; k++) 
-                    constr += flow_var[i*switches+j][k];
-                constr -= throughput * flow_matrix[i][j];
-                model.addConstr(constr, GRB_EQUAL, 0);
+    float flow_matrix[switches][switches];
+    if(type == "aa"){
+        float pair_flow = hosts/float(switches-1);
+        for(int i = 0; i < switches; i++){
+            for(int j = 0; j < switches; j++){
+                if(i != j)
+                    flow_matrix[i][j] = pair_flow;
             }
         }
-    }  
-
-    for(auto &link : path_map_link){
-        GRBLinExpr constr = 0;
-        for(int i = 0; i < link.second.size()/2; i++){
-            constr += flow_var[link.second[2*i]][link.second[2*i+1]];
-        }
-        model.addConstr(constr, GRB_LESS_EQUAL, 1);
     }
-    cout << "All consts added" << endl;
-
-    model.setObjective(1 * throughput, GRB_MAXIMIZE);
-    model.set(GRB_IntParam_OutputFlag, 0);
-    double throught_result = 0.0;
-    try {
-        model.optimize();
-        if(model.get(GRB_IntAttr_Status) != GRB_OPTIMAL)
-            cout << "Not optimal " << endl;
-        else{
-            throught_result = model.get(GRB_DoubleAttr_ObjVal);
-            cout << "Throughtput: " << throught_result << endl;
+    else if(type == "ur"){
+        int combination = switches/8;
+        int rand_rate[combination];
+        float rate[combination];
+        int sum = 0;
+        for(int i = 0; i < combination; i++){
+            rand_rate[i] = rand()%10000;
+            sum += rand_rate[i];
         }
-    } catch (GRBException e) {
-        cout << "Error code = " << e.getErrorCode() << endl;
-        cout << e.getMessage() << endl;
+        for(int i = 0; i < combination; i++){
+            rate[i] = rand_rate[i]/float(sum);
+            cout << rate[i] <<endl;
+        }
+    
+        for(int i = 0; i < switches; i++)
+            for(int j = 0; j < switches; j++)
+                flow_matrix[i][j] = 0;
+        for(int k = 0; k < combination; k++){
+            int permu[switches];
+            for(int i = 0; i < switches; i++){
+                permu[i] = i;
+            }
+            shuffle(permu, permu+switches, default_random_engine(k*random_seed));
+            int store_same;
+            int store_len = 0;
+            for(int i = 0; i < switches; i++){
+                if(permu[i] == i){
+                    if(store_len == 0){
+                        store_same = i;
+                        store_len++;
+                    }
+                    else{
+                        permu[i] = store_same;
+                        permu[store_same] = i;
+                        store_len--;
+                    }
+                }
+            }
+            if(store_len == 1){
+                int rand_pick = rand()%switches;
+                while(rand_pick == store_same)
+                    rand_pick = rand()%switches;
+                permu[rand_pick] = store_same;
+                permu[store_same] = rand_pick;
+            }
+            for(int i = 0; i < switches; i++)
+                cout << permu[i] << " ";
+            cout << endl;
+        }
     }
+
+    // for(int i = 0; i < switches; i++){
+    //     for(int j = 0; j < switches; j++){
+    //         if(i != j){
+    //             GRBLinExpr constr = 0;
+    //             for (int k = 0; k < path_num[i][j]; k++) 
+    //                 constr += flow_var[i*switches+j][k];
+    //             constr -= throughput * flow_matrix[i][j];
+    //             model.addConstr(constr, GRB_EQUAL, 0);
+    //         }
+    //     }
+    // }  
+
+    // for(auto &link : path_map_link){
+    //     GRBLinExpr constr = 0;
+    //     for(int i = 0; i < link.second.size()/2; i++){
+    //         constr += flow_var[link.second[2*i]][link.second[2*i+1]];
+    //     }
+    //     model.addConstr(constr, GRB_LESS_EQUAL, 1);
+    // }
+    // cout << "All consts added" << endl;
+
+    // model.setObjective(1 * throughput, GRB_MAXIMIZE);
+    // model.set(GRB_IntParam_OutputFlag, 0);
+    // double throught_result = 0.0;
+    // try {
+    //     model.optimize();
+    //     if(model.get(GRB_IntAttr_Status) != GRB_OPTIMAL)
+    //         cout << "Not optimal " << endl;
+    //     else{
+    //         throught_result = model.get(GRB_DoubleAttr_ObjVal);
+    //         cout << "Throughtput: " << throught_result << endl;
+    //     }
+    // } catch (GRBException e) {
+    //     cout << "Error code = " << e.getErrorCode() << endl;
+    //     cout << e.getMessage() << endl;
+    // }
 
     delete[] pair_len;
     delete[] pair_infor;
