@@ -1098,7 +1098,7 @@ void Fc_topo_all_route::throughput_test(string type){
         path_num[dst][src] = pair_len[2*i];
         for(int j = 0; j < pair_len[2*i]; j++){
             flow_var[src*switches+dst][j].set(GRB_DoubleAttr_LB, 0.0);
-            flow_var[dst*switches+src][j].set(GRB_DoubleAttr_UB, 1);
+            flow_var[dst*switches+src][j].set(GRB_DoubleAttr_UB, 100);
         }
         while(count < node_len - 1){
             node1 = pair_infor[basic_len+count];
@@ -1164,11 +1164,8 @@ void Fc_topo_all_route::throughput_test(string type){
             rand_rate[i] = rand()%10000;
             sum += rand_rate[i];
         }
-        for(int i = 0; i < combination; i++){
+        for(int i = 0; i < combination; i++)
             rate[i] = rand_rate[i]/float(sum);
-            cout << rate[i] <<endl;
-        }
-    
         for(int i = 0; i < switches; i++)
             for(int j = 0; j < switches; j++)
                 flow_matrix[i][j] = 0;
@@ -1201,47 +1198,46 @@ void Fc_topo_all_route::throughput_test(string type){
                 permu[store_same] = rand_pick;
             }
             for(int i = 0; i < switches; i++)
-                cout << permu[i] << " ";
-            cout << endl;
+                flow_matrix[i][permu[i]] += rate[k]*hosts;
         }
     }
 
-    // for(int i = 0; i < switches; i++){
-    //     for(int j = 0; j < switches; j++){
-    //         if(i != j){
-    //             GRBLinExpr constr = 0;
-    //             for (int k = 0; k < path_num[i][j]; k++) 
-    //                 constr += flow_var[i*switches+j][k];
-    //             constr -= throughput * flow_matrix[i][j];
-    //             model.addConstr(constr, GRB_EQUAL, 0);
-    //         }
-    //     }
-    // }  
+    for(int i = 0; i < switches; i++){
+        for(int j = 0; j < switches; j++){
+            if(i != j){
+                GRBLinExpr constr = 0;
+                for (int k = 0; k < path_num[i][j]; k++) 
+                    constr += flow_var[i*switches+j][k];
+                constr -= throughput * flow_matrix[i][j];
+                model.addConstr(constr, GRB_EQUAL, 0);
+            }
+        }
+    }  
 
-    // for(auto &link : path_map_link){
-    //     GRBLinExpr constr = 0;
-    //     for(int i = 0; i < link.second.size()/2; i++){
-    //         constr += flow_var[link.second[2*i]][link.second[2*i+1]];
-    //     }
-    //     model.addConstr(constr, GRB_LESS_EQUAL, 1);
-    // }
-    // cout << "All consts added" << endl;
+    for(auto &link : path_map_link){
+        GRBLinExpr constr = 0;
+        for(int i = 0; i < link.second.size()/2; i++){
+            constr += flow_var[link.second[2*i]][link.second[2*i+1]];
+        }
+        model.addConstr(constr, GRB_LESS_EQUAL, 1);
+    }
+    cout << "All consts added" << endl;
 
-    // model.setObjective(1 * throughput, GRB_MAXIMIZE);
-    // model.set(GRB_IntParam_OutputFlag, 0);
-    // double throught_result = 0.0;
-    // try {
-    //     model.optimize();
-    //     if(model.get(GRB_IntAttr_Status) != GRB_OPTIMAL)
-    //         cout << "Not optimal " << endl;
-    //     else{
-    //         throught_result = model.get(GRB_DoubleAttr_ObjVal);
-    //         cout << "Throughtput: " << throught_result << endl;
-    //     }
-    // } catch (GRBException e) {
-    //     cout << "Error code = " << e.getErrorCode() << endl;
-    //     cout << e.getMessage() << endl;
-    // }
+    model.setObjective(1 * throughput, GRB_MAXIMIZE);
+    model.set(GRB_IntParam_OutputFlag, 0);
+    double throught_result = 0.0;
+    try {
+        model.optimize();
+        if(model.get(GRB_IntAttr_Status) != GRB_OPTIMAL)
+            cout << "Not optimal " << endl;
+        else{
+            throught_result = model.get(GRB_DoubleAttr_ObjVal);
+            cout << "Throughtput: " << throught_result << endl;
+        }
+    } catch (GRBException e) {
+        cout << "Error code = " << e.getErrorCode() << endl;
+        cout << e.getMessage() << endl;
+    }
 
     delete[] pair_len;
     delete[] pair_infor;
