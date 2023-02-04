@@ -1096,6 +1096,7 @@ void Fc_topo_all_route::throughput_test(string type, int seed){
     GRBVar *flow_var[switches*switches];
     GRBVar throughput = model.addVar(0, max_through, 0, GRB_CONTINUOUS, "throughput");
     int path_num[switches][switches];
+    int path_sum = 0;
     for(int i = 0; i < switches*(switches-1)/2; i++){
         node_len = pair_len[2*i+1];
         int count = 0;
@@ -1104,6 +1105,7 @@ void Fc_topo_all_route::throughput_test(string type, int seed){
         flow_var[dst*switches+src] = model.addVars(pair_len[2*i], GRB_CONTINUOUS);
         path_num[src][dst] = pair_len[2*i];
         path_num[dst][src] = pair_len[2*i];
+        path_sum += pair_len[2*i];
         for(int j = 0; j < pair_len[2*i]; j++){
             flow_var[src*switches+dst][j].set(GRB_DoubleAttr_LB, 0.0);
             flow_var[dst*switches+src][j].set(GRB_DoubleAttr_UB, 100);
@@ -1152,7 +1154,7 @@ void Fc_topo_all_route::throughput_test(string type, int seed){
     }
     fclose(ofs);
     fclose(ofs_len);
-
+    cout << "Average path num: " << float(path_sum)*2/(switches*(switches-1)) << endl; 
     float *flow_matrix[switches];
     for(int i = 0; i < switches; i++){
         flow_matrix[i] = new float[switches];
