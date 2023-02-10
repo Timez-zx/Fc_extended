@@ -1291,3 +1291,8 @@ void Fc_topo_all_route::gene_worse_case(float **flow_matrix){
     }
     ifs.close();
 }
+
+void Fc_topo_all_route::cost_model(int ocs_ports, int* distance_infor, int copper_tor_cost, int fiber_cost, int tranceiver_cost){
+    int ocs_number = ceil(switches*(ports-hosts)/float(ocs_ports));
+
+}

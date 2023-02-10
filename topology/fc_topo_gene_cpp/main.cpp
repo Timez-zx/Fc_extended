@@ -18,45 +18,40 @@ int main(){
     // int layer_num = 4;
     // int is_random = 1;
     // int random_seed = 1;
-    double wr_ave = 0;
-    for(int i = 1; i <= 10; i++){
-        int switches = 144;
-        int hosts = 8;
-        int ports = 24;
-        int vir_layer_degree[] = {3, 5, 5, 3};
-        int layer_num = 4;
-        int is_random = 1;
-        int random_seed = i;
+    int switches = 144;
+    int hosts = 8;
+    int ports = 24;
+    int vir_layer_degree[] = {3, 5, 5, 3};
+    int layer_num = 4;
+    int is_random = 1;
+    int random_seed = 1;
 
-        // Fc_edge_disjoin_cost_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-        Fc_edge_disjoin_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-        fc_test.fc_topo_gene_1v1();
-        // fc_test.fc_topo_gene();
-        fc_test.path_infor_gene();
-        // fc_test.display_all_path();
-        fc_test.build_search_dic();
-        // fc_test.display_dic(2);
+    // Fc_edge_disjoin_cost_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    Fc_edge_disjoin_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    fc_test.fc_topo_gene_1v1();
+    // fc_test.fc_topo_gene();
+    fc_test.path_infor_gene();
+    // fc_test.display_all_path();
+    fc_test.build_search_dic();
+    // fc_test.display_dic(2);
 
 
-        struct timeval start, end;
-        gettimeofday(&start, NULL);
-        bool if_report = true;
-        int report_inter = 5000;
-        bool if_store = true;
-        bool store_part = false;
-        fc_test.pthread_for_all_route(4, if_report, report_inter, if_store, store_part);
-        // fc_test.pthread_for_all_path(8, if_report, report_inter, if_store);
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
+    bool if_report = true;
+    int report_inter = 5000;
+    bool if_store = true;
+    bool store_part = false;
+    fc_test.pthread_for_all_route(4, if_report, report_inter, if_store, store_part);
+    // fc_test.pthread_for_all_path(8, if_report, report_inter, if_store);
 
-        bool if_search_map = true;
-        fc_test.find_all_route(4, 5000, if_search_map);
-        for(int j = 1; j <= 10; j += 1)
-            wr_ave += fc_test.throughput_test("ur", j);
-        // fc_test.find_edge_disjoin_route_fast(1, 0, 10, "sw10_vir2442_rand2", false);
-        // fc_test.find_edge_disjoin_route_fast(8, 2, 10000, "sw500_vir713137_rand7", true);
-        // fc_test.find_edge_disjoin_route_fast(8, 2, 10000, "sw2000_vir51010105_rand2", true);
-        gettimeofday(&end, NULL);
-        cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
-    }
-    cout << wr_ave << endl;
+    bool if_search_map = true;
+    fc_test.find_all_route(4, 5000, if_search_map);
+    double wr_ave = fc_test.throughput_test("ur", 2);
+    // fc_test.find_edge_disjoin_route_fast(1, 0, 10, "sw10_vir2442_rand2", false);
+    // fc_test.find_edge_disjoin_route_fast(8, 2, 10000, "sw500_vir713137_rand7", true);
+    // fc_test.find_edge_disjoin_route_fast(8, 2, 10000, "sw2000_vir51010105_rand2", true);
+    gettimeofday(&end, NULL);
+    cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     return 0;
 }
