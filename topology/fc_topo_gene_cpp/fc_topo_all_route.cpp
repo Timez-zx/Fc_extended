@@ -1308,17 +1308,38 @@ void Fc_topo_all_route::cost_model(int ocs_ports, int* distance_infor, int coppe
     int dst_x, dst_y;
     int ocs_port_count = 0;
     int ocs_label = 0;
+    int ocs_y = 0;
+    int fiber_len_src, fiber_len_dst;
     for(int i = 0; i < layer_num-1; i++){
         degree = bipart_degree[i];
-        for(int j = 0; j < switches; i++){
+        for(int j = 0; j < switches; j++){
             src = j;
-            src_x = (src/100 + 1)*pow(-1, src/50);
-            src_y = src % 50;
+            src_x = ((src/100)*distance_infor[0]+distance_infor[2]);
+            src_y = (src % 50)*distance_infor[1];
             for(int k = 1; k < degree; k++){
                 dst = topo_index[basic_index+j*degree+k];
-                dst_x = (src/100 + 1)*pow(-1, src/50);
-                dst_y = src % 50;
-
+                dst_x = ((dst/100)*distance_infor[0]+distance_infor[2]);
+                dst_y = (dst % 50)*distance_infor[1];
+                fiber_len_src = src_x + abs(src_y-ocs_y);
+                fiber_len_dst = dst_x + abs(dst_y-ocs_y);
+                total_cost += (fiber_len_dst+fiber_len_src)*fiber_cost;
+                if(fiber_len_src > 500)
+                    total_cost += 1000;
+                else
+                    total_cost += 800;
+                if(fiber_len_dst > 500)
+                    total_cost += 1000;
+                else
+                    total_cost += 800;   
+                if(ocs_port_count == ocs_ports - 2){
+                    ocs_port_count = 0;
+                    ocs_label++;
+                    if(ocs_label%4 == 0)
+                        ocs_y += distance_infor[3];
+                }
+                else
+                    ocs_port_count += 2;
+                
             }
         }
         basic_index += degree*switches;
