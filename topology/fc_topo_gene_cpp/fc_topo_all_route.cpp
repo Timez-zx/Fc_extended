@@ -1049,7 +1049,7 @@ void Fc_topo_all_route::pthread_for_all_path(int thread_num, bool if_report, int
 }
 
 
-void Fc_topo_all_route::throughput_test(string type, int seed){
+double Fc_topo_all_route::throughput_test(string type, int seed){
     string file_dir_name("");
     file_dir_name += "sw";
     file_dir_name += to_string(switches);
@@ -1211,6 +1211,7 @@ void Fc_topo_all_route::throughput_test(string type, int seed){
 
     delete[] pair_len;
     delete[] pair_infor;
+    return throught_result;
 }
 
 
