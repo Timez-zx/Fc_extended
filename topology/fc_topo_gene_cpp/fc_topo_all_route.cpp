@@ -1300,6 +1300,28 @@ void Fc_topo_all_route::cost_model(int ocs_ports, int* distance_infor, int coppe
     int ocs_number = ceil(switches*(ports-hosts)/float(ocs_ports));
     int total_cost = 0;
     total_cost += switches*hosts*copper_tor_cost;
-    
+
+    int basic_index = 0;
+    int degree;
+    int src, dst;
+    int src_x, src_y;
+    int dst_x, dst_y;
+    int ocs_port_count = 0;
+    int ocs_label = 0;
+    for(int i = 0; i < layer_num-1; i++){
+        degree = bipart_degree[i];
+        for(int j = 0; j < switches; i++){
+            src = j;
+            src_x = (src/100 + 1)*pow(-1, src/50);
+            src_y = src % 50;
+            for(int k = 1; k < degree; k++){
+                dst = topo_index[basic_index+j*degree+k];
+                dst_x = (src/100 + 1)*pow(-1, src/50);
+                dst_y = src % 50;
+
+            }
+        }
+        basic_index += degree*switches;
+    }
     cout << total_cost << endl;
 }
