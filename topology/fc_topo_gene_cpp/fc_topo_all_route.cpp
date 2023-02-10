@@ -1297,6 +1297,10 @@ void Fc_topo_all_route::gene_worse_case(float **flow_matrix){
 
 
 void Fc_topo_all_route::cost_model(int ocs_ports, int* distance_infor, int copper_tor_cost, int fiber_cost, int* tranceiver_cost){
+    if(topo_index == NULL){
+        cout << "Please generate topology!" << endl;
+        exit(1);
+    }
     int ocs_number = ceil(switches*(ports-hosts)/float(ocs_ports));
     int total_cost = 0;
     total_cost += switches*hosts*copper_tor_cost;
