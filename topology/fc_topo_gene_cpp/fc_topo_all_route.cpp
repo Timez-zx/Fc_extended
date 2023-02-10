@@ -136,7 +136,6 @@ void Fc_topo_all_route::fc_topo_gene_1v1(void){
     int initial_sub = 0;
     bipart_degree = new int[bipart_num+1];
     int bipart_count = 0;
-
     int total_degree = 0;
     int remain_degree = vir_layer_degree[layer_num-1];
 
@@ -145,18 +144,18 @@ void Fc_topo_all_route::fc_topo_gene_1v1(void){
         bit_map[i] = new int[switches];
         memset(bit_map[i], 0, sizeof(int)*switches);
     }
-  
     total_degree += remain_degree + 1;
     for(int i = layer_num-2; i > 0; i--){
         remain_degree = vir_layer_degree[i] - remain_degree;
         total_degree += remain_degree + 1;
     }
     topo_index = new int[switches*total_degree];
-    bool vertex_check[switches][switches];
-    for(int i = 0; i < switches; i++)
+    bool **vertex_check = new bool*[switches];
+    for(int i = 0; i < switches; i++){
+        vertex_check[i] = new bool[switches];
         for(int j = 0; j < switches; j++)
             vertex_check[i][j] = false;
-    
+    }
     vector<vector<int> > poss_connect;
     int poss_connect_num[switches];
     for(int i = 0; i < switches; i++){
@@ -254,6 +253,10 @@ void Fc_topo_all_route::fc_topo_gene_1v1(void){
         index_basic += (degree+1)*switches;
     }
     bipart_degree[bipart_count] = 0;
+    for(int i = 0; i <  switches; i++){
+        delete[] vertex_check[i];
+    }
+    delete[] vertex_check;
 }
 
 
@@ -1292,7 +1295,8 @@ void Fc_topo_all_route::gene_worse_case(float **flow_matrix){
     ifs.close();
 }
 
-void Fc_topo_all_route::cost_model(int ocs_ports, int* distance_infor, int copper_tor_cost, int fiber_cost, int tranceiver_cost){
+void Fc_topo_all_route::cost_model(int ocs_ports, int* distance_infor, int copper_tor_cost, int fiber_cost, int* tranceiver_cost){
     int ocs_number = ceil(switches*(ports-hosts)/float(ocs_ports));
+    cout << ocs_number << endl;
 
 }

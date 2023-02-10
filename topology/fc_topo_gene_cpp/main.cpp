@@ -18,7 +18,7 @@ int main(){
     // int layer_num = 4;
     // int is_random = 1;
     // int random_seed = 1;
-    int switches = 144;
+    int switches = 3000;
     int hosts = 8;
     int ports = 24;
     int vir_layer_degree[] = {3, 5, 5, 3};
@@ -29,7 +29,20 @@ int main(){
     // Fc_edge_disjoin_cost_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     Fc_edge_disjoin_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     fc_test.fc_topo_gene_1v1();
-    
+
+    int ocs_ports = 400;
+    int distance_infor[4];
+    distance_infor[0] = 10; // Tor to tor:x
+    distance_infor[1] = 10; // Tor to tor:y
+    distance_infor[2] = 100; // Ocs to tor:x
+    distance_infor[3] = 20;  // Ocs to ocs:y
+    int copper_cost = 150;
+    int fiber_cost = 2;   // 2$/m
+    int tranceiver_cost[2];
+    tranceiver_cost[0] = 800;
+    tranceiver_cost[1] = 1000; 
+    fc_test.cost_model(ocs_ports, distance_infor, copper_cost, fiber_cost, tranceiver_cost);
+
     // fc_test.fc_topo_gene();
     // fc_test.path_infor_gene();
     // fc_test.display_all_path();
