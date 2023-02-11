@@ -1461,7 +1461,10 @@ void Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed){
     int bipart_band_other[switches/2];
     int max_rand_switch, max_rand_index;
     int max_other_switch, max_other_index;
+    int band;
+    int min_band = 1e7;
     for(int m = 0; m < 100; m++){
+        band = 0;
         max_rand_index = 0;
         max_other_index = 0;
         max_other_switch = 0;
@@ -1475,12 +1478,15 @@ void Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed){
                 for(int k = 1; k < degree; k++){
                     dst = topo_index[index_basic[j]+rand_switch*degree+k];
                     if(rand_switches_label[dst] == 0){
+                        band++;
                         bipart_band_rand[i]++;
                         bipart_band_other[other_index_table[dst]]++;
                     }
                 }
             }
         }
+        if(band < min_band)
+            min_band = band;
 
         for(int i = 0; i < switches/2; i++){
             other_switch = other_switches[i];
@@ -1515,11 +1521,9 @@ void Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed){
         int temp = rand_switches[max_rand_index];
         rand_switches[max_rand_index] = other_switches[max_other_index];
         other_switches[max_other_index] = temp;
-        cout << max_rand_switch << " " << rand_switches[max_rand_index] << " " << max_rand_index << endl;
-        cout << max_other_switch << " " << other_switches[max_other_index] << " " << max_other_index << endl;
-        cout << endl;
+        // cout << max_rand_switch << " " << rand_switches[max_rand_index] << " " << max_rand_index << endl;
+        // cout << max_other_switch << " " << other_switches[max_other_index] << " " << max_other_index << endl;
+        // cout <<  min_band <<endl;
     }
-
-
-
+    cout <<  min_band <<endl;
 }
