@@ -75,7 +75,7 @@ int main(){
     // }
     // cout << min_band << endl;
 
-    fc_test.bisection_bandwidth_byExchange(1);
+    fc_test.bisection_bandwidth_byExchange(9);
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     return 0;
