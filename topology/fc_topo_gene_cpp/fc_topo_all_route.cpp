@@ -1371,3 +1371,11 @@ void Fc_topo_all_route::cost_model(int ocs_ports, int* distance_infor, int coppe
     }
     cout << "The cabling cost of Fc topo: "<<total_cost << "$" << endl;
 }
+
+void Fc_topo_all_route::bisection_bandwidth(int random_send, int random_times){
+    if(topo_index == NULL){
+        cout << "Please generate topology!" << endl;
+        exit(1);
+    }
+
+}
