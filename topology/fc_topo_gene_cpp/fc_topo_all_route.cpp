@@ -302,6 +302,10 @@ void Fc_topo_all_route::search_path(int root, node_path_infor* node_infor){
 
 
 void Fc_topo_all_route::path_infor_gene(void){
+    if(topo_index == NULL){
+        cout << "Please generate topo!" << endl;
+        exit(1);
+    }
     int remain_degree = vir_layer_degree[layer_num-1];
     int max_path = 1;
     max_path *= remain_degree + 1;
@@ -351,6 +355,10 @@ void Fc_topo_all_route::display_all_path(void){
 
 
 void Fc_topo_all_route::build_search_dic(void){
+    if(all_path_infor == NULL){
+        cout<< "Please generate index dic!" << endl;
+        exit(1);
+    }
     topo_dic = new topo_dic_infor[switches];
     for(int i = 0; i < switches; i++){
         topo_dic[i].index_table = new int[switches];
@@ -657,6 +665,10 @@ void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label,
 
 
 void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, int report_inter, bool if_store, bool store_part){
+    if(topo_dic == NULL){
+        cout << "Please generate topo dic!" << endl;
+        exit(1);
+    }
     int total_pairs = switches*(switches-1)/2;
     int average = ceil(total_pairs/float(thread_num));
     int count = 0;
@@ -970,6 +982,10 @@ void Fc_topo_all_route::thread_all_path(vector<int*> route_pairs, int thread_lab
 
 
 void Fc_topo_all_route::pthread_for_all_path(int thread_num, bool if_report, int report_inter, bool if_store){
+    if(topo_dic == NULL){
+        cout << "Please generate topo dic!" << endl;
+        exit(1);
+    }
     int total_pairs = switches*(switches-1)/2;
     int average = ceil(total_pairs/float(thread_num));
     int count = 0;
@@ -1348,5 +1364,5 @@ void Fc_topo_all_route::cost_model(int ocs_ports, int* distance_infor, int coppe
         }
         basic_index += degree*switches;
     }
-    cout << total_cost << endl;
+    cout << "The cabling cost of Fc topo: "<<total_cost << "$" << endl;
 }
