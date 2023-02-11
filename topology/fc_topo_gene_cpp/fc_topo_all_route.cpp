@@ -257,6 +257,7 @@ void Fc_topo_all_route::fc_topo_gene_1v1(void){
         delete[] vertex_check[i];
     }
     delete[] vertex_check;
+    cout << "Topology constructed" << endl;
 }
 
 
@@ -1508,4 +1509,34 @@ int Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed, int cycle
         // cout <<  min_band <<endl;
     }
     return min_band;
+}
+
+
+void Fc_topo_all_route::b_bandwidth_onethread(int thread_label, int rand_interval, int cycle_times, int* band_find){
+    int min_band = 1e7;
+    int band;
+    for(int i = thread_label*rand_interval; i < (thread_label+1)*rand_interval; i++){
+        band = bisection_bandwidth_byExchange(i, cycle_times);
+        if(band < min_band)
+            min_band = band;
+    }
+    *band_find = min_band;
+    cout << "Thread " << thread_label << ":" << min_band << endl;
+}
+
+
+void Fc_topo_all_route::multi_thread_b_bandwidth(int thread_num, int rand_interval, int cycle_times){
+    thread* th = new thread[thread_num];
+    int band_find[thread_num];
+    for(int i = 0; i < thread_num; i++){
+        th[i] = thread(&Fc_topo_all_route::b_bandwidth_onethread, this, i, rand_interval, cycle_times, band_find+i);
+    }
+    for(int i = 0; i < thread_num; i++)
+        th[i].join();
+    int min_band = 1e7;
+    for(int i = 0; i < thread_num; i++){
+        if(band_find[i] < min_band)
+            min_band = band_find[i];
+    }
+    cout << "Min band: " << min_band << endl;
 }

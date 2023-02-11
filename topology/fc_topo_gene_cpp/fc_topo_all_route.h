@@ -74,4 +74,6 @@ class Fc_topo_all_route{
 
         void cost_model(int ocs_ports, int* distance_infor, int copper_tor_cost, int fiber_cost, int* tranceiver_cost);
         int bisection_bandwidth_byExchange(int random_seed, int cycle_times);
+        void b_bandwidth_onethread(int thread_label, int rand_interval, int cycle_times, int* band_find);
+        void multi_thread_b_bandwidth(int thread_num, int rand_interval, int cycle_times);
 };
