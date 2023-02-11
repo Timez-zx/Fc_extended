@@ -55,6 +55,7 @@ class Fc_topo_all_route{
         // generate topology
         int  change_base(int basic);
         void fc_topo_gene(void);
+        // two mode, fast mode can build fast but has high prob to fail
         void fc_topo_gene_1v1(int fast_or_not);
         void search_path(int root, node_path_infor* node_infor);
         void path_infor_gene(void);

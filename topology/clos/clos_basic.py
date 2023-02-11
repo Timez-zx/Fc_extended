@@ -41,6 +41,7 @@ class clos_basic():
             num_tors = math.ceil(num_servers / host_per_tor)
             num_pods = math.ceil(num_tors / eps_port_count * 2)
             if num_pods > eps_port_count:
+                mini_tor_host = host_per_tor
                 continue
             mini_tor_host = host_per_tor
             break
@@ -52,14 +53,16 @@ class clos_basic():
         num_aggrs = (eps_port_count - Tor_hosts) * num_pods
         num_aggr_links_per_core = math.floor(eps_port_count / num_pods)
         num_cores_per_group = math.ceil(eps_port_count / 2 / num_aggr_links_per_core)
-        num_cores = num_cores_per_group * (eps_port_count - host_per_tor)
-        print(num_tors, num_aggrs, num_cores)
+        num_cores = num_cores_per_group * (eps_port_count - Tor_hosts)
+        print(num_tors+num_aggrs+num_cores)
+        return num_cores*num_pods*num_aggr_links_per_core/2
 
 
 
 if __name__ == "__main__":
 
-    clos_temp = clos_basic(20000, 12000, 32)
-    clos_temp.bisection_topo(24)
+    clos_temp = clos_basic(20000, 10000, 32)
+    bisection_band = clos_temp.bisection_topo(25)
+    print(bisection_band)
     # throughput = clos_temp.cost_equivalent_clos()
     # print(throughput)

@@ -1459,15 +1459,6 @@ int Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed, int cycle
                 }
             }
         }
-        if(band < min_band){
-            min_band = band;
-            equal_count = 0;
-        }
-        else if(band == min_band){
-            equal_count++;
-            if(equal_count > cycle_times)
-                break;
-        }
 
         for(int i = 0; i < switches/2; i++){
             other_switch = other_switches[i];
@@ -1476,11 +1467,22 @@ int Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed, int cycle
                 for(int k = 1; k < degree; k++){
                     dst = topo_index[index_basic[j]+other_switch*degree+k];
                     if(rand_switches_label[dst] == 1){
+                        band++;
                         bipart_band_other[i]++;
                         bipart_band_rand[rand_index_table[dst]]++;
                     }
                 }
             }
+        }
+
+        if(band < min_band){
+            min_band = band;
+            equal_count = 0;
+        }
+        else if(band == min_band){
+            equal_count++;
+            if(equal_count > cycle_times)
+                break;
         }
 
         for(int i = 0; i < switches/2; i++){
