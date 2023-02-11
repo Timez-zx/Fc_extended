@@ -1377,5 +1377,37 @@ void Fc_topo_all_route::bisection_bandwidth(int random_send, int random_times){
         cout << "Please generate topology!" << endl;
         exit(1);
     }
+    int index_basic[layer_num-1];
+    index_basic[0] = 0;
+    for(int i = 1; i < layer_num-1; i++)
+        index_basic[i] = index_basic[i-1] + bipart_degree[i-1]*switches;
+    
+    srand(random_seed);
+    int rand_switches[switches/2];
+    int rand_switches_label[switches];
+    memset(rand_switches_label, 0, switches*sizeof(int));
+    for(int i = 0; i < switches/2; i++){
+        rand_switches[i] = rand()%switches;
+        while(rand_switches_label[rand_switches[i]])
+            rand_switches[i] = rand()%switches;
+        rand_switches_label[rand_switches[i]] = 1;
+    }
+
+    int rand_switch;
+    int degree;
+    int dst;
+    int bipart_band = 0;
+    for(int i = 0; i < switches/2; i++){
+        rand_switch = rand_switches[i];
+        for(int j = 0; j < layer_num-1; j++){
+            degree = bipart_degree[j];
+            for(int k = 1; k < degree; k++){
+                dst = topo_index[index_basic[j]+rand_switch*degree+k];
+                if(rand_switches_label[dst] == 0)
+                    bipart_band++;
+            }
+        }
+    }
+    cout << bipart_band << endl;
 
 }
