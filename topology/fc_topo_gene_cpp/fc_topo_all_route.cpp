@@ -1476,7 +1476,6 @@ int Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed, int cycle
                 }
             }
         }
-
         if(band < min_band){
             min_band = band;
             equal_count = 0;
@@ -1523,6 +1522,10 @@ int Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed, int cycle
         // cout << max_other_switch << " " << other_switches[max_other_index] << " " << max_other_index << endl;
         // cout <<  min_band <<endl;
     }
+    // for(int i = 0; i < switches/2; i++){
+    //     cout << rand_switches[i] << " ";
+    // }
+    // cout << endl;
     return min_band;
 }
 
