@@ -27,7 +27,7 @@ int main(){
     int vir_layer_degree[] = {4, 8, 8, 4};
     int layer_num = 4;
     int is_random = 1;
-    int random_seed = 1;
+    int random_seed = 2;
 
     // Fc_edge_disjoin_cost_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     Fc_edge_disjoin_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
@@ -66,7 +66,16 @@ int main(){
     // tranceiver_cost[2] = 1000; 
     // fc_test.cost_model(ocs_ports, distance_infor, copper_cost, fiber_cost, tranceiver_cost);
 
-    fc_test.bisection_bandwidth(1, 100);
+    // int band;
+    // int min_band = 1e7;
+    // for(int i = 0; i < 1; i++){
+    //     band = fc_test.bisection_bandwidth_byRand(i, 10000000);
+    //     if(band < min_band)
+    //         min_band = band;
+    // }
+    // cout << min_band << endl;
+
+    fc_test.bisection_bandwidth_byExchange(1);
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     return 0;

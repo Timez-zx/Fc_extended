@@ -73,5 +73,6 @@ class Fc_topo_all_route{
         void gene_worse_case(float **flow_matrix);
 
         void cost_model(int ocs_ports, int* distance_infor, int copper_tor_cost, int fiber_cost, int* tranceiver_cost);
-        void bisection_bandwidth(int random_send, int random_times);
+        int bisection_bandwidth_byRand(int random_send, int random_times);
+        void bisection_bandwidth_byExchange(int random_seed);
 };
