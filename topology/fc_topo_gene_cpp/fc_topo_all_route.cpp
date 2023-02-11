@@ -1343,19 +1343,19 @@ void Fc_topo_all_route::cost_model(int ocs_ports, int* distance_infor, int coppe
                 fiber_len_src = src_x + abs(src_y-ocs_y);
                 fiber_len_dst = dst_x + abs(dst_y-ocs_y);
                 total_cost += (fiber_len_dst+fiber_len_src)*fiber_cost;
-                if(fiber_len_src > 100 && fiber_len_src <= 500)
-                    total_cost += 800;
-                else if(fiber_len_src > 500)
-                    total_cost += 1000;
+                if(fiber_len_src <= 100)
+                    total_cost += tranceiver_cost[0];
+                else if(fiber_len_src > 100 && fiber_len_src <= 500)
+                    total_cost += tranceiver_cost[1];
                 else
-                    total_cost += 500;
+                    total_cost += tranceiver_cost[2];
                 
-                if(fiber_len_dst > 100 && fiber_len_dst <= 500)
-                    total_cost += 800;
-                else if(fiber_len_dst > 500)
-                    total_cost += 1000;
+                if(fiber_len_dst <= 100)
+                    total_cost += tranceiver_cost[0];
+                else if(fiber_len_dst > 100 && fiber_len_dst <= 500)
+                    total_cost += tranceiver_cost[1];
                 else
-                    total_cost += 500;
+                    total_cost += tranceiver_cost[2];
                 if(ocs_port_count == ocs_ports - 2){
                     ocs_port_count = 0;
                     ocs_label++;
