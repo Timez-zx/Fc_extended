@@ -1372,53 +1372,8 @@ void Fc_topo_all_route::cost_model(int ocs_ports, int* distance_infor, int coppe
     cout << "The cabling cost of Fc topo: "<<total_cost << "$" << endl;
 }
 
-int Fc_topo_all_route::bisection_bandwidth_byRand(int random_send, int random_times){
-    if(topo_index == NULL){
-        cout << "Please generate topology!" << endl;
-        exit(1);
-    }
-    int index_basic[layer_num-1];
-    index_basic[0] = 0;
-    for(int i = 1; i < layer_num-1; i++)
-        index_basic[i] = index_basic[i-1] + bipart_degree[i-1]*switches;
-    
-    srand(random_seed);
-    int bipart_band;
-    int rand_switches[switches/2];
-    int rand_switches_label[switches];
-    int rand_switch;
-    int degree;
-    int dst;
-    int min_bipart_band = switches*(ports-hosts);
-    for(int m = 0; m < random_times; m++){
-        bipart_band = 0;
-        memset(rand_switches_label, 0, switches*sizeof(int));
-        for(int i = 0; i < switches/2; i++){
-            rand_switches[i] = rand()%switches;
-            while(rand_switches_label[rand_switches[i]])
-                rand_switches[i] = rand()%switches;
-            rand_switches_label[rand_switches[i]] = 1;
-        }
 
-        for(int i = 0; i < switches/2; i++){
-            rand_switch = rand_switches[i];
-            for(int j = 0; j < layer_num-1; j++){
-                degree = bipart_degree[j];
-                for(int k = 1; k < degree; k++){
-                    dst = topo_index[index_basic[j]+rand_switch*degree+k];
-                    if(rand_switches_label[dst] == 0)
-                        bipart_band++;
-                }
-            }
-        }
-        if(bipart_band < min_bipart_band)
-            min_bipart_band = bipart_band;
-    }
-    return min_bipart_band;
-}
-
-
-void Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed){
+int Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed, int cycle_times){
     if(topo_index == NULL){
         cout << "Please generate topology!" << endl;
         exit(1);
@@ -1463,7 +1418,14 @@ void Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed){
     int max_other_switch, max_other_index;
     int band;
     int min_band = 1e7;
-    for(int m = 0; m < 100; m++){
+    int equal_count = 0;
+    int pick_count_other, pick_count_rand;
+    int pick_rand[switches/2];
+    int pick_other[switches/2];
+    int rand_pick_index, other_pick_index;
+    while(true){
+        pick_count_other = 0;
+        pick_count_rand = 0;
         band = 0;
         max_rand_index = 0;
         max_other_index = 0;
@@ -1485,8 +1447,15 @@ void Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed){
                 }
             }
         }
-        if(band < min_band)
+        if(band < min_band){
             min_band = band;
+            equal_count = 0;
+        }
+        else if(band == min_band){
+            equal_count++;
+            if(equal_count > cycle_times)
+                break;
+        }
 
         for(int i = 0; i < switches/2; i++){
             other_switch = other_switches[i];
@@ -1512,6 +1481,19 @@ void Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed){
                 max_other_index = i;
             }
         }
+
+        for(int i = 0; i < switches/2; i++){
+            if(bipart_band_rand[i] == max_rand_switch)
+                pick_rand[pick_count_rand++] = i;
+            if(bipart_band_other[i] == max_other_switch)
+                pick_other[pick_count_other++] = i;
+        }
+        
+        rand_pick_index = rand()%pick_count_rand;
+        other_pick_index = rand()%pick_count_other;
+        max_rand_index = pick_rand[rand_pick_index];
+        max_other_index = pick_other[other_pick_index];
+
         rand_switches_label[rand_switches[max_rand_index]] = 0;
         rand_switches_label[other_switches[max_other_index]] = 1;
         rand_index_table[rand_switches[max_rand_index]] = -1;
@@ -1525,5 +1507,5 @@ void Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed){
         // cout << max_other_switch << " " << other_switches[max_other_index] << " " << max_other_index << endl;
         // cout <<  min_band <<endl;
     }
-    cout <<  min_band <<endl;
+    return min_band;
 }

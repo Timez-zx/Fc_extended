@@ -66,16 +66,14 @@ int main(){
     // tranceiver_cost[2] = 1000; 
     // fc_test.cost_model(ocs_ports, distance_infor, copper_cost, fiber_cost, tranceiver_cost);
 
-    // int band;
-    // int min_band = 1e7;
-    // for(int i = 0; i < 1; i++){
-    //     band = fc_test.bisection_bandwidth_byRand(i, 10000000);
-    //     if(band < min_band)
-    //         min_band = band;
-    // }
-    // cout << min_band << endl;
-
-    fc_test.bisection_bandwidth_byExchange(8);
+    int min_band = 1e7;
+    int band;
+    for(int i = 0; i < 1000; i++){
+        band = fc_test.bisection_bandwidth_byExchange(i, 1000);
+        if(band < min_band)
+            min_band = band;
+    }
+    cout << min_band << endl;
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     return 0;
