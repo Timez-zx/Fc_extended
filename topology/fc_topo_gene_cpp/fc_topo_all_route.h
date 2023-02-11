@@ -73,4 +73,5 @@ class Fc_topo_all_route{
         void gene_worse_case(float **flow_matrix);
 
         void cost_model(int ocs_ports, int* distance_infor, int copper_tor_cost, int fiber_cost, int* tranceiver_cost);
+        
 };
