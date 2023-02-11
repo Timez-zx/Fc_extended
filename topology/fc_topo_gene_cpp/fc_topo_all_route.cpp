@@ -125,10 +125,11 @@ void Fc_topo_all_route::fc_topo_gene(void){
     bipart_degree[bipart_count] = 0;
     delete[] switch_array;
     delete[] degrees;
+    cout << "Topology constructed" << endl;
 }
 
 
-void Fc_topo_all_route::fc_topo_gene_1v1(void){
+void Fc_topo_all_route::fc_topo_gene_1v1(int fast_or_not){
     int sw_ports = ports - hosts;
     int bipart_num = layer_num - 1;
     int degree;
@@ -193,6 +194,7 @@ void Fc_topo_all_route::fc_topo_gene_1v1(void){
                 src_choose[k] = k;
             src = 0;
             while(two_count < switches){
+                int count_break = 0;
                 rand_index = rand()%poss_connect_num[src];
                 dst = poss_connect[src][rand_index];
                 degrees[src]++;
@@ -214,6 +216,11 @@ void Fc_topo_all_route::fc_topo_gene_1v1(void){
                     rand_index = rand()%poss_connect_num[src];
                     dst = poss_connect[src][rand_index];
                     degrees[dst]++;
+                    if(count_break > 1e6){
+                        cout << "Can't construct, please change the rand seed or use other mode!" << endl;
+                        exit(1);
+                    }
+                    count_break++;
                     if(degrees[dst] == 1)
                         zero_count--;
                     if(degrees[dst] == 2)
@@ -234,16 +241,20 @@ void Fc_topo_all_route::fc_topo_gene_1v1(void){
                 // cout << src << "->" << dst << endl;
                 remove(src_choose.begin(), src_choose.begin()+src_remain, src);
                 src_remain--;
-                int mininum = switches+1;
-                for(int k = 0; k < src_remain; k++){
-                    int temp_count = 0;
-                    for(int m = 0; m < switches; m++){
-                        temp_count += degree_label[m] | vertex_check[src_choose[k]][m];
-                    }
-                    temp_count = switches - temp_count;
-                    if(temp_count <= mininum){
-                        src = src_choose[k];
-                        mininum = temp_count;
+                if(fast_or_not)
+                    src++;
+                else{
+                    int mininum = switches+1;
+                    for(int k = 0; k < src_remain; k++){
+                        int temp_count = 0;
+                        for(int m = 0; m < switches; m++){
+                            temp_count += degree_label[m] | vertex_check[src_choose[k]][m];
+                        }
+                        temp_count = switches - temp_count;
+                        if(temp_count <= mininum){
+                            src = src_choose[k];
+                            mininum = temp_count;
+                        }
                     }
                 }
             }
