@@ -55,6 +55,7 @@ class clos_basic():
         num_cores_per_group = math.ceil(eps_port_count / 2 / num_aggr_links_per_core)
         num_cores = num_cores_per_group * (eps_port_count - Tor_hosts)
         print(num_tors+num_aggrs+num_cores)
+        print(num_tors, num_aggrs, num_cores, num_pods)
         return num_cores*num_pods*num_aggr_links_per_core/2
     
     def topo_cost(self, Tor_hosts, inter_distance):
@@ -95,7 +96,6 @@ class clos_basic():
                 else:
                     total_cost += 2*(eps_port_count-Tor_hosts)*1000
 
-
         for core in range(num_cores):
             core_loc = math.floor((core+32)/64)*inter_distance
             for link_num in range(num_aggr_links_per_core):
@@ -116,9 +116,9 @@ class clos_basic():
 
 
 if __name__ == "__main__":
-    clos_temp = clos_basic(20000, 4800, 32)
-    # bisection_band = clos_temp.bisection_topo(26)
-    # print(bisection_band)
-    clos_temp.topo_cost(16, 2)
+    clos_temp = clos_basic(20000, 7200, 32)
+    bisection_band = clos_temp.bisection_topo(16)
+    print(bisection_band)
+    # clos_temp.topo_cost(16, 2)
     # throughput = clos_temp.cost_equivalent_clos()
     # print(throughput)
