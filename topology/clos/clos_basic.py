@@ -47,6 +47,14 @@ class clos_basic():
         if(Tor_hosts < mini_tor_host):
             print("Tor hosts must be larger than", mini_tor_host)
             exit(1)
+        num_tors = math.ceil(num_servers / Tor_hosts)
+        num_pods = math.ceil(num_tors / eps_port_count * 2)
+        num_aggrs = (eps_port_count - Tor_hosts) * num_pods
+        num_aggr_links_per_core = math.floor(eps_port_count / num_pods)
+        num_cores_per_group = math.ceil(eps_port_count / 2 / num_aggr_links_per_core)
+        num_cores = num_cores_per_group * (eps_port_count - host_per_tor)
+        print(num_tors, num_aggrs, num_cores)
+
 
 
 if __name__ == "__main__":
