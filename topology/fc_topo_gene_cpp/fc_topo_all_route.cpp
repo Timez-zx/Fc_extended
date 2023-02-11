@@ -1332,7 +1332,6 @@ void Fc_topo_all_route::cost_model(int ocs_ports, int* distance_infor, int coppe
     int ocs_number = ceil(switches*(ports-hosts)/float(ocs_ports));
     int total_cost = 0;
     total_cost += switches*hosts*copper_tor_cost;
-
     int basic_index = 0;
     int degree;
     int src, dst;
@@ -1342,6 +1341,7 @@ void Fc_topo_all_route::cost_model(int ocs_ports, int* distance_infor, int coppe
     int ocs_label = 0;
     int ocs_y = 0;
     int fiber_len_src, fiber_len_dst;
+    int fiber_len = 0;
     for(int i = 0; i < layer_num-1; i++){
         degree = bipart_degree[i];
         for(int j = 0; j < switches; j++){
@@ -1355,13 +1355,15 @@ void Fc_topo_all_route::cost_model(int ocs_ports, int* distance_infor, int coppe
                 fiber_len_src = src_x + abs(src_y-ocs_y);
                 fiber_len_dst = dst_x + abs(dst_y-ocs_y);
                 total_cost += (fiber_len_dst+fiber_len_src)*fiber_cost;
+                fiber_len += fiber_len_dst+fiber_len_src;
                 if(fiber_len_src <= 100)
                     total_cost += tranceiver_cost[0];
-                else if(fiber_len_src > 100 && fiber_len_src <= 500)
+                else if(fiber_len_src > 100 && fiber_len_src <= 500){
                     total_cost += tranceiver_cost[1];
-                else
+                }
+                else{
                     total_cost += tranceiver_cost[2];
-                
+                }
                 if(fiber_len_dst <= 100)
                     total_cost += tranceiver_cost[0];
                 else if(fiber_len_dst > 100 && fiber_len_dst <= 500)
@@ -1381,7 +1383,7 @@ void Fc_topo_all_route::cost_model(int ocs_ports, int* distance_infor, int coppe
         }
         basic_index += degree*switches;
     }
-    cout << "The cabling cost of Fc topo: "<<total_cost << "$" << endl;
+    cout << "The cabling cost of Fc topo: "<<total_cost << "$" << " " << fiber_len <<endl;
 }
 
 
