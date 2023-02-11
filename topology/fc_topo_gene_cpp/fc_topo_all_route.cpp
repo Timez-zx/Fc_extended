@@ -1461,54 +1461,64 @@ void Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed){
     int bipart_band_other[switches/2];
     int max_rand_switch, max_rand_index;
     int max_other_switch, max_other_index;
-
-    max_rand_index = 0;
-    max_other_index = 0;
-    max_other_switch = 0;
-    max_rand_switch = 0;
-    memset(bipart_band_rand, 0, switches/2*sizeof(int));
-    memset(bipart_band_other, 0, switches/2*sizeof(int));
-    for(int i = 0; i < switches/2; i++){
-        rand_switch = rand_switches[i];
-        for(int j = 0; j < layer_num-1; j++){
-            degree = bipart_degree[j];
-            for(int k = 1; k < degree; k++){
-                dst = topo_index[index_basic[j]+rand_switch*degree+k];
-                if(rand_switches_label[dst] == 0){
-                    bipart_band_rand[i]++;
-                    bipart_band_other[other_index_table[dst]]++;
+    for(int m = 0; m < 100; m++){
+        max_rand_index = 0;
+        max_other_index = 0;
+        max_other_switch = 0;
+        max_rand_switch = 0;
+        memset(bipart_band_rand, 0, switches/2*sizeof(int));
+        memset(bipart_band_other, 0, switches/2*sizeof(int));
+        for(int i = 0; i < switches/2; i++){
+            rand_switch = rand_switches[i];
+            for(int j = 0; j < layer_num-1; j++){
+                degree = bipart_degree[j];
+                for(int k = 1; k < degree; k++){
+                    dst = topo_index[index_basic[j]+rand_switch*degree+k];
+                    if(rand_switches_label[dst] == 0){
+                        bipart_band_rand[i]++;
+                        bipart_band_other[other_index_table[dst]]++;
+                    }
                 }
             }
         }
-    }
 
-    for(int i = 0; i < switches/2; i++){
-        other_switch = other_switches[i];
-        for(int j = 0; j < layer_num-1; j++){
-            degree = bipart_degree[j];
-            for(int k = 1; k < degree; k++){
-                dst = topo_index[index_basic[j]+other_switch*degree+k];
-                if(rand_switches_label[dst] == 1){
-                    bipart_band_other[i]++;
-                    bipart_band_rand[rand_index_table[dst]]++;
+        for(int i = 0; i < switches/2; i++){
+            other_switch = other_switches[i];
+            for(int j = 0; j < layer_num-1; j++){
+                degree = bipart_degree[j];
+                for(int k = 1; k < degree; k++){
+                    dst = topo_index[index_basic[j]+other_switch*degree+k];
+                    if(rand_switches_label[dst] == 1){
+                        bipart_band_other[i]++;
+                        bipart_band_rand[rand_index_table[dst]]++;
+                    }
                 }
             }
         }
-    }
 
-    for(int i = 0; i < switches/2; i++){
-        if(bipart_band_rand[i] > max_rand_switch){
-            max_rand_switch = bipart_band_rand[i];
-            max_rand_index = i;
+        for(int i = 0; i < switches/2; i++){
+            if(bipart_band_rand[i] > max_rand_switch){
+                max_rand_switch = bipart_band_rand[i];
+                max_rand_index = i;
+            }
+            if(bipart_band_other[i] > max_other_switch){
+                max_other_switch = bipart_band_other[i];
+                max_other_index = i;
+            }
         }
-        if(bipart_band_other[i] > max_other_switch){
-            max_other_switch = bipart_band_other[i];
-            max_other_index = i;
-        }
+        rand_switches_label[rand_switches[max_rand_index]] = 0;
+        rand_switches_label[other_switches[max_other_index]] = 1;
+        rand_index_table[rand_switches[max_rand_index]] = -1;
+        other_index_table[other_switches[max_other_index]] = -1;
+        rand_index_table[other_switches[max_other_index]] = max_rand_index;
+        other_index_table[rand_switches[max_rand_index]] = max_other_index;
+        int temp = rand_switches[max_rand_index];
+        rand_switches[max_rand_index] = other_switches[max_other_index];
+        other_switches[max_other_index] = temp;
+        cout << max_rand_switch << " " << rand_switches[max_rand_index] << " " << max_rand_index << endl;
+        cout << max_other_switch << " " << other_switches[max_other_index] << " " << max_other_index << endl;
+        cout << endl;
     }
-    cout << max_rand_switch << " " << rand_switches[max_rand_index] << endl;
-    cout << max_other_switch << " " << other_switches[max_other_index] << endl;
-
 
 
 
