@@ -36,7 +36,7 @@ int main(){
     // int layer_num = 4;
     // int is_random = 1;
     // int random_seed = 2;
-    int switches = 500;
+    int switches = 200;
     int hosts = 14;
     int ports = 32;
     int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
@@ -61,12 +61,12 @@ int main(){
     bool store_part = false;
     // fc_test.pthread_for_all_route(4, if_report, report_inter, if_store, store_part);
     string mode = "ksp";
-    int ksp_num = 32;
+    int ksp_num = 16;
     fc_test.pthread_for_all_path(1, if_report, report_inter, if_store, mode, ksp_num);
 
     // bool if_search_map = true;
     // fc_test.find_all_route(4, 5000, if_search_map);
-    double wr_ave = fc_test.throughput_test("wr", 1);
+    double wr_ave = fc_test.throughput_test("ur", 1);
 
     // int ocs_ports = 400;
     // int distance_infor[4];
