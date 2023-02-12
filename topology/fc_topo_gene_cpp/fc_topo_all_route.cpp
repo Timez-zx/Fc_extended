@@ -934,12 +934,16 @@ uint16_t Fc_topo_all_route::extract_all_path(int src, int dst, bool if_display, 
                 if(real_node_path[i][j]%switches != real_node_path[i][j+1]%switches)
                     path_real_len[i]++;
             }
-            cout << path_real_len[i] << " ";
         }
-        cout << endl;
         sort(len_index, len_index + real_node_path.size(),
             [&](const int& a, const int& b) {return (path_real_len[a] < path_real_len[b]);});
         
+        for(int i = 0; i < ksp_num; i++){
+            for(int j = 0; j < real_node_path[len_index[i]].size(); j++){
+                return_path[data_count+j] = real_node_path[len_index[i]][j];
+            }
+            data_count += real_node_path[len_index[i]].size();
+        }     
     }
     else{
         *path_num = real_node_path.size();
@@ -995,7 +999,6 @@ void Fc_topo_all_route::thread_all_path(vector<int*> route_pairs, int thread_lab
                 store_info_len.clear();
                 store_count = 0;
             }
-            exit(1);
         }
     }
     if(if_store){

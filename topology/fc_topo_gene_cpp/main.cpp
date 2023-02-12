@@ -36,7 +36,7 @@ int main(){
     // int layer_num = 4;
     // int is_random = 1;
     // int random_seed = 2;
-    int switches = 50;
+    int switches = 500;
     int hosts = 14;
     int ports = 32;
     int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
@@ -66,7 +66,7 @@ int main(){
 
     // bool if_search_map = true;
     // fc_test.find_all_route(4, 5000, if_search_map);
-    // double wr_ave = fc_test.throughput_test("wr", 1);
+    double wr_ave = fc_test.throughput_test("wr", 1);
 
     // int ocs_ports = 400;
     // int distance_infor[4];
