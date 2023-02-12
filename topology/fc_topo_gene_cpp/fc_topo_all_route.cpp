@@ -924,16 +924,21 @@ uint16_t Fc_topo_all_route::extract_all_path(int src, int dst, bool if_display, 
 
     uint16_t data_count = 0;
     int path_real_len[real_node_path.size()];
+    int len_index[real_node_path.size()];
     memset(path_real_len, 0, sizeof(int)*real_node_path.size());
     if(mode == "ksp" && ksp_num < real_node_path.size()){
         *path_num = ksp_num;
         for(int i = 0; i < real_node_path.size(); i++){
+            len_index[i] = i;
             for(int j = 0; j < real_node_path[i].size()-1; j++){
-                if(real_node_path[i][j] != real_node_path[i][j+1])
+                if(real_node_path[i][j]%switches != real_node_path[i][j+1]%switches)
                     path_real_len[i]++;
             }
+            cout << path_real_len[i] << " ";
         }
-
+        cout << endl;
+        sort(len_index, len_index + real_node_path.size(),
+            [&](const int& a, const int& b) {return (path_real_len[a] < path_real_len[b]);});
         
     }
     else{
@@ -990,6 +995,7 @@ void Fc_topo_all_route::thread_all_path(vector<int*> route_pairs, int thread_lab
                 store_info_len.clear();
                 store_count = 0;
             }
+            exit(1);
         }
     }
     if(if_store){
