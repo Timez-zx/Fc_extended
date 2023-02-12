@@ -1387,7 +1387,7 @@ void Fc_topo_all_route::cost_model(int ocs_ports, int* distance_infor, int coppe
 }
 
 
-int Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed, int cycle_times){
+int Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed, int cycle_times, int poss_base){
     if(topo_index == NULL){
         cout << "Please generate topology!" << endl;
         exit(1);
@@ -1437,6 +1437,8 @@ int Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed, int cycle
     int pick_rand[switches/2];
     int pick_other[switches/2];
     int rand_pick_index, other_pick_index;
+    float possi;
+    float compare;
     while(true){
         pick_count_other = 0;
         pick_count_rand = 0;
@@ -1508,6 +1510,13 @@ int Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed, int cycle
         other_pick_index = rand()%pick_count_other;
         max_rand_index = pick_rand[rand_pick_index];
         max_other_index = pick_other[other_pick_index];
+        
+        possi = equal_count/float(cycle_times);
+        compare = (rand()%100000+1)/float(100000);
+        if(compare < possi/poss_base){
+            max_rand_index = rand()%(switches/2);
+            max_other_index = rand()%(switches/2);
+        }
 
         rand_switches_label[rand_switches[max_rand_index]] = 0;
         rand_switches_label[other_switches[max_other_index]] = 1;
@@ -1530,11 +1539,11 @@ int Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed, int cycle
 }
 
 
-void Fc_topo_all_route::b_bandwidth_onethread(int thread_label, int rand_interval, int cycle_times, int* band_find){
+void Fc_topo_all_route::b_bandwidth_onethread(int thread_label, int rand_interval, int cycle_times, int* band_find, int poss_base){
     int min_band = 1e7;
     int band;
     for(int i = thread_label*rand_interval; i < (thread_label+1)*rand_interval; i++){
-        band = bisection_bandwidth_byExchange(i, cycle_times);
+        band = bisection_bandwidth_byExchange(i, cycle_times, poss_base);
         if(band < min_band)
             min_band = band;
     }
@@ -1543,11 +1552,11 @@ void Fc_topo_all_route::b_bandwidth_onethread(int thread_label, int rand_interva
 }
 
 
-void Fc_topo_all_route::multi_thread_b_bandwidth(int thread_num, int rand_interval, int cycle_times){
+void Fc_topo_all_route::multi_thread_b_bandwidth(int thread_num, int rand_interval, int cycle_times, int poss_base){
     thread* th = new thread[thread_num];
     int band_find[thread_num];
     for(int i = 0; i < thread_num; i++){
-        th[i] = thread(&Fc_topo_all_route::b_bandwidth_onethread, this, i, rand_interval, cycle_times, band_find+i);
+        th[i] = thread(&Fc_topo_all_route::b_bandwidth_onethread, this, i, rand_interval, cycle_times, band_find+i, poss_base);
     }
     for(int i = 0; i < thread_num; i++)
         th[i].join();
