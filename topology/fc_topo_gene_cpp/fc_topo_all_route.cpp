@@ -737,7 +737,7 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
 }
 
 
-uint16_t Fc_topo_all_route::extract_all_path(int src, int dst, bool if_display, uint16_t* return_path, uint16_t *path_num){
+uint16_t Fc_topo_all_route::extract_all_path(int src, int dst, bool if_display, string mode, int ksp_num, uint16_t* return_path, uint16_t *path_num){
     vector<vector<int> > route_node_path;
     set<vector<int> > temp_node_path;
     vector<vector<int> > temp_vec;
@@ -922,19 +922,24 @@ uint16_t Fc_topo_all_route::extract_all_path(int src, int dst, bool if_display, 
         cout<< count <<endl;
     }
 
-    *path_num = real_node_path.size();
     uint16_t data_count = 0;
-    for(int i = 0; i < real_node_path.size(); i++){
-        for(int j = 0; j < real_node_path[i].size(); j++){
-            return_path[data_count+j] = real_node_path[i][j];
+    if(mode == "ksp"){
+
+    }
+    else{
+        *path_num = real_node_path.size();
+        for(int i = 0; i < real_node_path.size(); i++){
+            for(int j = 0; j < real_node_path[i].size(); j++){
+                return_path[data_count+j] = real_node_path[i][j];
+            }
+            data_count += real_node_path[i].size();
         }
-        data_count += real_node_path[i].size();
     }
     return data_count;
 }
 
 
-void Fc_topo_all_route::thread_all_path(vector<int*> route_pairs, int thread_label, bool if_report, int report_inter, bool if_store, string store_file) {
+void Fc_topo_all_route::thread_all_path(vector<int*> route_pairs, int thread_label, bool if_report, int report_inter, bool if_store, string store_file, string mode, int ksp_num) {
     int count = 0;
     int store_count = 0;
     uint16_t* temp_infor = new uint16_t[switches*1000];
@@ -950,7 +955,7 @@ void Fc_topo_all_route::thread_all_path(vector<int*> route_pairs, int thread_lab
         ofs_len = fopen(len_path.c_str(), "w");
     }
     for(int i = 0; i < route_pairs.size(); i++){
-        uint16_t data_num  = extract_all_path(route_pairs[i][0], route_pairs[i][1], false, temp_infor, &path_num);
+        uint16_t data_num  = extract_all_path(route_pairs[i][0], route_pairs[i][1], false, mode, ksp_num, temp_infor, &path_num);
         if(if_report){
             count++;
             if(count % report_inter == 0){
@@ -993,7 +998,7 @@ void Fc_topo_all_route::thread_all_path(vector<int*> route_pairs, int thread_lab
 }
 
 
-void Fc_topo_all_route::pthread_for_all_path(int thread_num, bool if_report, int report_inter, bool if_store){
+void Fc_topo_all_route::pthread_for_all_path(int thread_num, bool if_report, int report_inter, bool if_store, string mode, int ksp_num){
     if(topo_dic == NULL){
         cout << "Please generate topo dic!" << endl;
         exit(1);
@@ -1047,7 +1052,7 @@ void Fc_topo_all_route::pthread_for_all_path(int thread_num, bool if_report, int
     }
     thread* th = new thread[thread_num];
     for(int i = 0; i < thread_num; i++){
-        th[i] = thread(&Fc_topo_all_route::thread_all_path, this, thread_pairs[i], i, if_report, report_inter, if_store, file_dir_name);
+        th[i] = thread(&Fc_topo_all_route::thread_all_path, this, thread_pairs[i], i, if_report, report_inter, if_store, file_dir_name, mode, ksp_num);
     }
     for(int i = 0; i < thread_num; i++)
         th[i].join();
