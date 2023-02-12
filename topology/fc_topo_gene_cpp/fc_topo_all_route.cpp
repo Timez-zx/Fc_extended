@@ -1527,14 +1527,7 @@ int Fc_topo_all_route::bisection_bandwidth_byExchange(int random_seed, int cycle
         int temp = rand_switches[max_rand_index];
         rand_switches[max_rand_index] = other_switches[max_other_index];
         other_switches[max_other_index] = temp;
-        // cout << max_rand_switch << " " << rand_switches[max_rand_index] << " " << max_rand_index << endl;
-        // cout << max_other_switch << " " << other_switches[max_other_index] << " " << max_other_index << endl;
-        // cout <<  min_band <<endl;
     }
-    // for(int i = 0; i < switches/2; i++){
-    //     cout << rand_switches[i] << " ";
-    // }
-    // cout << endl;
     return min_band;
 }
 
