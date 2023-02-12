@@ -923,8 +923,18 @@ uint16_t Fc_topo_all_route::extract_all_path(int src, int dst, bool if_display, 
     }
 
     uint16_t data_count = 0;
-    if(mode == "ksp"){
+    int path_real_len[real_node_path.size()];
+    memset(path_real_len, 0, sizeof(int)*real_node_path.size());
+    if(mode == "ksp" && ksp_num < real_node_path.size()){
+        *path_num = ksp_num;
+        for(int i = 0; i < real_node_path.size(); i++){
+            for(int j = 0; j < real_node_path[i].size()-1; j++){
+                if(real_node_path[i][j] != real_node_path[i][j+1])
+                    path_real_len[i]++;
+            }
+        }
 
+        
     }
     else{
         *path_num = real_node_path.size();
