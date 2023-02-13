@@ -32,7 +32,13 @@ class Fc_base{
         int random_seed;
 
         Fc_base(int switches, int hosts, int ports, int* vir_layer_degree, int layer_num, int is_random, int random_seed):
-        switches(switches), hosts(hosts), ports(ports), vir_layer_degree(vir_layer_degree), layer_num(layer_num),is_random(is_random), random_seed(random_seed){}
+        switches(switches), hosts(hosts), ports(ports), vir_layer_degree(vir_layer_degree), layer_num(layer_num),is_random(is_random), random_seed(random_seed){
+            if(access("data", 0)){
+                string cmd("mkdir ");
+                cmd += "data";
+                int temp = system(cmd.c_str());
+            }
+        }
 
         ~Fc_base();
         // two mode, fast mode can build fast but has high prob to fail
