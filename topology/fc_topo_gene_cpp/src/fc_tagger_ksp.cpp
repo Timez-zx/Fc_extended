@@ -41,6 +41,7 @@ void Fc_tagger_ksp::search_up_down_ksp(int src, int dst, int path_num, int vc_nu
     int src_inter, dst_inter, src_layer, dst_layer;
     int past_layer = 0;
     int vc_used;
+    int real_path[1000];
 	while(yenAlg.has_next() & i < path_num)
 	{
 		yenAlg.next()->get_path(path, &path_len);
@@ -63,19 +64,29 @@ void Fc_tagger_ksp::search_up_down_ksp(int src, int dst, int path_num, int vc_nu
                 past_layer = src_layer;
         }
 
-        // for(int i = 0; i < 2*(path_len-1); i++){
-        //     cout << layer_pass[i] << " ";
-        // }
-        // cout << endl;
 
         if(vc_used > vc_num)
             continue;
         else{
             i++;
+            // for(int i = 0; i < 2*(path_len-1); i++){
+            //     cout << layer_pass[i] << " ";
+            // }
+            // cout << endl;
             // for(int i = 0; i < path_len; i++){
             //     cout << path[i] << " ";
             // }
-            // cout << endl << endl;
+            // cout << endl;
+            for(int i = 0; i < path_len-1; i++){
+                if(layer_pass[2*i] < layer_pass[2*i+1]){
+                    real_path[2*i] = layer_pass[2*i]*switches + path[i];
+                    real_path[2*i+1] = layer_pass[2*i+1]*switches + path[i+1];
+                }
+                else{
+                    real_path[2*i] = layer_pass[2*i]*switches + path[i] + (layer_num-layer_pass[2*i]-1)*2*switches;
+                    real_path[2*i+1] = layer_pass[2*i+1]*switches + path[i+1] + (layer_num-layer_pass[2*i+1]-1)*2*switches;
+                }
+            }
         }
         
 	}

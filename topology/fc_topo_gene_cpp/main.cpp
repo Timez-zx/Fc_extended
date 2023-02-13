@@ -48,7 +48,7 @@ int main(){
     Fc_tagger_ksp fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     fc_test.fc_topo_gene_1v1(0);
     fc_test.save_graph_infor();
-    fc_test.search_up_down_ksp(0, 1, 16, 1);
+    fc_test.search_up_down_ksp(0, 1, 16, 3);
 
     // fc_test.path_infor_gene();
     // // fc_test.display_all_path();
