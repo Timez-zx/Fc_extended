@@ -5,6 +5,25 @@ void Fc_tagger_ksp::save_graph_infor(){
         cout << "Please generate graph infor first by fc_topo_gene_1v1!" << endl;
         exit(1);
     }
-    gene_path_for_file("data/topo_infor/");
+    string file_dir_name = gene_path_for_file("data/topo_infor/");
+    ofstream ofs("data/topo_infor/" + file_dir_name + "/" + file_dir_name+".txt");
+    int degree;
+    int basic_index = 0;
+    int src, dst;
+    ofs << switches << endl;
+    for(int i = 0; i < layer_num-1; i++){
+        degree = bipart_degree[i];
+        for(int j = 0; j < switches; j++){
+            src = j;
+            for(int k = 1; k < degree; k++){
+                dst = topo_index[basic_index+j*degree+k];
+                ofs << src << " " << dst << " " << 1 << endl;
+            }
+        }
+        
+        basic_index += degree*switches;
+    }
+    ofs.close();
+
 
 }
