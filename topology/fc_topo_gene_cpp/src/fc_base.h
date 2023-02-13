@@ -38,6 +38,8 @@ class Fc_base{
         // two mode, fast mode can build fast but has high prob to fail
         void fc_topo_gene_1v1(int fast_or_not);
 
+        string gene_path_for_file(string path);
+
         double throughput_test(string type, int seed);
         void gene_uniform_random(float **flow_matrix, int seed);
         void gene_worse_case(float **flow_matrix);

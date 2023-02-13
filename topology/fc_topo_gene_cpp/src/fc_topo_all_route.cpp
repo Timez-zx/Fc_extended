@@ -558,24 +558,7 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
 
     string file_dir_name("");
     if(if_store){
-        if(access("data/all_graph_infor", 0)){
-            string cmd("mkdir ");
-            cmd += "data/all_graph_infor";
-            int temp = system(cmd.c_str());
-        }
-        file_dir_name += "sw";
-        file_dir_name += to_string(switches);
-        file_dir_name += "_vir";
-        for(int i = 0; i < layer_num; i++)
-            file_dir_name += to_string(vir_layer_degree[i]);
-        file_dir_name += "_rand";
-        file_dir_name += to_string(is_random*random_seed);
-        if(access(("data/all_graph_infor/" + file_dir_name).c_str(), 0)){
-            string cmd("mkdir ");
-            cmd += "data/all_graph_infor/";
-            cmd += file_dir_name;
-            int temp = system(cmd.c_str());
-        }
+        file_dir_name += gene_path_for_file("data/all_graph_infor/");
     }
     thread* th = new thread[thread_num];
     for(int i = 0; i < thread_num; i++){
@@ -899,24 +882,7 @@ void Fc_topo_all_route::pthread_for_all_path(int thread_num, bool if_report, int
 
     string file_dir_name("");
     if(if_store){
-        if(access("data/all_graph_route", 0)){
-            string cmd("mkdir ");
-            cmd += "data/all_graph_route";
-            int temp = system(cmd.c_str());
-        }
-        file_dir_name += "sw";
-        file_dir_name += to_string(switches);
-        file_dir_name += "_vir";
-        for(int i = 0; i < layer_num; i++)
-            file_dir_name += to_string(vir_layer_degree[i]);
-        file_dir_name += "_rand";
-        file_dir_name += to_string(is_random*random_seed);
-        if(access(("data/all_graph_route/" + file_dir_name).c_str(), 0)){
-            string cmd("mkdir ");
-            cmd += "data/all_graph_route/";
-            cmd += file_dir_name;
-            int temp = system(cmd.c_str());
-        }
+        file_dir_name += gene_path_for_file("data/all_graph_route/");
     }
     thread* th = new thread[thread_num];
     for(int i = 0; i < thread_num; i++){

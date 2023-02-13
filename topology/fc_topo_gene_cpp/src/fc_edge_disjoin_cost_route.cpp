@@ -239,25 +239,8 @@ void Fc_edge_disjoin_cost_route::fc_topo_gene_1v1(int fast_or_not){
 
 
 void Fc_edge_disjoin_cost_route::find_all_route(int thread_num, int batch_num, bool if_search_map){
-    if(access("data/all_graph_route", 0)){
-        string cmd("mkdir ");
-        cmd += "data/all_graph_route";
-        int temp = system(cmd.c_str());
-    }
     string file_dir_name("");
-    file_dir_name += "sw";
-    file_dir_name += to_string(switches);
-    file_dir_name += "_vir";
-    for(int i = 0; i < layer_num; i++)
-        file_dir_name += to_string(vir_layer_degree[i]);
-    file_dir_name += "_rand";
-    file_dir_name += to_string(is_random*random_seed);
-    if(access(("data/all_graph_route/" + file_dir_name).c_str(), 0)){
-        string cmd("mkdir ");
-        cmd += "data/all_graph_route/";
-        cmd += file_dir_name;
-        int temp = system(cmd.c_str());
-    }
+    file_dir_name += gene_path_for_file("data/all_graph_route/");
     thread* th = new thread[thread_num];
     for(int i = 0; i < thread_num; i++){
         th[i] = thread(&Fc_edge_disjoin_cost_route::find_edge_disjoin_route_fast, this, thread_num, i, batch_num, file_dir_name, false);

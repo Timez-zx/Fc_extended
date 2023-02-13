@@ -5,6 +5,6 @@ void Fc_tagger_ksp::save_graph_infor(){
         cout << "Please generate graph infor first by fc_topo_gene_1v1!" << endl;
         exit(1);
     }
-    
+    gene_path_for_file("data/topo_infor/");
 
 }

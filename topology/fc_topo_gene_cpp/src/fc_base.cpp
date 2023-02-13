@@ -166,6 +166,30 @@ void Fc_base::fc_topo_gene_1v1(int fast_or_not){
 }
 
 
+string Fc_base::gene_path_for_file(string path){
+    if(access(path.c_str(), 0)){
+        string cmd("mkdir ");
+        cmd += path;
+        int temp = system(cmd.c_str());
+    }
+    string file_dir_name("");
+    file_dir_name += "sw";
+    file_dir_name += to_string(switches);
+    file_dir_name += "_vir";
+    for(int i = 0; i < layer_num; i++)
+        file_dir_name += to_string(vir_layer_degree[i]);
+    file_dir_name += "_rand";
+    file_dir_name += to_string(is_random*random_seed);
+    if(access((path + file_dir_name).c_str(), 0)){
+        string cmd("mkdir ");
+        cmd += path;
+        cmd += file_dir_name;
+        int temp = system(cmd.c_str());
+    }
+    return file_dir_name;
+}
+
+
 double Fc_base::throughput_test(string type, int seed){
     string file_dir_name("");
     file_dir_name += "sw";
