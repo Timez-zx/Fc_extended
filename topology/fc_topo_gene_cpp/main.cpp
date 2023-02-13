@@ -1,6 +1,6 @@
 #include <sys/time.h>
-#include "fc_edge_disjoin_route.h"
-#include "fc_edge_disjoin_cost_route.h"
+#include "src/fc_edge_disjoin_route.h"
+#include "src/fc_edge_disjoin_cost_route.h"
 
 int main(){
     struct timeval start, end;
@@ -59,14 +59,14 @@ int main(){
     int report_inter = 5000;
     bool if_store = true;
     bool store_part = false;
-    // fc_test.pthread_for_all_route(4, if_report, report_inter, if_store, store_part);
+    fc_test.pthread_for_all_route(4, if_report, report_inter, if_store, store_part);
     string mode = "ksp";
     int ksp_num = 16;
-    fc_test.pthread_for_all_path(1, if_report, report_inter, if_store, mode, ksp_num);
+    // fc_test.pthread_for_all_path(1, if_report, report_inter, if_store, mode, ksp_num);
 
-    // bool if_search_map = true;
-    // fc_test.find_all_route(4, 5000, if_search_map);
-    double wr_ave = fc_test.throughput_test("ur", 1);
+    bool if_search_map = true;
+    fc_test.find_all_route(4, 5000, if_search_map);
+    double wr_ave = fc_test.throughput_test("wr", 1);
 
     // int ocs_ports = 400;
     // int distance_infor[4];

@@ -2,11 +2,11 @@ import sys
 import networkx as nx
 import numpy as np
 import string
-sys.path.append('TUB')
+sys.path.append('src/TUB')
 from topo_repo import topology
 
 def get_worst_flow():
-    file = open("worst_flow_infor/temp_infor", "rb")
+    file = open("data/worst_flow_infor/temp_infor", "rb")
     data = file.read(4)
     switches = int.from_bytes(data, byteorder='little', signed=True)
     data = file.read(4)
@@ -31,7 +31,7 @@ def get_worst_flow():
         src = key[0]
         dst = key[1]
         worst_case_tm[src][dst] = tm[key]
-    file = open("worst_flow_infor/temp_infor_flow", "w")
+    file = open("data/worst_flow_infor/temp_infor_flow", "w")
     for src in range(switches):
         for dst in range(switches):
             file.write(f"{worst_case_tm[src][dst]} ")

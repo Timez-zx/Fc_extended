@@ -626,7 +626,7 @@ void Fc_topo_all_route::thread_route(vector<int*> route_pairs, int thread_label,
     uint** store_graph_info = new uint*[report_inter];
     vector<uint> store_info_len;
     if(if_store){
-        string file_path("all_graph_infor/" + store_file + "/" + store_file + to_string(thread_label));
+        string file_path("data/all_graph_infor/" + store_file + "/" + store_file + to_string(thread_label));
         string len_path(file_path + "_num");
         ofs = fopen(file_path.c_str(), "w");
         ofs_len = fopen(len_path.c_str(), "w");
@@ -709,9 +709,9 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
 
     string file_dir_name("");
     if(if_store){
-        if(access("all_graph_infor", 0)){
+        if(access("data/all_graph_infor", 0)){
             string cmd("mkdir ");
-            cmd += "all_graph_infor";
+            cmd += "data/all_graph_infor";
             int temp = system(cmd.c_str());
         }
         file_dir_name += "sw";
@@ -721,9 +721,9 @@ void Fc_topo_all_route::pthread_for_all_route(int thread_num, bool if_report, in
             file_dir_name += to_string(vir_layer_degree[i]);
         file_dir_name += "_rand";
         file_dir_name += to_string(is_random*random_seed);
-        if(access(("all_graph_infor/" + file_dir_name).c_str(), 0)){
+        if(access(("data/all_graph_infor/" + file_dir_name).c_str(), 0)){
             string cmd("mkdir ");
-            cmd += "all_graph_infor/";
+            cmd += "data/all_graph_infor/";
             cmd += file_dir_name;
             int temp = system(cmd.c_str());
         }
@@ -968,7 +968,7 @@ void Fc_topo_all_route::thread_all_path(vector<int*> route_pairs, int thread_lab
     vector<uint16_t> store_info_len;
     uint16_t path_num;
     if(if_store){
-        string file_path("all_graph_route/" + store_file + "/" + store_file + to_string(thread_label));
+        string file_path("data/all_graph_route/" + store_file + "/" + store_file + to_string(thread_label));
         string len_path(file_path + "_num");
         ofs = fopen(file_path.c_str(), "w");
         ofs_len = fopen(len_path.c_str(), "w");
@@ -1050,9 +1050,9 @@ void Fc_topo_all_route::pthread_for_all_path(int thread_num, bool if_report, int
 
     string file_dir_name("");
     if(if_store){
-        if(access("all_graph_route", 0)){
+        if(access("data/all_graph_route", 0)){
             string cmd("mkdir ");
-            cmd += "all_graph_route";
+            cmd += "data/all_graph_route";
             int temp = system(cmd.c_str());
         }
         file_dir_name += "sw";
@@ -1062,9 +1062,9 @@ void Fc_topo_all_route::pthread_for_all_path(int thread_num, bool if_report, int
             file_dir_name += to_string(vir_layer_degree[i]);
         file_dir_name += "_rand";
         file_dir_name += to_string(is_random*random_seed);
-        if(access(("all_graph_route/" + file_dir_name).c_str(), 0)){
+        if(access(("data/all_graph_route/" + file_dir_name).c_str(), 0)){
             string cmd("mkdir ");
-            cmd += "all_graph_route/";
+            cmd += "data/all_graph_route/";
             cmd += file_dir_name;
             int temp = system(cmd.c_str());
         }
@@ -1076,13 +1076,13 @@ void Fc_topo_all_route::pthread_for_all_path(int thread_num, bool if_report, int
     for(int i = 0; i < thread_num; i++)
         th[i].join();
 
-    string file_path("all_graph_route/" + file_dir_name + "/" + file_dir_name);
+    string file_path("data/all_graph_route/" + file_dir_name + "/" + file_dir_name);
     string len_path(file_path + "_num"); 
     int state;
     FILE* ofs = fopen(file_path.c_str(), "w");
     FILE* ofs_len = fopen(len_path.c_str(), "w");
     for(int i = 0; i < thread_num; i++){
-        string in_file_path("all_graph_route/" + file_dir_name + "/" + file_dir_name + to_string(i));
+        string in_file_path("data/all_graph_route/" + file_dir_name + "/" + file_dir_name + to_string(i));
         string in_len_path(in_file_path + "_num");
         string cmd1("cat ");
         string cmd2("cat ");
@@ -1113,12 +1113,12 @@ double Fc_topo_all_route::throughput_test(string type, int seed){
         file_dir_name += to_string(vir_layer_degree[i]);
     file_dir_name += "_rand";
     file_dir_name += to_string(is_random*random_seed);
-    if(access(("all_graph_route/" + file_dir_name).c_str(), 0)){
+    if(access(("data/all_graph_route/" + file_dir_name).c_str(), 0)){
         cout << "No route infor!" << endl;
         exit(1);
     }
 
-    string file_path("all_graph_route/" + file_dir_name + "/" + file_dir_name);
+    string file_path("data/all_graph_route/" + file_dir_name + "/" + file_dir_name);
     string len_path(file_path + "_num"); 
     int state;
     FILE* ofs = fopen(file_path.c_str(), "r");
@@ -1320,24 +1320,24 @@ void Fc_topo_all_route::gene_uniform_random(float **flow_matrix, int seed){
 
 
 void Fc_topo_all_route::gene_worse_case(float **flow_matrix){
-    if(access("worst_flow_infor", 0)){
+    if(access("data/worst_flow_infor", 0)){
         string cmd("mkdir ");
-        cmd += "worst_flow_infor";
+        cmd += "data/worst_flow_infor";
         int temp = system(cmd.c_str());
     }
     string store_file("temp_infor");
-    string file_path("worst_flow_infor/" + store_file);
+    string file_path("data/worst_flow_infor/" + store_file);
     FILE* ofs = fopen(file_path.c_str(), "w");
     fwrite(&switches, sizeof(int), 1, ofs);
     fwrite(&hosts, sizeof(int), 1, ofs);
     for(int i = 0; i < switches; i++)
         fwrite(bit_map[i], sizeof(int), switches, ofs);
     fclose(ofs);
-    string cmd("python3 worst_case.py");
+    string cmd("python3 src/worst_case.py");
     int state = system(cmd.c_str());
 
     string read_file("temp_infor_flow");
-    string read_path("worst_flow_infor/" + read_file);
+    string read_path("data/worst_flow_infor/" + read_file);
     ifstream ifs(read_path.c_str(), ios::in);
     for(int i = 0; i < switches; i++){
         for(int j = 0; j < switches; j++){
