@@ -1,3 +1,6 @@
+#ifndef FC_TOPO_ALL_
+#define FC_TOPO_ALL_
+
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -15,6 +18,15 @@
 #include <string>
 #include "gurobi_c++.h"
 using namespace std;
+
+const int MAX_NUM = 10000;
+
+struct Edge
+{
+    int next;
+    int to;
+    int weight;
+};
 
 typedef struct {   
     int** path_infor;
@@ -78,3 +90,5 @@ class Fc_topo_all_route{
         void b_bandwidth_onethread(int thread_label, int rand_interval, int cycle_times, int* band_find, int poss_base);
         void multi_thread_b_bandwidth(int thread_num, int rand_interval, int cycle_times, int poss_base);
 };
+
+#endif

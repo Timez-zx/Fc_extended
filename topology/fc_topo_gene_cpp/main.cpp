@@ -1,6 +1,6 @@
 #include <sys/time.h>
 #include "fc_edge_disjoin_route.h"
-// #include "fc_edge_disjoin_cost_route.h"
+#include "fc_edge_disjoin_cost_route.h"
 
 int main(){
     struct timeval start, end;
