@@ -10,6 +10,8 @@
 ///  $Id: DijkstraShortestPathAlg.h 65 2010-09-08 06:48:36Z yan.qi.asu $
 ///
 ///////////////////////////////////////////////////////////////////////////////
+#ifndef DIJKS_
+#define DIJKS_
 
 #pragma once
 
@@ -67,3 +69,5 @@ protected:
 	void improve2vertex(BaseVertex* cur_vertex_pt, bool is_source2sink);
 
 };
+
+#endif

@@ -10,7 +10,8 @@
 ///  $Id: YenTopKShortestPathsAlg.h 65 2010-09-08 06:48:36Z yan.qi.asu $
 ///
 ///////////////////////////////////////////////////////////////////////////////
-
+#ifndef YENTOP_
+#define YENTOP_
 #pragma once
 
 using namespace std;
@@ -56,3 +57,5 @@ public:
 	void get_shortest_paths(BaseVertex* pSource, BaseVertex* pTarget, int top_k, 
 		vector<BasePath*>&);
 };
+
+#endif

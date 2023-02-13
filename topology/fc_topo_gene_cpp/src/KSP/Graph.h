@@ -9,7 +9,8 @@
 ///  $Id: Graph.h 65 2010-09-08 06:48:36Z yan.qi.asu $
 ///////////////////////////////////////////////////////////////////////////////
 
-
+#ifndef GRAPH_
+#define GRAPH_
 #pragma once
 
 using namespace std;
@@ -112,3 +113,5 @@ private:
 	void _import_from_file(const std::string& file_name);
 
 };
+
+#endif

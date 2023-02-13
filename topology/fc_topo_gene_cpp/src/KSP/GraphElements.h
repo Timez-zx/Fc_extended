@@ -8,7 +8,8 @@
 ///
 ///  $Id: GraphElements.h 65 2010-09-08 06:48:36Z yan.qi.asu $
 ///////////////////////////////////////////////////////////////////////////////
-
+#ifndef GRAPH_ELE_
+#define GRAPH_ELE_
 #pragma once
 
 #include <string>
@@ -157,3 +158,5 @@ public:
 		out_stream << std::endl <<  "*********************************************" << std::endl;
 	}
 };
+
+#endif
