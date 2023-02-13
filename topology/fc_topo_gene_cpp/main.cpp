@@ -45,7 +45,7 @@ int main(){
     int random_seed = 8;
 
     // Fc_edge_disjoin_cost_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-    Fc_edge_disjoin_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    Fc_edge_disjoin_cost_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     fc_test.fc_topo_gene_1v1(0);
     // fc_test.fc_topo_gene();
 
