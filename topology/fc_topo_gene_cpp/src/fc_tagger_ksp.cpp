@@ -21,6 +21,7 @@ void Fc_tagger_ksp::save_graph_infor(){
                 link_to_layer_map[src*switches+dst] = (layer_num-i-1)*layer_num+layer_num-i-2;
                 link_to_layer_map[dst*switches+src] = (layer_num-i-2)*layer_num+layer_num-i-1;
                 ofs << src << " " << dst << " " << 1 << endl;
+                ofs << dst << " " << src << " " << 1 << endl;
             }
         }
         
@@ -34,16 +35,40 @@ void Fc_tagger_ksp::save_graph_infor(){
 void Fc_tagger_ksp::search_up_down_ksp(int src, int dst, int path_num, int vc_num){
     YenTopKShortestPathsAlg yenAlg(*my_graph, (*my_graph).get_vertex(src), (*my_graph).get_vertex(dst));
 	int i = 0;
-    int path[100];
+    int path[1000];
+    int layer_pass[1000];
     int path_len;
+    int src_inter, dst_inter, src_layer, dst_layer;
+    int past_layer = 0;
+    int vc_used;
 	while(yenAlg.has_next() & i < path_num)
 	{
-		++i;
 		yenAlg.next()->get_path(path, &path_len);
-        cout << path_len << endl;
+        vc_used = 1;
+        past_layer = 0;
+        for(int i = 0; i < path_len-1; i++){
+            src_inter = path[i];
+            dst_inter = path[i+1];
+            src_layer = link_to_layer_map[src_inter*switches+dst_inter]/layer_num;
+            dst_layer = link_to_layer_map[src_inter*switches+dst_inter]%layer_num;
+            layer_pass[2*i] = src_layer;
+            layer_pass[2*i+1] = dst_layer;
+        }
+        for(int i = 0; i < 2*(path_len-1)-1; i++){
+            src_layer = layer_pass[i];
+            if(src_layer < past_layer && src_layer < layer_pass[i+1]){
+                vc_used++;
+            }
+            past_layer = src_layer;
+        }
         for(int i = 0; i < path_len; i++){
             cout << path[i] << " ";
         }
         cout << endl;
+        if(vc_used > vc_num)
+            continue;
+        else
+            i++;
+        
 	}
 }
