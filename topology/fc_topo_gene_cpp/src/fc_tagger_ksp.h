@@ -11,8 +11,10 @@ class Fc_tagger_ksp: public Fc_base{
 
         ~Fc_tagger_ksp(){};
 
-        
+        void save_graph_infor();
 
-}
+
+
+};
 
 #endif
