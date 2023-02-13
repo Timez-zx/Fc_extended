@@ -152,10 +152,18 @@ public:
 		out_stream << "Cost: " << m_dWeight << " Length: " << m_vtVertexList.size() << std::endl;
 		for(std::vector<BaseVertex*>::const_iterator pos=m_vtVertexList.begin(); pos!=m_vtVertexList.end();++pos)
 		{
-			(*pos)->PrintOut(out_stream);
+			out_stream << (*pos)->getID();
 			out_stream << "->";
 		}
 		out_stream << std::endl <<  "*********************************************" << std::endl;
+	}
+
+	void get_path(int* path, int* path_len)
+	{
+		int index_count = 0;
+		for(std::vector<BaseVertex*>::const_iterator pos=m_vtVertexList.begin(); pos!=m_vtVertexList.end();++pos)
+			path[index_count++] = (*pos)->getID();
+		*path_len = index_count;
 	}
 };
 

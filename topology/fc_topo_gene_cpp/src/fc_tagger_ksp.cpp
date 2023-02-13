@@ -34,9 +34,16 @@ void Fc_tagger_ksp::save_graph_infor(){
 void Fc_tagger_ksp::search_up_down_ksp(int src, int dst, int path_num, int vc_num){
     YenTopKShortestPathsAlg yenAlg(*my_graph, (*my_graph).get_vertex(src), (*my_graph).get_vertex(dst));
 	int i = 0;
+    int path[100];
+    int path_len;
 	while(yenAlg.has_next() & i < path_num)
 	{
 		++i;
-		yenAlg.next()->PrintOut(cout);
+		yenAlg.next()->get_path(path, &path_len);
+        cout << path_len << endl;
+        for(int i = 0; i < path_len; i++){
+            cout << path[i] << " ";
+        }
+        cout << endl;
 	}
 }

@@ -48,7 +48,7 @@ int main(){
     fc_test.save_graph_infor();
     struct timeval start, end;
     gettimeofday(&start, NULL);
-    fc_test.search_up_down_ksp(0, 2, 10, 1);
+    fc_test.search_up_down_ksp(0, 1, 10, 1);
 
     // fc_test.path_infor_gene();
     // fc_test.display_all_path();
