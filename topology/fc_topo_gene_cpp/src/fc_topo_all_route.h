@@ -67,6 +67,7 @@ class Fc_topo_all_route{
         void display_all_path(void);
         void build_search_dic(void);
         void display_dic(int index);
+
         uint extract_route_path(int src, int dst, bool if_display, uint* return_graph);
         void thread_route(vector<int*> route_pairs, int thread_label, bool if_report, int report_inter, bool if_store, string store_file, bool store_part);
         void pthread_for_all_route(int thread_num, bool if_report, int report_inter, bool if_store, bool store_part);
@@ -74,6 +75,7 @@ class Fc_topo_all_route{
         uint16_t extract_all_path(int src, int dst, bool if_display, string mode, int ksp_num, uint16_t* return_path, uint16_t *path_num);
         void thread_all_path(vector<int*> route_pairs, int thread_label, bool if_report, int report_inter, bool if_store, string store_file, string mode, int ksp_num);
         void pthread_for_all_path(int thread_num, bool if_report, int report_inter, bool if_store, string mode, int ksp_num);
+        
         double throughput_test(string type, int seed);
         void gene_uniform_random(float **flow_matrix, int seed);
         void gene_worse_case(float **flow_matrix);
