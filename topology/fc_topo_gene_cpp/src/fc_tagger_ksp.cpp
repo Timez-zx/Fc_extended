@@ -17,6 +17,8 @@ void Fc_tagger_ksp::save_graph_infor(){
             src = j;
             for(int k = 1; k < degree; k++){
                 dst = topo_index[basic_index+j*degree+k];
+                link_to_layer_map[src*switches+dst] = (layer_num-i-1)*layer_num+layer_num-i-2;
+                link_to_layer_map[dst*switches+src] = (layer_num-i-2)*layer_num+layer_num-i-1;
                 ofs << src << " " << dst << " " << 1 << endl;
             }
         }
