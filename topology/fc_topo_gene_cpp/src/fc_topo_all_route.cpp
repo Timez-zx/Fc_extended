@@ -36,7 +36,19 @@ Fc_topo_all_route::~Fc_topo_all_route(){
         }   
         delete[] topo_dic;
         topo_dic = NULL;
-    }   
+    }  
+    if (bit_map)
+    {
+        for(int i = 0; i < switches; i++){
+            if(bit_map[i]){
+                delete[] bit_map[i];
+                bit_map[i] = NULL;
+            }
+        }   
+        delete[] bit_map;
+        bit_map = NULL;
+    }    
+
 }
 
 

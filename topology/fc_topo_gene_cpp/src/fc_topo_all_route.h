@@ -82,11 +82,11 @@ class Fc_topo_all_route{
         int bisection_bandwidth_byExchange(int random_seed, int cycle_times, int poss_base);
         void b_bandwidth_onethread(int thread_label, int rand_interval, int cycle_times, int* band_find, int poss_base);
         void multi_thread_b_bandwidth(int thread_num, int rand_interval, int cycle_times, int poss_base);
-        
+
     protected:
         int* bipart_degree=NULL;
         int* topo_index=NULL;
-        int** bit_map;
+        int** bit_map=NULL;
         node_path_infor* all_path_infor=NULL;
         topo_dic_infor* topo_dic=NULL;
 };
