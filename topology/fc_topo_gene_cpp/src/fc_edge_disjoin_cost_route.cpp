@@ -108,16 +108,13 @@ void Fc_edge_disjoin_cost_route::fc_topo_gene_1v1(int fast_or_not){
     int bipart_count = 0;
     cost_map = new unordered_map<int,int>[switches];
     mtx = new mutex[switches];
-
     int total_degree = 0;
     int remain_degree = vir_layer_degree[layer_num-1];
-
     bit_map = new int*[switches];
     for(int i = 0; i < switches; i++){
         bit_map[i] = new int[switches];
         memset(bit_map[i], 0, sizeof(int)*switches);
     }
-  
     total_degree += remain_degree + 1;
     for(int i = layer_num-2; i > 0; i--){
         remain_degree = vir_layer_degree[i] - remain_degree;
@@ -128,7 +125,6 @@ void Fc_edge_disjoin_cost_route::fc_topo_gene_1v1(int fast_or_not){
     for(int i = 0; i < switches; i++)
         for(int j = 0; j < switches; j++)
             vertex_check[i][j] = false;
-    
     vector<vector<int> > poss_connect;
     int poss_connect_num[switches];
     for(int i = 0; i < switches; i++){
