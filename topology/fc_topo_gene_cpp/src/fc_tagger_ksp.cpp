@@ -27,6 +27,8 @@ void Fc_tagger_ksp::save_graph_infor(){
         basic_index += degree*switches;
     }
     ofs.close();
+    my_graph_pt = new Graph("data/topo_infor/" + file_dir_name + "/" + file_dir_name+".txt");
+    cout << my_graph_pt->get_vertex(0) << endl;
 
 
 }
