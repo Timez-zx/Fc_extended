@@ -116,9 +116,9 @@ class clos_basic():
 
 
 if __name__ == "__main__":
-    clos_temp = clos_basic(20000, 7200, 32)
-    bisection_band = clos_temp.bisection_topo(16)
-    print(bisection_band)
+    clos_temp = clos_basic(490, 4900, 32)
+    # bisection_band = clos_temp.bisection_topo(16)
+    # print(bisection_band)
     # clos_temp.topo_cost(16, 2)
-    # throughput = clos_temp.cost_equivalent_clos()
-    # print(throughput)
+    throughput = clos_temp.cost_equivalent_clos()
+    print(throughput)
