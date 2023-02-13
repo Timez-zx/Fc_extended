@@ -27,8 +27,16 @@ void Fc_tagger_ksp::save_graph_infor(){
         basic_index += degree*switches;
     }
     ofs.close();
-    my_graph_pt = new Graph("data/topo_infor/" + file_dir_name + "/" + file_dir_name+".txt");
-    cout << my_graph_pt->get_vertex(0) << endl;
+    my_graph = new Graph("data/topo_infor/" + file_dir_name + "/" + file_dir_name+".txt");
+}
 
 
+void Fc_tagger_ksp::search_up_down_ksp(int src, int dst, int path_num, int vc_num){
+    YenTopKShortestPathsAlg yenAlg(*my_graph, (*my_graph).get_vertex(src), (*my_graph).get_vertex(dst));
+	int i = 0;
+	while(yenAlg.has_next() & i < path_num)
+	{
+		++i;
+		yenAlg.next()->PrintOut(cout);
+	}
 }
