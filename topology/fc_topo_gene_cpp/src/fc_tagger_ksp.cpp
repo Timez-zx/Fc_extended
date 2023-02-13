@@ -59,16 +59,24 @@ void Fc_tagger_ksp::search_up_down_ksp(int src, int dst, int path_num, int vc_nu
             if(src_layer < past_layer && src_layer < layer_pass[i+1]){
                 vc_used++;
             }
-            past_layer = src_layer;
+            if(src_layer > past_layer)
+                past_layer = src_layer;
         }
-        for(int i = 0; i < path_len; i++){
-            cout << path[i] << " ";
-        }
-        cout << endl;
+
+        // for(int i = 0; i < 2*(path_len-1); i++){
+        //     cout << layer_pass[i] << " ";
+        // }
+        // cout << endl;
+
         if(vc_used > vc_num)
             continue;
-        else
+        else{
             i++;
+            // for(int i = 0; i < path_len; i++){
+            //     cout << path[i] << " ";
+            // }
+            // cout << endl << endl;
+        }
         
 	}
 }
