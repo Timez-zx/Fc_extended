@@ -58,6 +58,46 @@ class clos_basic():
         print(num_tors, num_aggrs, num_cores, num_pods)
         return num_cores*num_pods*num_aggr_links_per_core/2
     
+    def bisection_topo_4layer(self, Tor_hosts):
+        eps_port_count = self.ports
+        num_servers = self.servers
+        if(num_servers <= eps_port_count**3/4):
+            print("Please use 3 layer to evaluate!")
+            exit(1)
+        mini_tor_host = eps_port_count // 2
+        for host_per_tor in range(eps_port_count // 2, eps_port_count):
+            num_tors = math.ceil(num_servers / host_per_tor)
+            num_pods_layer2 = math.ceil(num_tors / eps_port_count * 2)
+            num_aggrs = (eps_port_count - host_per_tor) * num_pods_layer2
+            num_aggrs_per_pod = eps_port_count - host_per_tor
+            num_pods_layer3 = math.ceil(num_pods_layer2/eps_port_count*2)
+            if(num_pods_layer3 > eps_port_count):
+                mini_tor_host = host_per_tor
+                continue
+            mini_tor_host = host_per_tor
+            break
+        if(mini_tor_host == eps_port_count-1):
+            print("4 layer is not enough")
+            exit(1)         
+        if(Tor_hosts < mini_tor_host):
+            print("Please use more ports for hosts, at least", mini_tor_host)
+            exit(1)
+        for host_per_tor in range(eps_port_count // 2, eps_port_count):
+            num_tors = math.ceil(num_servers / host_per_tor)
+            num_pods_layer2 = math.ceil(num_tors / eps_port_count * 2)
+            num_aggrs = (eps_port_count - host_per_tor) * num_pods_layer2
+            num_aggrs_per_pod = eps_port_count - host_per_tor
+            num_pods_layer3 = math.ceil(num_pods_layer2/eps_port_count*2)
+            if(num_pods_layer3 > eps_port_count):
+                continue
+            num_cores_per_pod = num_aggrs_per_pod*eps_port_count/2
+            num_links_per_core = math.floor(eps_port_count / num_pods_layer3)
+            num_cores_per_group = math.ceil(eps_port_count / 2 / num_links_per_core)
+            num_cores_layer4 = num_cores_per_group * num_cores_per_pod
+            print(host_per_tor, num_tors, num_aggrs, num_cores_per_pod*num_pods_layer3, num_cores_layer4)
+
+
+    
     def topo_cost_3layer(self, Tor_hosts, inter_distance):
         eps_port_count = self.ports
         num_servers = self.servers
@@ -116,9 +156,5 @@ class clos_basic():
 
 
 if __name__ == "__main__":
-    clos_temp = clos_basic(490, 4900, 32)
-    # bisection_band = clos_temp.bisection_topo(16)
-    # print(bisection_band)
-    # clos_temp.topo_cost(16, 2)
-    throughput = clos_temp.cost_equivalent_clos_2_3layer()
-    print(throughput)
+    clos_temp = clos_basic(490, 220000, 32)
+    clos_temp.bisection_topo_4layer(27)
