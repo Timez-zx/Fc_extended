@@ -57,7 +57,7 @@ int main(){
     int report_inter = 100;
     bool if_store = true;
     bool store_part = false;
-    fc_test.pthread_up_down_ksp(16, 32, 100, if_report, report_inter, if_store);
+    fc_test.pthread_up_down_ksp(1, 32, 100, if_report, report_inter, if_store);
     // fc_test.pthread_for_all_route(4, if_report, report_inter, if_store, store_part);
     // string mode = "ksp";
     // int ksp_num = 32;
