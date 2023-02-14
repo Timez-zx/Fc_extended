@@ -60,7 +60,7 @@ int main(){
     int report_inter = 100;
     bool if_store = true;
     bool store_part = false;
-    fc_test.pthread_up_down_ksp(16, 32, 3, if_report, report_inter, if_store);
+    fc_test.pthread_up_down_ksp(16, 32, 2, if_report, report_inter, if_store);
     // // fc_test.pthread_for_all_route(4, if_report, report_inter, if_store, store_part);
     // string mode = "ksp";
     // int ksp_num = 16;
@@ -68,7 +68,7 @@ int main(){
 
     // bool if_search_map = true;
     // fc_test.find_all_route(4, 5000, if_search_map);
-    double wr_ave = fc_test.throughput_test("ur", 2, 32, 3);
+    double wr_ave = fc_test.throughput_test("wr", 2, 32, 2);
 
     // int ocs_ports = 400;
     // int distance_infor[4];
