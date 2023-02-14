@@ -6,7 +6,7 @@ class clos_basic():
         self.servers = servers
         self.ports = ports
 
-    def cost_equivalent_clos(self):
+    def cost_equivalent_clos_2_3layer(self):
         num_eps = self.switches
         eps_port_count = self.ports
         num_servers = self.servers
@@ -33,7 +33,7 @@ class clos_basic():
                 break
         return max(l2_throughput, l3_throughput)
     
-    def bisection_topo(self, Tor_hosts):
+    def bisection_topo_3layer(self, Tor_hosts):
         eps_port_count = self.ports
         num_servers = self.servers
         mini_tor_host = eps_port_count // 2
@@ -58,7 +58,7 @@ class clos_basic():
         print(num_tors, num_aggrs, num_cores, num_pods)
         return num_cores*num_pods*num_aggr_links_per_core/2
     
-    def topo_cost(self, Tor_hosts, inter_distance):
+    def topo_cost_3layer(self, Tor_hosts, inter_distance):
         eps_port_count = self.ports
         num_servers = self.servers
         mini_tor_host = eps_port_count // 2
@@ -120,5 +120,5 @@ if __name__ == "__main__":
     # bisection_band = clos_temp.bisection_topo(16)
     # print(bisection_band)
     # clos_temp.topo_cost(16, 2)
-    throughput = clos_temp.cost_equivalent_clos()
+    throughput = clos_temp.cost_equivalent_clos_2_3layer()
     print(throughput)
