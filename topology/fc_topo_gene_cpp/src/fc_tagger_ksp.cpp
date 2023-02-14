@@ -253,7 +253,7 @@ void Fc_tagger_ksp::pthread_up_down_ksp(int thread_num, int path_num, int vc_num
 }
 
 
-double Fc_tagger_ksp::throughput_test(string type, int seed, int path_number, int vc_num){
+double Fc_tagger_ksp::throughput_test_ksp(string type, int seed, int path_number, int vc_num){
     string file_dir_name("");
     file_dir_name += "sw";
     file_dir_name += to_string(switches);

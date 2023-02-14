@@ -44,31 +44,32 @@ int main(){
     int layer_num = 6;
     int is_random = 1;
     int random_seed = 5;
-    // Fc_edge_disjoin_cost_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-    Fc_tagger_ksp fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    Fc_edge_disjoin_cost_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    // Fc_tagger_ksp fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     fc_test.fc_topo_gene_1v1(0);
-    fc_test.save_graph_infor();
+    // fc_test.save_graph_infor();
     // uint16_t temp[1000];
     // fc_test.search_up_down_ksp(0, 1, 16, 3, temp);
-    // fc_test.path_infor_gene();
-    // // fc_test.display_all_path();
-    // fc_test.build_search_dic();
-    // // fc_test.display_dic(2);
+    fc_test.path_infor_gene();
+    // fc_test.display_all_path();
+    fc_test.build_search_dic();
+    // fc_test.display_dic(2);
 
 
     bool if_report = true;
-    int report_inter = 100;
+    int report_inter = 1000;
     bool if_store = true;
     bool store_part = false;
-    fc_test.pthread_up_down_ksp(16, 32, 2, if_report, report_inter, if_store);
-    // // fc_test.pthread_for_all_route(4, if_report, report_inter, if_store, store_part);
-    // string mode = "ksp";
-    // int ksp_num = 16;
-    // fc_test.pthread_for_all_path(1, if_report, report_inter, if_store, mode, ksp_num);
+    // fc_test.pthread_up_down_ksp(16, 32, 2, if_report, report_inter, if_store);
+    // fc_test.pthread_for_all_route(4, if_report, report_inter, if_store, store_part);
+    string mode = "ksp";
+    int ksp_num = 32;
+    fc_test.pthread_for_all_path(1, if_report, report_inter, if_store, mode, ksp_num);
 
     // bool if_search_map = true;
     // fc_test.find_all_route(4, 5000, if_search_map);
-    double wr_ave = fc_test.throughput_test("wr", 2, 32, 2);
+    double wr_ave = fc_test.throughput_test("wr", 2);
+    // double wr_ave = fc_test.throughput_test_ksp("wr", 2, 32, 2);
 
     // int ocs_ports = 400;
     // int distance_infor[4];
