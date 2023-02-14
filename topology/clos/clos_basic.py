@@ -160,5 +160,5 @@ class clos_basic():
 
 
 if __name__ == "__main__":
-    clos_temp = clos_basic(490, 131072, 32)
-    clos_temp.bisection_topo_4layer(16)
+    clos_temp = clos_basic(490, 72000, 32)
+    clos_temp.bisection_topo_4layer(25)
