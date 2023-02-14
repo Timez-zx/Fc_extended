@@ -37,7 +37,7 @@ int main(){
     // int layer_num = 4;
     // int is_random = 1;
     // int random_seed = 2;
-    int switches = 200;
+    int switches = 300;
     int hosts = 14;
     int ports = 32;
     int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
