@@ -43,7 +43,7 @@ int main(){
     int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
     int layer_num = 6;
     int is_random = 1;
-    int random_seed = 8;
+    int random_seed = 5;
     // Fc_edge_disjoin_cost_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     Fc_tagger_ksp fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     fc_test.fc_topo_gene_1v1(0);
@@ -68,7 +68,7 @@ int main(){
 
     // bool if_search_map = true;
     // fc_test.find_all_route(4, 5000, if_search_map);
-    double wr_ave = fc_test.throughput_test("wr", 1);
+    double wr_ave = fc_test.throughput_test("ur", 2, 32, 3);
 
     // int ocs_ports = 400;
     // int distance_infor[4];

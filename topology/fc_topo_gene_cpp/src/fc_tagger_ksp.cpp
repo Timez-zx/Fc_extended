@@ -32,6 +32,33 @@ void Fc_tagger_ksp::save_graph_infor(){
 }
 
 
+string Fc_tagger_ksp::gene_path_for_file_ksp(string path, int ksp_num, int vc_num){
+    if(access(path.c_str(), 0)){
+        string cmd("mkdir ");
+        cmd += path;
+        int temp = system(cmd.c_str());
+    }
+    string file_dir_name("");
+    file_dir_name += "sw";
+    file_dir_name += to_string(switches);
+    file_dir_name += "_vir";
+    for(int i = 0; i < layer_num; i++)
+        file_dir_name += to_string(vir_layer_degree[i]);
+    file_dir_name += "_rand";
+    file_dir_name += to_string(is_random*random_seed);
+    file_dir_name += "_";
+    file_dir_name += to_string(ksp_num);
+    file_dir_name += "_";
+    file_dir_name += to_string(vc_num);
+    if(access((path + file_dir_name).c_str(), 0)){
+        string cmd("mkdir ");
+        cmd += path;
+        cmd += file_dir_name;
+        int temp = system(cmd.c_str());
+    }
+    return file_dir_name;
+}
+
 uint16_t Fc_tagger_ksp::search_up_down_ksp(int src, int dst, int path_num, int vc_num, uint16_t *path_infor){
     YenTopKShortestPathsAlg yenAlg(*my_graph, (*my_graph).get_vertex(src), (*my_graph).get_vertex(dst));
 	int i = 0;
@@ -107,7 +134,7 @@ void Fc_tagger_ksp::thread_up_down_ksp(vector<int*> route_pairs, int thread_labe
     uint16_t** store_graph_info = new uint16_t*[report_inter];
     vector<uint16_t> store_info_len;
     if(if_store){
-        string file_path("data/all_graph_route/" + store_file + "/" + store_file + to_string(thread_label));
+        string file_path("data/all_graph_route_ksp/" + store_file + "/" + store_file + to_string(thread_label));
         string len_path(file_path + "_num");
         ofs = fopen(file_path.c_str(), "w");
         ofs_len = fopen(len_path.c_str(), "w");
@@ -189,7 +216,7 @@ void Fc_tagger_ksp::pthread_up_down_ksp(int thread_num, int path_num, int vc_num
 
     string file_dir_name("");
     if(if_store){
-        file_dir_name += gene_path_for_file("data/all_graph_route/");
+        file_dir_name += gene_path_for_file_ksp("data/all_graph_route_ksp/", path_num, vc_num);
     }
     thread* th = new thread[thread_num];
     for(int i = 0; i < thread_num; i++){
@@ -198,13 +225,13 @@ void Fc_tagger_ksp::pthread_up_down_ksp(int thread_num, int path_num, int vc_num
     for(int i = 0; i < thread_num; i++)
         th[i].join();
 
-    string file_path("data/all_graph_route/" + file_dir_name + "/" + file_dir_name);
+    string file_path("data/all_graph_route_ksp/" + file_dir_name + "/" + file_dir_name);
     string len_path(file_path + "_num"); 
     int state;
     FILE* ofs = fopen(file_path.c_str(), "w");
     FILE* ofs_len = fopen(len_path.c_str(), "w");
     for(int i = 0; i < thread_num; i++){
-        string in_file_path("data/all_graph_route/" + file_dir_name + "/" + file_dir_name + to_string(i));
+        string in_file_path("data/all_graph_route_ksp/" + file_dir_name + "/" + file_dir_name + to_string(i));
         string in_len_path(in_file_path + "_num");
         string cmd1("cat ");
         string cmd2("cat ");
@@ -223,4 +250,174 @@ void Fc_tagger_ksp::pthread_up_down_ksp(int thread_num, int path_num, int vc_num
     }
     fclose(ofs);
     fclose(ofs_len);
+}
+
+
+double Fc_tagger_ksp::throughput_test(string type, int seed, int path_number, int vc_num){
+    string file_dir_name("");
+    file_dir_name += "sw";
+    file_dir_name += to_string(switches);
+    file_dir_name += "_vir";
+    for(int i = 0; i < layer_num; i++)
+        file_dir_name += to_string(vir_layer_degree[i]);
+    file_dir_name += "_rand";
+    file_dir_name += to_string(is_random*random_seed);
+    file_dir_name += "_";
+    file_dir_name += to_string(path_number);
+    file_dir_name += "_";
+    file_dir_name += to_string(vc_num);
+    if(access(("data/all_graph_route_ksp/" + file_dir_name).c_str(), 0)){
+        cout << "No route infor!" << endl;
+        exit(1);
+    }
+
+    string file_path("data/all_graph_route_ksp/" + file_dir_name + "/" + file_dir_name);
+    string len_path(file_path + "_num"); 
+    int state;
+    FILE* ofs = fopen(file_path.c_str(), "r");
+    FILE* ofs_len = fopen(len_path.c_str(), "r");
+    fseek(ofs_len, 0, SEEK_END);
+    int len_size = ftell(ofs_len);
+    rewind(ofs_len);
+    fseek(ofs, 0, SEEK_END);
+    int file_size = ftell(ofs);
+    rewind(ofs);
+    uint16_t *pair_len = new uint16_t[len_size/2];
+    uint16_t *pair_infor = new uint16_t[file_size/2];
+    state = fread(pair_len, sizeof(uint16_t), len_size/2, ofs_len);
+    state = fread(pair_infor, sizeof(uint16_t), file_size/2, ofs);
+
+    unordered_map<int, vector<int>> path_map_link;
+    int node_len;
+    int basic_len = 0;
+    int node1, node2;
+    int src = 0, dst = 1;
+    int basic_count = 1;
+    int sw1, sw2;
+    int map_count;
+    int layer1, layer2;
+    int new_node1, new_node2;
+
+    int max_through = 10;
+    GRBEnv *env = new GRBEnv();
+    GRBModel model = GRBModel(*env);
+    GRBVar *flow_var[switches*switches];
+    GRBVar throughput = model.addVar(0, max_through, 0, GRB_CONTINUOUS, "throughput");
+    int path_num[switches][switches];
+    int path_sum = 0;
+    for(int i = 0; i < switches*(switches-1)/2; i++){
+        node_len = pair_len[2*i+1];
+        int count = 0;
+        int path_count = 0;
+        flow_var[src*switches+dst] = model.addVars(pair_len[2*i], GRB_CONTINUOUS);
+        flow_var[dst*switches+src] = model.addVars(pair_len[2*i], GRB_CONTINUOUS);
+        path_num[src][dst] = pair_len[2*i];
+        path_num[dst][src] = pair_len[2*i];
+        path_sum += pair_len[2*i];
+        for(int j = 0; j < pair_len[2*i]; j++){
+            flow_var[src*switches+dst][j].set(GRB_DoubleAttr_LB, 0.0);
+            flow_var[dst*switches+src][j].set(GRB_DoubleAttr_UB, 100);
+        }
+        while(count < node_len - 1){
+            node1 = pair_infor[basic_len+count];
+            node2 = pair_infor[basic_len+count+1];
+            sw1 = node1%switches;
+            sw2 = node2%switches;
+            layer1 = node1/switches;
+            layer2 = node2/switches;
+            if(sw1 != sw2){
+                map_count = node1*(2*layer_num-1)*switches+node2;
+                if(path_map_link.find(map_count) == path_map_link.end()){
+                    vector<int> temp = {src*switches+dst, path_count};
+                    path_map_link[map_count] = temp;
+                }
+                else{
+                    path_map_link[map_count].push_back(src*switches+dst);
+                    path_map_link[map_count].push_back(path_count);
+                }
+                new_node1 = node1 + (layer_num-1-layer1)*2*switches;
+                new_node2 = node2 + (layer_num-1-layer2)*2*switches;
+                map_count = new_node2*(2*layer_num-1)*switches+new_node1;
+                if(path_map_link.find(map_count) == path_map_link.end()){
+                    vector<int> temp = {dst*switches+src, path_count};
+                    path_map_link[map_count] = temp;
+                }
+                else{
+                    path_map_link[map_count].push_back(dst*switches+src);
+                    path_map_link[map_count].push_back(path_count);
+                }
+            }
+            if(sw2 == dst){
+                count++;
+                path_count++;
+            }
+            count++;
+        }
+        dst++;
+        if(dst == switches){
+            src = basic_count;
+            dst = ++basic_count;
+        }
+        basic_len += node_len;
+    }
+    fclose(ofs);
+    fclose(ofs_len);
+    cout << "Average path num: " << float(path_sum)*2/(switches*(switches-1)) << endl; 
+    float *flow_matrix[switches];
+    for(int i = 0; i < switches; i++){
+        flow_matrix[i] = new float[switches];
+        memset(flow_matrix[i], 0, sizeof(float)*switches);
+    }
+    if(type == "aa"){
+        float pair_flow = hosts/float(switches-1);
+        for(int i = 0; i < switches; i++)
+            for(int j = 0; j < switches; j++)
+                if(i != j)
+                    flow_matrix[i][j] = pair_flow;
+    }
+    else if(type == "ur")
+        gene_uniform_random(flow_matrix, seed);
+    else if(type == "wr")
+        gene_worse_case(flow_matrix);
+  
+    for(int i = 0; i < switches; i++){
+        for(int j = 0; j < switches; j++){
+            if(i != j){
+                GRBLinExpr constr = 0;
+                for (int k = 0; k < path_num[i][j]; k++) 
+                    constr += flow_var[i*switches+j][k];
+                constr -= throughput * flow_matrix[i][j];
+                model.addConstr(constr, GRB_EQUAL, 0);
+            }
+        }
+    }  
+
+    for(auto &link : path_map_link){
+        GRBLinExpr constr = 0;
+        for(int i = 0; i < link.second.size()/2; i++){
+            constr += flow_var[link.second[2*i]][link.second[2*i+1]];
+        }
+        model.addConstr(constr, GRB_LESS_EQUAL, 1);
+    }
+    cout << "All consts added" << endl;
+
+    model.setObjective(1 * throughput, GRB_MAXIMIZE);
+    model.set(GRB_IntParam_OutputFlag, 0);
+    double throught_result = 0.0;
+    try {
+        model.optimize();
+        if(model.get(GRB_IntAttr_Status) != GRB_OPTIMAL)
+            cout << "Not optimal " << endl;
+        else{
+            throught_result = model.get(GRB_DoubleAttr_ObjVal);
+            cout << "Throughtput: " << throught_result << endl;
+        }
+    } catch (GRBException e) {
+        cout << "Error code = " << e.getErrorCode() << endl;
+        cout << e.getMessage() << endl;
+    }
+
+    delete[] pair_len;
+    delete[] pair_infor;
+    return throught_result;
 }

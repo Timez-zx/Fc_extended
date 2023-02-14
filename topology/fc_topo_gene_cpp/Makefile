@@ -14,6 +14,7 @@ GUROBI_LIB_U=$(GUROBI_UBUNTU)/lib/
 GUROBI_INCLUDE_U=$(GUROBI_UBUNTU)/include/
 
 CLEAN_PATH=data/all_graph_infor/*  data/all_graph_route/*  data/worst_flow_infor/* data/topo_infor/*
+CLEAN_PATHK=data/all_graph_route_ksp/*
 
 default: $(ALL_SRC) $(ALL_HEADER) main.cpp
 	g++  $(CFLAGS_U) $(ALL_SRC) main.cpp -o $(OUT) -I $(ORTOOL_INCLUDE_U) -I $(GUROBI_INCLUDE_U) -L $(ORTOOL_LIB_U) -L $(GUROBI_LIB_U) -lortools -lpthread -lgurobi_c++ -lgurobi95
@@ -22,3 +23,6 @@ default: $(ALL_SRC) $(ALL_HEADER) main.cpp
 clean:
 	$(RM) $(OUT)
 	$(RM) -r $(CLEAN_PATH)
+
+cleank:
+	$(RM) -r $(CLEAN_PATHK)
