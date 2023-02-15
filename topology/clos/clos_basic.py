@@ -123,22 +123,14 @@ class clos_basic():
         num_aggr_links_per_core = math.floor(eps_port_count / num_pods)
         num_cores_per_group = math.ceil(eps_port_count / 2 / num_aggr_links_per_core)
         num_cores = num_cores_per_group * (eps_port_count - Tor_hosts)
-
-        total_cost = 0
-        total_cost += num_servers*150
+        tranceiver_num = 0
         num_tors_pods = math.ceil(num_tors/num_pods)
         fiber_length = 0
         for pod in range(num_pods):
             for tor in range(num_tors_pods):
                 tor_loc = (math.floor(tor/2)+1)*inter_distance
-                total_cost += tor_loc*2*(eps_port_count - Tor_hosts)
                 fiber_length += tor_loc*(eps_port_count - Tor_hosts)
-                if(tor_loc <= 100):
-                    total_cost += 2*(eps_port_count-Tor_hosts)*500
-                elif(tor_loc > 100 and tor_loc <= 500):
-                    total_cost += 2*(eps_port_count-Tor_hosts)*800
-                else:
-                    total_cost += 2*(eps_port_count-Tor_hosts)*1000
+                tranceiver_num += 2*(eps_port_count - Tor_hosts)
 
         for core in range(num_cores):
             core_loc = math.floor((core+32)/64)*inter_distance
@@ -146,19 +138,14 @@ class clos_basic():
                 for pod in range(num_pods):
                     aggre_loc = (math.floor(pod/2)+1)*inter_distance
                     link_len = core_loc + aggre_loc
-                    total_cost += link_len*2
                     fiber_length += link_len
-                    if(link_len <= 100):
-                        total_cost += 2*500
-                    elif(link_len > 100 and link_len <= 500):
-                        total_cost += 2*800
-                    else:
-                        total_cost += 2*1000
-        print(total_cost, fiber_length)
+                    tranceiver_num += 2
+        print("The cable length of clos:", fiber_length)
+        print("The number of tranceiver:", tranceiver_num)
 
         
 
 
 if __name__ == "__main__":
-    clos_temp = clos_basic(490, 72000, 32)
-    clos_temp.bisection_topo_4layer(25)
+    clos_temp = clos_basic(490, 7200, 32)
+    clos_temp.topo_cost_3layer(16, 2)
