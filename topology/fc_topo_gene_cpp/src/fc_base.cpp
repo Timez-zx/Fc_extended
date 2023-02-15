@@ -434,14 +434,13 @@ void Fc_base::gene_worse_case(float **flow_matrix){
 }
 
 
-void Fc_base::cost_model(int ocs_ports, int* distance_infor, int copper_tor_cost, int fiber_cost, int* tranceiver_cost){
+void Fc_base::cost_model(int ocs_ports, int* distance_infor){
     if(topo_index == NULL){
         cout << "Please generate topology!" << endl;
         exit(1);
     }
     int ocs_number = ceil(switches*(ports-hosts)/float(ocs_ports));
-    int total_cost = 0;
-    total_cost += switches*hosts*copper_tor_cost;
+    int tranceiver_num = 0;
     int basic_index = 0;
     int degree;
     int src, dst;
@@ -464,22 +463,8 @@ void Fc_base::cost_model(int ocs_ports, int* distance_infor, int copper_tor_cost
                 dst_y = (dst % 50)*distance_infor[1];
                 fiber_len_src = src_x + abs(src_y-ocs_y);
                 fiber_len_dst = dst_x + abs(dst_y-ocs_y);
-                total_cost += (fiber_len_dst+fiber_len_src)*fiber_cost;
                 fiber_len += fiber_len_dst+fiber_len_src;
-                if(fiber_len_src <= 100)
-                    total_cost += tranceiver_cost[0];
-                else if(fiber_len_src > 100 && fiber_len_src <= 500){
-                    total_cost += tranceiver_cost[1];
-                }
-                else{
-                    total_cost += tranceiver_cost[2];
-                }
-                if(fiber_len_dst <= 100)
-                    total_cost += tranceiver_cost[0];
-                else if(fiber_len_dst > 100 && fiber_len_dst <= 500)
-                    total_cost += tranceiver_cost[1];
-                else
-                    total_cost += tranceiver_cost[2];
+                tranceiver_num += 2;
                 if(ocs_port_count == ocs_ports - 2){
                     ocs_port_count = 0;
                     ocs_label++;
@@ -493,7 +478,8 @@ void Fc_base::cost_model(int ocs_ports, int* distance_infor, int copper_tor_cost
         }
         basic_index += degree*switches;
     }
-    cout << "The cabling cost of Fc topo: "<<total_cost << "$" << " " << fiber_len <<endl;
+    cout << "The cabling length of Fc topo: "<< fiber_len << "m" << endl;
+    cout << "The number of tranceiver: "<< tranceiver_num << endl;
 }
 
 
