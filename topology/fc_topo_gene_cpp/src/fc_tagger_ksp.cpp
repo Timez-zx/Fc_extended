@@ -28,7 +28,6 @@ void Fc_tagger_ksp::save_graph_infor(){
     }
     ofs.close();
     topo_path = "data/topo_infor/" + file_dir_name + "/" + file_dir_name+".txt";
-    my_graph._import_from_file(topo_path);
 }
 
 
@@ -93,28 +92,25 @@ uint16_t Fc_tagger_ksp::search_up_down_ksp(int src, int dst, int path_num, int v
                 extract_layer_pass.push_back(layer_pass[i]);
             last_pass = layer_pass[i];
         }
-
         for(int i = 0; i < extract_layer_pass.size()-1; i++){
             src_layer = extract_layer_pass[i];
             if(src_layer < past_layer && src_layer < extract_layer_pass[i+1]){
                 vc_used++;
             }
             past_layer = src_layer;
-        }
-        
-        for(int i = 0; i < 2*(path_len-1); i++){
-            cout << layer_pass[i] << " ";
-        }
-        cout << endl;
-        cout << vc_used << endl;
+        }  
+        // for(int i = 0; i < 2*(path_len-1); i++){
+        //     cout << layer_pass[i] << " ";
+        // }
+        // cout << endl;
         if(vc_used > vc_num)
             continue;
         else{
             i++;
-            for(int i = 0; i < path_len; i++){
-                cout << path[i] << " ";
-            }
-            cout << endl << endl;
+            // for(int i = 0; i < path_len; i++){
+            //     cout << path[i] << " ";
+            // }
+            // cout << endl << endl;
             for(int i = 0; i < path_len-1; i++){
                 if(layer_pass[2*i] < layer_pass[2*i+1]){
                     real_path[2*i] = layer_pass[2*i]*switches + path[i];
@@ -165,7 +161,6 @@ void Fc_tagger_ksp::thread_up_down_ksp(vector<int*> route_pairs, int thread_labe
             store_info_len.push_back(data_num);
             store_count++;
             if(store_count == report_inter) {
-                exit(1);
                 fwrite(&store_info_len[0], sizeof(uint16_t), store_count*2, ofs_len);
                 for(int j = 0; j < report_inter; j++){
                     fwrite(store_graph_info[j], sizeof(uint16_t), store_info_len[2*j+1], ofs);
