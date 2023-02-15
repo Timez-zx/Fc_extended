@@ -18,7 +18,7 @@ using namespace std;
 
 class YenTopKShortestPathsAlg
 {
-	Graph* m_pGraph;
+	Graph* m_pGraph=NULL;
 
 	vector<BasePath*> m_vResultList;
 	map<BasePath*, BaseVertex*> m_mpDerivationVertexIndex;
@@ -47,7 +47,20 @@ public:
 		_init();
 	}
 
-	~YenTopKShortestPathsAlg(void){clear();}
+	YenTopKShortestPathsAlg(const string& path, BaseVertex* pSource, BaseVertex* pTarget)
+		:m_pSourceVertex(pSource), m_pTargetVertex(pTarget)
+	{
+		m_pGraph = new Graph(path);
+		_init();
+	}
+
+	~YenTopKShortestPathsAlg(void){
+		if(m_pGraph != NULL){
+			delete m_pGraph;
+			m_pGraph = NULL;
+		}
+		clear();
+	}
 
 	void clear();
 	bool has_next();	

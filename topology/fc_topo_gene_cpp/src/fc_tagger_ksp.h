@@ -12,7 +12,7 @@ class Fc_tagger_ksp: public Fc_base{
     public:
         Fc_tagger_ksp(int switches, int hosts, int ports, int* vir_layer_degree, int layer_num, int is_random, int random_seed):
         Fc_base(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed){}
-        ~Fc_tagger_ksp(){};
+        ~Fc_tagger_ksp(){my_graph.clear();};
         void save_graph_infor();
 
         string gene_path_for_file_ksp(string path, int ksp_num, int vc_num);
@@ -21,10 +21,12 @@ class Fc_tagger_ksp: public Fc_base{
         void thread_up_down_ksp(vector<int*> route_pairs, int thread_label, int path_num, int vc_num, bool if_report, int report_inter, bool if_store, string store_file);
         void pthread_up_down_ksp(int thread_num, int path_num, int vc_num, bool if_report, int report_inter, bool if_store);
     
-        double throughput_test_ksp(string type, int seed, int path_num, int vc_num);
+        double throughput_test(string type, int seed, int path_num, int vc_num);
+
     private:
         unordered_map<int,int> link_to_layer_map;
-        Graph *my_graph;
+        Graph my_graph;
+        string topo_path;
 };
 
 #endif

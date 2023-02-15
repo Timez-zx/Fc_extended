@@ -159,10 +159,11 @@ void Graph::clear()
 	m_nEdgeNum = 0;
 	m_nVertexNum = 0;
 
-	for(map<BaseVertex*, set<BaseVertex*>*>::const_iterator pos=m_mpFaninVertices.begin();
+	for(map<BaseVertex*, set<BaseVertex*>*>::iterator pos=m_mpFaninVertices.begin();
 		pos!=m_mpFaninVertices.end(); ++pos)
 	{
 		delete pos->second;
+
 	}
 	m_mpFaninVertices.clear();
 

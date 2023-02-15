@@ -24,11 +24,11 @@ void Fc_tagger_ksp::save_graph_infor(){
                 ofs << dst << " " << src << " " << 1 << endl;
             }
         }
-        
         basic_index += degree*switches;
     }
     ofs.close();
-    my_graph = new Graph("data/topo_infor/" + file_dir_name + "/" + file_dir_name+".txt");
+    topo_path = "data/topo_infor/" + file_dir_name + "/" + file_dir_name+".txt";
+    my_graph._import_from_file(topo_path);
 }
 
 
@@ -59,8 +59,9 @@ string Fc_tagger_ksp::gene_path_for_file_ksp(string path, int ksp_num, int vc_nu
     return file_dir_name;
 }
 
+
 uint16_t Fc_tagger_ksp::search_up_down_ksp(int src, int dst, int path_num, int vc_num, uint16_t *path_infor){
-    YenTopKShortestPathsAlg yenAlg(*my_graph, (*my_graph).get_vertex(src), (*my_graph).get_vertex(dst));
+    YenTopKShortestPathsAlg yenAlg(topo_path, (my_graph).get_vertex(src), (my_graph).get_vertex(dst));
 	int i = 0;
     int path[1000];
     int layer_pass[1000];
@@ -70,6 +71,7 @@ uint16_t Fc_tagger_ksp::search_up_down_ksp(int src, int dst, int path_num, int v
     int vc_used;
     uint16_t real_path[1000];
     uint16_t data_num = 0;
+
 	while(yenAlg.has_next() & i < path_num){
 		yenAlg.next()->get_path(path, &path_len);
         vc_used = 1;
@@ -90,8 +92,6 @@ uint16_t Fc_tagger_ksp::search_up_down_ksp(int src, int dst, int path_num, int v
             if(src_layer > past_layer)
                 past_layer = src_layer;
         }
-
-
         if(vc_used > vc_num)
             continue;
         else{
@@ -122,7 +122,6 @@ uint16_t Fc_tagger_ksp::search_up_down_ksp(int src, int dst, int path_num, int v
 	}
     return data_num;
 }
-
 
 
 void Fc_tagger_ksp::thread_up_down_ksp(vector<int*> route_pairs, int thread_label, int path_num, int vc_num, bool if_report, int report_inter, bool if_store, string store_file) {
@@ -253,7 +252,7 @@ void Fc_tagger_ksp::pthread_up_down_ksp(int thread_num, int path_num, int vc_num
 }
 
 
-double Fc_tagger_ksp::throughput_test_ksp(string type, int seed, int path_number, int vc_num){
+double Fc_tagger_ksp::throughput_test(string type, int seed, int path_number, int vc_num){
     string file_dir_name("");
     file_dir_name += "sw";
     file_dir_name += to_string(switches);

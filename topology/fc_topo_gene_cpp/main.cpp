@@ -57,8 +57,7 @@ int main(){
     // Fc_edge_disjoin_cost_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     Fc_tagger_ksp fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     fc_test.fc_topo_gene_1v1(0);
-    // fc_test.save_graph_infor();
-
+    fc_test.save_graph_infor();
     // fc_test.path_infor_gene();
     // fc_test.build_search_dic();
 
@@ -78,7 +77,7 @@ int main(){
     // bool if_search_map = true;
     // fc_test.find_all_route(4, 5000, if_search_map);
     // double wr_ave = fc_test.throughput_test("wr", 2);
-    // double wr_ave = fc_test.throughput_test_ksp("ur", 2, 32, 2);
+    // double wr_ave = fc_test.throughput_test("ur", 2, 32, 2);
 
     // int ocs_ports = 400;
     // int distance_infor[4];

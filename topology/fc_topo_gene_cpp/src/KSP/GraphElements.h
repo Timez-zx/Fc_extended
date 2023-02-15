@@ -14,6 +14,7 @@
 
 #include <string>
 #include <iostream>
+#include <algorithm>
 
 template<class T>
 class WeightGreater

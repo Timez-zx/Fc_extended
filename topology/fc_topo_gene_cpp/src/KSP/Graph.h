@@ -63,6 +63,7 @@ public:
 	// Constructors and Destructor
 	Graph(const string& file_name);
 	Graph(const Graph& rGraph);
+	Graph(){};
 	~Graph(void);
 
 	void clear();
@@ -109,7 +110,6 @@ public:
 		m_stRemovedVertexIds.erase(m_stRemovedVertexIds.find(vertex_id));
 	}
 	
-private:
 	void _import_from_file(const std::string& file_name);
 
 };
