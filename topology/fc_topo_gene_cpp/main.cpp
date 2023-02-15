@@ -47,7 +47,7 @@ int main(){
     // int is_random = 1;
     // int random_seed = 3;
 
-    int switches = 400;
+    int switches = 100;
     int hosts = 14;
     int ports = 32;
     int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
@@ -63,7 +63,7 @@ int main(){
 
 
     bool if_report = true;
-    int report_inter = 300;
+    int report_inter = 100;
     bool if_store = true;
     bool store_part = false;
     // fc_test.pthread_up_down_ksp(16, 32, 2, if_report, report_inter, if_store);
