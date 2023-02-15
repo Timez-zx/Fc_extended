@@ -22,7 +22,7 @@ int main(){
     // int is_random = 1;
     // int random_seed = 1;
 
-    int switches = 300;
+    int switches = 144;
     int hosts = 8;
     int ports = 32;
     int vir_layer_degree[] = {4, 8, 8, 4};
@@ -56,7 +56,7 @@ int main(){
     // int random_seed = 5;
     // Fc_edge_disjoin_cost_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     Fc_tagger_ksp fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-    fc_test.fc_topo_gene_1v1(1);
+    fc_test.fc_topo_gene_1v1(0);
     // fc_test.save_graph_infor();
     // fc_test.path_infor_gene();
     // fc_test.build_search_dic();

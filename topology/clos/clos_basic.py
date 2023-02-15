@@ -30,7 +30,7 @@ class clos_basic():
             num_cores_per_group = math.ceil(eps_port_count / 2 / num_aggr_links_per_core)
             num_cores = num_cores_per_group * (eps_port_count - host_per_tor)
             if num_tors + num_aggrs + num_cores <= num_eps:
-                print(num_tors, num_aggrs, num_cores)
+                print(num_tors, num_aggrs, num_cores, host_per_tor)
                 l3_throughput = (eps_port_count - host_per_tor) / host_per_tor
                 break
         return max(l2_throughput, l3_throughput)
@@ -228,5 +228,7 @@ class clos_basic():
 
 
 if __name__ == "__main__":
-    clos_temp = clos_basic(490, 24000, 32)
-    clos_temp.topo_cost_4layer(16, 2)
+
+    clos_temp = clos_basic(148, 1152, 32)
+    clos_temp.topo_cost_3layer(18, 2)
+    clos_temp.cost_equivalent_clos_2_3layer()
