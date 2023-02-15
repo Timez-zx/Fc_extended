@@ -61,7 +61,8 @@ string Fc_tagger_ksp::gene_path_for_file_ksp(string path, int ksp_num, int vc_nu
 
 
 uint16_t Fc_tagger_ksp::search_up_down_ksp(int src, int dst, int path_num, int vc_num, uint16_t *path_infor){
-    YenTopKShortestPathsAlg yenAlg(topo_path, (my_graph).get_vertex(src), (my_graph).get_vertex(dst));
+    YenTopKShortestPathsAlg yenAlg(topo_path);
+    yenAlg.start_get_ksp(yenAlg.m_pGraph->get_vertex(src), yenAlg.m_pGraph->get_vertex(dst));
 	int i = 0;
     int path[1000];
     int layer_pass[1000];
@@ -71,11 +72,14 @@ uint16_t Fc_tagger_ksp::search_up_down_ksp(int src, int dst, int path_num, int v
     int vc_used;
     uint16_t real_path[1000];
     uint16_t data_num = 0;
+    int last_pass;
 
 	while(yenAlg.has_next() & i < path_num){
 		yenAlg.next()->get_path(path, &path_len);
         vc_used = 1;
         past_layer = 0;
+        last_pass = -1;
+        vector<int> extract_layer_pass;
         for(int i = 0; i < path_len-1; i++){
             src_inter = path[i];
             dst_inter = path[i+1];
@@ -84,26 +88,33 @@ uint16_t Fc_tagger_ksp::search_up_down_ksp(int src, int dst, int path_num, int v
             layer_pass[2*i] = src_layer;
             layer_pass[2*i+1] = dst_layer;
         }
-        for(int i = 0; i < 2*(path_len-1)-1; i++){
-            src_layer = layer_pass[i];
-            if(src_layer < past_layer && src_layer < layer_pass[i+1]){
+        for(int i = 0; i < 2*(path_len-1); i++){
+            if(layer_pass[i] != last_pass)
+                extract_layer_pass.push_back(layer_pass[i]);
+            last_pass = layer_pass[i];
+        }
+
+        for(int i = 0; i < extract_layer_pass.size()-1; i++){
+            src_layer = extract_layer_pass[i];
+            if(src_layer < past_layer && src_layer < extract_layer_pass[i+1]){
                 vc_used++;
             }
-            if(src_layer > past_layer)
-                past_layer = src_layer;
+            past_layer = src_layer;
         }
+        
+        for(int i = 0; i < 2*(path_len-1); i++){
+            cout << layer_pass[i] << " ";
+        }
+        cout << endl;
+        cout << vc_used << endl;
         if(vc_used > vc_num)
             continue;
         else{
             i++;
-            // for(int i = 0; i < 2*(path_len-1); i++){
-            //     cout << layer_pass[i] << " ";
-            // }
-            // cout << endl;
-            // for(int i = 0; i < path_len; i++){
-            //     cout << path[i] << " ";
-            // }
-            // cout << endl;
+            for(int i = 0; i < path_len; i++){
+                cout << path[i] << " ";
+            }
+            cout << endl << endl;
             for(int i = 0; i < path_len-1; i++){
                 if(layer_pass[2*i] < layer_pass[2*i+1]){
                     real_path[2*i] = layer_pass[2*i]*switches + path[i];
@@ -154,6 +165,7 @@ void Fc_tagger_ksp::thread_up_down_ksp(vector<int*> route_pairs, int thread_labe
             store_info_len.push_back(data_num);
             store_count++;
             if(store_count == report_inter) {
+                exit(1);
                 fwrite(&store_info_len[0], sizeof(uint16_t), store_count*2, ofs_len);
                 for(int j = 0; j < report_inter; j++){
                     fwrite(store_graph_info[j], sizeof(uint16_t), store_info_len[2*j+1], ofs);
