@@ -77,7 +77,7 @@ int main(){
     // bool if_search_map = true;
     // fc_test.find_all_route(4, 5000, if_search_map);
     // double wr_ave = fc_test.throughput_test("wr", 2);
-    double wr_ave = fc_test.throughput_test("wr", 2, 32, 100);
+    double wr_ave = fc_test.throughput_test("wr", 2, 32, 2);
 
     // int ocs_ports = 400;
     // int distance_infor[4];
