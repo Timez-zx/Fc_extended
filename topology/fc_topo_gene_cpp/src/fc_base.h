@@ -50,7 +50,7 @@ class Fc_base{
         void gene_uniform_random(float **flow_matrix, int seed);
         void gene_worse_case(float **flow_matrix);
 
-        void cost_model(int ocs_ports, int* distance_infor);
+        void cost_model(int ocs_ports, int* distance_infor, int column_num);
         int bisection_bandwidth_byExchange(int random_seed, int cycle_times, int poss_base);
         void b_bandwidth_onethread(int thread_label, int rand_interval, int cycle_times, int* band_find, int poss_base);
         void multi_thread_b_bandwidth(int thread_num, int rand_interval, int cycle_times, int poss_base);

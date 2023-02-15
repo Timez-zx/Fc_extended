@@ -22,13 +22,13 @@ int main(){
     // int is_random = 1;
     // int random_seed = 1;
 
-    int switches = 900;
+    int switches = 300;
     int hosts = 8;
     int ports = 32;
     int vir_layer_degree[] = {4, 8, 8, 4};
     int layer_num = 4;
     int is_random = 1;
-    int random_seed = 3;
+    int random_seed = 1;
 
 
     // int switches = 6000;
@@ -45,7 +45,7 @@ int main(){
     // int vir_layer_degree[] = {2, 6, 6, 2};
     // int layer_num = 4;
     // int is_random = 1;
-    // int random_seed = 3;
+    // int random_seed = 1;
 
     // int switches = 100;
     // int hosts = 14;
@@ -85,7 +85,8 @@ int main(){
     distance_infor[1] = 2; // Tor to tor:y
     distance_infor[2] = 2; // Ocs to tor:x
     distance_infor[3] = 2;  // Ocs to ocs:y
-    fc_test.cost_model(ocs_ports, distance_infor);
+    int column_num = 50;
+    fc_test.cost_model(ocs_ports, distance_infor, column_num);
 
     // fc_test.multi_thread_b_bandwidth(16, 50, 20, 1000);
     gettimeofday(&end, NULL);

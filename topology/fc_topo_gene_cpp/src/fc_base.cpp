@@ -434,7 +434,7 @@ void Fc_base::gene_worse_case(float **flow_matrix){
 }
 
 
-void Fc_base::cost_model(int ocs_ports, int* distance_infor){
+void Fc_base::cost_model(int ocs_ports, int* distance_infor, int column_num){
     if(topo_index == NULL){
         cout << "Please generate topology!" << endl;
         exit(1);
@@ -455,12 +455,12 @@ void Fc_base::cost_model(int ocs_ports, int* distance_infor){
         degree = bipart_degree[i];
         for(int j = 0; j < switches; j++){
             src = j;
-            src_x = ((src/100)*distance_infor[0]+distance_infor[2]);
-            src_y = (src % 50)*distance_infor[1];
+            src_x = ((src/(column_num*2))*distance_infor[0]+distance_infor[2]);
+            src_y = (src % column_num)*distance_infor[1];
             for(int k = 1; k < degree; k++){
                 dst = topo_index[basic_index+j*degree+k];
-                dst_x = ((dst/100)*distance_infor[0]+distance_infor[2]);
-                dst_y = (dst % 50)*distance_infor[1];
+                dst_x = ((dst/(column_num*2))*distance_infor[0]+distance_infor[2]);
+                dst_y = (dst % column_num)*distance_infor[1];
                 fiber_len_src = src_x + abs(src_y-ocs_y);
                 fiber_len_dst = dst_x + abs(dst_y-ocs_y);
                 fiber_len += fiber_len_dst+fiber_len_src;
