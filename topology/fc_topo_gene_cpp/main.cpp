@@ -22,7 +22,7 @@ int main(){
     // int is_random = 1;
     // int random_seed = 1;
 
-    // int switches = 144;
+    // int switches = 200;
     // int hosts = 8;
     // int ports = 32;
     // int vir_layer_degree[] = {4, 8, 8, 4};
@@ -47,7 +47,7 @@ int main(){
     // int is_random = 1;
     // int random_seed = 1;
 
-    int switches = 500;
+    int switches = 200;
     int hosts = 14;
     int ports = 32;
     int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
@@ -63,7 +63,7 @@ int main(){
 
 
     bool if_report = true;
-    int report_inter = 100;
+    int report_inter = 150;
     bool if_store = true;
     bool store_part = false;
     fc_test.pthread_up_down_ksp(16, 32, 2, if_report, report_inter, if_store);
@@ -77,7 +77,7 @@ int main(){
     // bool if_search_map = true;
     // fc_test.find_all_route(4, 5000, if_search_map);
     // double wr_ave = fc_test.throughput_test("wr", 2);
-    // double wr_ave = fc_test.throughput_test("wr", 2, 32, 2);
+    // double wr_ave = fc_test.throughput_test("wr", 2, 32, 100);
 
     // int ocs_ports = 400;
     // int distance_infor[4];
