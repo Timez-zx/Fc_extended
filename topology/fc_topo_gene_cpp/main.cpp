@@ -3,6 +3,9 @@
 #include "src/fc_edge_disjoin_cost_route.h"
 #include "src/fc_tagger_ksp.h"
 
+
+
+
 int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
@@ -77,7 +80,7 @@ int main(){
     // bool if_search_map = true;
     // fc_test.find_all_route(4, 5000, if_search_map);
     // double wr_ave = fc_test.throughput_test("wr", 2);
-    double wr_ave = fc_test.throughput_test("wr", 2, 32, 100);
+    double wr_ave = fc_test.throughput_test_ksp("wr", 2, 32, 100);
 
     // int ocs_ports = 400;
     // int distance_infor[4];
