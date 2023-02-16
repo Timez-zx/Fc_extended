@@ -89,12 +89,12 @@ if __name__ == "__main__":
   width = 0.2
   fig, ax = plt.subplots(figsize=(6,3))
 
-  ax.plot(x , ksp_tagger2_throughputs, marker='s', lw=2, label='KSP_TAGGER2')
-  ax.plot(x , ksp_tagger3_throughputs, marker='o', lw=2, label='KSP_TAGGER3')
-  ax.plot(x , ksp_throughputs, marker='*', lw=2, label='KSP')
-  ax.plot(x , up_down_ksp_throughputs, marker='h', lw=2, label='KSP-UP-DOWN')
-  ax.plot(x , edge_disjoin_throughputs, marker='<', lw=2, label='EDGE DISJOINT')
-  ax.plot(x , equal_cost_clos, marker='x', lw=2, label='CLOS')
+  ax.plot(x , ksp_tagger2_throughputs, marker='s', lw=1, label='KSP_T2')
+  ax.plot(x , ksp_tagger3_throughputs, marker='<', color='greenyellow', lw=1, label='KSP_T3')
+  ax.plot(x , ksp_throughputs, marker='*', color='r',lw=1, label='KSP')
+  ax.plot(x , up_down_ksp_throughputs, marker='h', color='c', lw=1, label='KSP-UD')
+  ax.plot(x , edge_disjoin_throughputs, marker='o', color='darkorange',lw=1, label='EDGE DIS')
+  ax.plot(x , equal_cost_clos, marker='x', color='mediumpurple', lw=1, label='CLOS')
 
   ax.set_xticks(x)
   ax.set_xticklabels(np.array(switches) * to_hosts)
