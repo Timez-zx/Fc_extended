@@ -47,7 +47,7 @@ int main(){
     // int is_random = 1;
     // int random_seed = 1;
 
-    int switches = 150;
+    int switches = 50;
     int hosts = 14;
     int ports = 32;
     int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
@@ -66,9 +66,9 @@ int main(){
     int report_inter = 150;
     bool if_store = true;
     bool store_part = false;
-    fc_test.pthread_up_down_ksp(16, 32, 2, if_report, report_inter, if_store);
-    fc_test.pthread_up_down_ksp(16, 32, 3, if_report, report_inter, if_store);
-    fc_test.pthread_up_down_ksp(16, 32, 100, if_report, report_inter, if_store);
+    // fc_test.pthread_up_down_ksp(16, 32, 2, if_report, report_inter, if_store);
+    // fc_test.pthread_up_down_ksp(16, 32, 3, if_report, report_inter, if_store);
+    fc_test.pthread_up_down_ksp(1, 32, 100, if_report, report_inter, if_store);
     // fc_test.pthread_for_all_route(4, if_report, report_inter, if_store, store_part);
     // string mode = "ksp";
     // int ksp_num = 32;
@@ -77,7 +77,7 @@ int main(){
     // bool if_search_map = true;
     // fc_test.find_all_route(4, 5000, if_search_map);
     // double wr_ave = fc_test.throughput_test("wr", 2);
-    // double wr_ave = fc_test.throughput_test("wr", 2, 32, 100);
+    double wr_ave = fc_test.throughput_test("wr", 2, 32, 100);
 
     // int ocs_ports = 400;
     // int distance_infor[4];

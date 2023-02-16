@@ -18,7 +18,7 @@ using namespace std;
 
 class YenTopKShortestPathsAlg
 {
-
+	Graph* m_pGraph=NULL;
 	vector<BasePath*> m_vResultList;
 	map<BasePath*, BaseVertex*> m_mpDerivationVertexIndex;
 	multiset<BasePath*, WeightLess<BasePath> > m_quPathCandidates;
@@ -33,7 +33,6 @@ private:
 	void _init();
 
 public:
-	Graph* m_pGraph=NULL;
 
 	YenTopKShortestPathsAlg(const Graph& graph)
 	{
@@ -64,6 +63,10 @@ public:
 		m_pSourceVertex = pSource;
 		m_pTargetVertex = pTarget;
 		_init();
+	}
+
+	BaseVertex* get_graph_vertex(int number){
+		return m_pGraph->get_vertex(number);
 	}
 
 	~YenTopKShortestPathsAlg(void){

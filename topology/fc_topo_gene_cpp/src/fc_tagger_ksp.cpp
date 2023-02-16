@@ -61,7 +61,7 @@ string Fc_tagger_ksp::gene_path_for_file_ksp(string path, int ksp_num, int vc_nu
 
 uint16_t Fc_tagger_ksp::search_up_down_ksp(int src, int dst, int path_num, int vc_num, uint16_t *path_infor){
     YenTopKShortestPathsAlg yenAlg(topo_path);
-    yenAlg.start_get_ksp(yenAlg.m_pGraph->get_vertex(src), yenAlg.m_pGraph->get_vertex(dst));
+    yenAlg.start_get_ksp(yenAlg.get_graph_vertex(src), yenAlg.get_graph_vertex(dst));
 	int i = 0;
     int path[1000];
     int layer_pass[1000];
