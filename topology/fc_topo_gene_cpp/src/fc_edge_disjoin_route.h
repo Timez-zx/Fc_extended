@@ -4,6 +4,9 @@
 #include "fc_topo_all_route.h"
 #include "ortools/graph/min_cost_flow.h"
 
+/*
+Fc_edge_disjoin_route: find maximum edge disjoint up-down paths
+*/
 
 class Fc_edge_disjoin_route: public Fc_topo_all_route{
     public:
@@ -11,6 +14,7 @@ class Fc_edge_disjoin_route: public Fc_topo_all_route{
         Fc_topo_all_route(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed){}
         ~Fc_edge_disjoin_route(){};
 
+        // Use multi thread to find maximum edge-disjoint paths
         void find_all_route(int thread_num, int batch_num);
         void find_edge_disjoin_route_fast(int thread_num ,int thread_label, int batch_num, string read_file, bool store_part);
         int verify_route(int src, int dst);
