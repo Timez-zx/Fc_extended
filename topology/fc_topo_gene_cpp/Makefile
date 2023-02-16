@@ -1,7 +1,7 @@
-CFLAGS_U= -O3 -P -std=c++17 
+CFLAGS_U= -O3 -P -std=c++17
 
-ALL_SRC = $(wildcard src/*.cpp) $(wildcard src/KSP/*.cpp)
-ALL_HEADER = $(wildcard src/*.h) $(wildcard src/KSP/*.h)
+ALL_SRC = $(wildcard src/*.cpp) $(wildcard src/KSP_PROZ/*.cpp)
+ALL_HEADER = $(wildcard src/*.h) $(wildcard src/KSP_PROZ/*.h)
 
 OUT=main
 

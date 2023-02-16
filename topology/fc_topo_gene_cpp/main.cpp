@@ -1,7 +1,8 @@
 #include <sys/time.h>
 #include "src/fc_edge_disjoin_route.h"
 #include "src/fc_edge_disjoin_cost_route.h"
-#include "src/fc_tagger_ksp.h"
+// #include "src/fc_tagger_ksp.h"
+#include "src/fc_tagger_kspz.h"
 
 
 // There are some demos in the demo, please refer file "demo".
@@ -33,7 +34,7 @@ double edge_disjoint_throught(Fc_edge_disjoin_route& fc){
 } 
 
 
-double ksp_tagger_throught(Fc_tagger_ksp& fc, int path_num, int vc_num){
+double ksp_tagger_throught(Fc_tagger_kspz& fc, int path_num, int vc_num){
     fc.fc_topo_gene_1v1(0);
     fc.save_graph_infor();
     return fc.throughput_test_ksp("wr", 2, path_num, vc_num);
@@ -55,7 +56,7 @@ void throughput_result(){
     double throughput[5][8];
     for(int i = 0; i < 3; i++){
         for(int j = 0; j < 8; j++){
-            Fc_tagger_ksp fc_test(switch_num[j], hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+            Fc_tagger_kspz fc_test(switch_num[j], hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
             throughput[i][j] =  ksp_tagger_throught(fc_test, 32, vc_num[i]);
         }
     }
@@ -83,7 +84,23 @@ void throughput_result(){
 int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
-    throughput_result();
+    int switches = 500;
+    int hosts = 14;
+    int ports = 32;
+    int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
+    int layer_num = 6;
+    int is_random = 1;
+    int random_seed = 5;
+    Fc_tagger_kspz fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    fc_test.fc_topo_gene_1v1(0);
+    fc_test.save_graph_infor();
+    bool if_report = true;
+    int report_inter = 300;
+    bool if_store = true;
+    bool store_part = false;
+    fc_test.pthread_up_down_ksp(16, 32, 2, if_report, report_inter, if_store);
+    double wr_ave = fc_test.throughput_test_ksp("wr", 2, 32, 2);
+
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     return 0;

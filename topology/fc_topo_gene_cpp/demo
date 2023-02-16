@@ -9,7 +9,7 @@ Throughput
     int layer_num = 6;
     int is_random = 1;
     int random_seed = 5;
-    Fc_tagger_ksp fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    Fc_tagger_kspz fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     fc_test.fc_topo_gene_1v1(0);
     fc_test.save_graph_infor();
 
@@ -75,7 +75,7 @@ Cost:
     int is_random = 1;
     int random_seed = 5;
     // All class is ok
-    Fc_tagger_ksp fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    Fc_tagger_kspz fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     // If the number of switches are larger, use para 1
     fc_test.fc_topo_gene_1v1(0);
 
@@ -97,7 +97,7 @@ Bisection Bandwidth:
     int is_random = 1;
     int random_seed = 5;
     // All class is ok
-    Fc_tagger_ksp fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    Fc_tagger_kspz fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     // If the number of switches are larger, use para 1
     fc_test.fc_topo_gene_1v1(0);
     fc_test.multi_thread_b_bandwidth(16, 50, 20, 1000);
