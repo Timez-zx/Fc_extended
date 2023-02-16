@@ -238,7 +238,7 @@ void Fc_edge_disjoin_cost_route::fc_topo_gene_1v1(int fast_or_not){
 
 
 
-void Fc_edge_disjoin_cost_route::find_all_route(int thread_num, int batch_num, bool if_search_map){
+void Fc_edge_disjoin_cost_route::find_all_route(int thread_num, int batch_num){
     string file_dir_name("");
     file_dir_name += gene_path_for_file("data/all_graph_route/");
     thread* th = new thread[thread_num];

@@ -1,0 +1,104 @@
+/*
+Some demos for the simulations
+Throughput
+1. For ksp and ksp with tagger:
+    int switches = 50;
+    int hosts = 14;
+    int ports = 32;
+    int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
+    int layer_num = 6;
+    int is_random = 1;
+    int random_seed = 5;
+    Fc_tagger_ksp fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    fc_test.fc_topo_gene_1v1(0);
+    fc_test.save_graph_infor();
+
+    bool if_report = true;
+    int report_inter = 150;
+    bool if_store = true;
+    bool store_part = false;
+    // if vc_num is large like 100, it is ksp. When vc_num is 2 or 3 or 4, it is ksp with tagger
+    fc_test.pthread_up_down_ksp(16, 32, 100, if_report, report_inter, if_store);
+    double wr_ave = fc_test.throughput_test_ksp("wr", 2, 32, 100);
+
+2. For all up-down paths and ksp up-down paths
+    int switches = 50;
+    int hosts = 14;
+    int ports = 32;
+    int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
+    int layer_num = 6;
+    int is_random = 1;
+    int random_seed = 5;
+    // Class Fc_topo_all_route or Fc_edge_disjoin_cost_route is ok
+    Fc_topo_all_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    fc_test.fc_topo_gene_1v1(0);
+    fc_test.path_infor_gene();
+    fc_test.build_search_dic();
+
+    bool if_report = true;
+    int report_inter = 5000;
+    bool if_store = true;
+    bool store_part = false;
+    string mode = "ksp";
+    int ksp_num = 32;
+    // ksp mode: for 32 ksp up-down paths in the demo, other mode: all up-down paths
+    fc_test.pthread_for_all_path(16, if_report, report_inter, if_store, mode, ksp_num);
+    double wr_ave = fc_test.throughput_test("wr", 2);
+
+3. For max edge disjoint up-down paths
+    int switches = 50;
+    int hosts = 14;
+    int ports = 32;
+    int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
+    int layer_num = 6;
+    int is_random = 1;
+    int random_seed = 5;
+    Fc_edge_disjoin_cost_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    fc_test.fc_topo_gene_1v1(0);
+    fc_test.path_infor_gene();
+    fc_test.build_search_dic();
+
+    bool if_report = true;
+    int report_inter = 5000;
+    bool if_store = true;
+    bool store_part = false;
+    fc_test.pthread_for_all_route(16, if_report, report_inter, if_store, store_part);
+    fc_test.find_all_route(16, 5000);
+    double wr_ave = fc_test.throughput_test("wr", 2);
+
+Cost:
+    int switches = 50;
+    int hosts = 14;
+    int ports = 32;
+    int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
+    int layer_num = 6;
+    int is_random = 1;
+    int random_seed = 5;
+    // All class is ok
+    Fc_tagger_ksp fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    // If the number of switches are larger, use para 1
+    fc_test.fc_topo_gene_1v1(0);
+
+    int ocs_ports = 400;
+    int distance_infor[4];
+    distance_infor[0] = 2; // Tor to tor:x
+    distance_infor[1] = 2; // Tor to tor:y
+    distance_infor[2] = 2; // Ocs to tor:x
+    distance_infor[3] = 2;  // Ocs to ocs:y
+    int column_num = 50;
+    fc_test.cost_model(ocs_ports, distance_infor, column_num);
+
+Bisection Bandwidth:
+    int switches = 50;
+    int hosts = 14;
+    int ports = 32;
+    int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
+    int layer_num = 6;
+    int is_random = 1;
+    int random_seed = 5;
+    // All class is ok
+    Fc_tagger_ksp fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    // If the number of switches are larger, use para 1
+    fc_test.fc_topo_gene_1v1(0);
+    fc_test.multi_thread_b_bandwidth(16, 50, 20, 1000);
+*/
