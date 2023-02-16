@@ -5,6 +5,12 @@
 #include "fc_topo_all_route.h"
 #include "ortools/graph/min_cost_flow.h"
 
+/*
+Fc_edge_disjoin_cost_route: Set the cost of the edges differently based on the usage of the edges
+when solving the edge-disjoint paths
+However, the problems of edge-disjoint or up-down are the poor path diversity, it is useless because it can't
+solve the principal controdiction
+*/
 
 class Fc_edge_disjoin_cost_route: public Fc_topo_all_route{
     public:
