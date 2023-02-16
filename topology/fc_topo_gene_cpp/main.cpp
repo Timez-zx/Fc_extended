@@ -4,11 +4,39 @@
 #include "src/fc_tagger_ksp.h"
 
 
-// There are some demos in the demo, please refer file "demo". 
+// There are some demos in the demo, please refer file "demo".
+double ksp_tagger_throught(Fc_tagger_ksp& fc, int path_num, int vc_num){
+    fc.fc_topo_gene_1v1(0);
+    fc.save_graph_infor();
+    return fc.throughput_test_ksp("wr", 2, path_num, vc_num);
+} 
 
 int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
+    int switches = 50;
+    int hosts = 14;
+    int ports = 32;
+    int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
+    int layer_num = 6;
+    int is_random = 1;
+    int random_seed = 5;
+    
+    int switch_num[8] = {50, 100, 150, 200, 250, 300, 400, 500};
+    int vc_num[3] = {2, 3, 100};
+    double throughput[3][8];
+    for(int i = 0; i < 3; i++){
+        for(int j = 0; j < 8; j++){
+            Fc_tagger_ksp fc_test(switch_num[j], hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+            throughput[i][j] =  ksp_tagger_throught(fc_test, 32, vc_num[i]);
+        }
+    }
+    for(int i = 0; i < 3; i++){
+        for(int j = 0; j < 8; j++){
+            cout << throughput[i][j] << " ";
+        }
+        cout << endl;
+    }
 
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
