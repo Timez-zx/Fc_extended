@@ -5,15 +5,42 @@
 
 
 // There are some demos in the demo, please refer file "demo".
+double up_down_ksp_throught(Fc_topo_all_route& fc){
+    fc.fc_topo_gene_1v1(0);
+    fc.path_infor_gene();
+    fc.build_search_dic();
+    bool if_report = true;
+    int report_inter = 5000;
+    bool if_store = true;
+    string mode = "ksp";
+    int ksp_num = 32;
+    fc.pthread_for_all_path(16, if_report, report_inter, if_store, mode, ksp_num);
+    return fc.throughput_test("wr", 2);
+} 
+
+
+double edge_disjoint_throught(Fc_edge_disjoin_route& fc){
+    fc.fc_topo_gene_1v1(0);
+    fc.path_infor_gene();
+    fc.build_search_dic();
+    bool if_report = true;
+    int report_inter = 5000;
+    bool if_store = true;
+    bool store_part = false;
+    fc.pthread_for_all_route(16, if_report, report_inter, if_store, store_part);
+    fc.find_all_route(16, 5000);
+    return fc.throughput_test("wr", 2);
+} 
+
+
 double ksp_tagger_throught(Fc_tagger_ksp& fc, int path_num, int vc_num){
     fc.fc_topo_gene_1v1(0);
     fc.save_graph_infor();
     return fc.throughput_test_ksp("wr", 2, path_num, vc_num);
-} 
+}
 
-int main(){
-    struct timeval start, end;
-    gettimeofday(&start, NULL);
+
+void throughput_result(){
     int switches = 50;
     int hosts = 14;
     int ports = 32;
@@ -24,20 +51,39 @@ int main(){
     
     int switch_num[8] = {50, 100, 150, 200, 250, 300, 400, 500};
     int vc_num[3] = {2, 3, 100};
-    double throughput[3][8];
+    string label[5] = {"ksp_tagger2", "ksp_tagger3", "ksp", "up_down_ksp", "edge_disjoint"};
+    double throughput[5][8];
     for(int i = 0; i < 3; i++){
         for(int j = 0; j < 8; j++){
             Fc_tagger_ksp fc_test(switch_num[j], hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
             throughput[i][j] =  ksp_tagger_throught(fc_test, 32, vc_num[i]);
         }
     }
-    for(int i = 0; i < 3; i++){
-        for(int j = 0; j < 8; j++){
-            cout << throughput[i][j] << " ";
-        }
-        cout << endl;
+    for(int j = 0; j < 8; j++){
+        Fc_topo_all_route fc_test(switch_num[j], hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+        throughput[3][j] =  up_down_ksp_throught(fc_test);
+    }
+    for(int j = 0; j < 8; j++){
+        Fc_edge_disjoin_route fc_test(switch_num[j], hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+        throughput[4][j] =  edge_disjoint_throught(fc_test);
     }
 
+    string file_name("data/throughput_result");
+    ofstream ofs(file_name);
+    for(int i = 0; i < 5; i++){
+        ofs << label[i] << " ";
+        for(int j = 0; j < 8; j++){
+            ofs << throughput[i][j] << " ";
+        }
+        ofs << endl;
+    }
+    ofs.close();
+}
+
+int main(){
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
+    throughput_result();
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     return 0;
