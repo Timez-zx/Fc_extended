@@ -1,7 +1,7 @@
 #include "fc_edge_disjoin_route.h"
 
 
-void Fc_edge_disjoin_route::find_all_route(int thread_num, int batch_num, bool if_search_map){
+void Fc_edge_disjoin_route::find_all_route(int thread_num, int batch_num){
     string file_dir_name("");
     file_dir_name += gene_path_for_file("data/all_graph_route/");
     thread* th = new thread[thread_num];
