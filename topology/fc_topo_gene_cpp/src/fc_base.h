@@ -19,6 +19,9 @@
 #include "gurobi_c++.h"
 using namespace std;
 
+/*
+Fc_base: base class for some evaluation function
+*/
 
 class Fc_base{
     public:
