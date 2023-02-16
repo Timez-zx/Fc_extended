@@ -46,14 +46,24 @@ class Fc_base{
 
         string gene_path_for_file(string path);
 
+        // three mode: seed is to generate the uniform random flow metrix
+        // all to all - "aa", uniform random - "ur", near-worst - "wr" 
         double throughput_test(string type, int seed);
         void gene_uniform_random(float **flow_matrix, int seed);
         void gene_worse_case(float **flow_matrix);
 
+        // Evaluate the length of fiber and the number of tranceivers
+        // distance_infor: [0] Tor to tor:x [1] Tor to tor:y [2] Ocs to tor:x [3] Ocs to ocs:y
+        // column_num: the number of tors for a column
         void cost_model(int ocs_ports, int* distance_infor, int column_num);
+
+        // Use the heuristic to calculate the bisection bandwidth
+        // rand_interval: the number of random seeds to decide the initial status
+        // cycle_times: max times at the local mini
+        // poss_base: give possi to jump out local mini, poss_base is smaller, the poss is larger
+        void multi_thread_b_bandwidth(int thread_num, int rand_interval, int cycle_times, int poss_base);
         int bisection_bandwidth_byExchange(int random_seed, int cycle_times, int poss_base);
         void b_bandwidth_onethread(int thread_label, int rand_interval, int cycle_times, int* band_find, int poss_base);
-        void multi_thread_b_bandwidth(int thread_num, int rand_interval, int cycle_times, int poss_base);
 
     protected:
         int* bipart_degree=NULL;
