@@ -38,6 +38,10 @@ class Fc_tagger_kspz: public Fc_base{
         int ecmp_num;
         int *thread_tag_num=NULL;
         int max_tag_num;
+        double *thread_tag_ecmpN=NULL;
+        double ave_tag_ecmpN;
+        double *thread_tag_kspN=NULL;
+        double ave_tag_kspN;
 };
 
 #endif

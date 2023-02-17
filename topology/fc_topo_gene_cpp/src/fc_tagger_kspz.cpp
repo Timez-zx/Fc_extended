@@ -114,8 +114,12 @@ uint16_t Fc_tagger_kspz::search_up_down_ksp(int src, int dst, int path_num, int 
         //     cout << layer_pass[i] << " ";
         // }
         // cout << endl;
+        if(vc_num >= 100)
+            thread_tag_kspN[thread_label] += vc_used;
         if(vc_num >= 100 && vc_used > thread_tag_num[thread_label])
             thread_tag_num[thread_label] = vc_used;
+        if(cost == min_cost)
+            thread_tag_ecmpN[thread_label] += vc_used;
         cost = ksp.FindNextPath();
         if(vc_used > vc_num)
             continue;
@@ -241,9 +245,13 @@ void Fc_tagger_kspz::pthread_up_down_ksp(int thread_num, int path_num, int vc_nu
     thread_ecmp_num = new int[thread_num];
     memset(thread_ecmp_num, 0, sizeof(int)*thread_num);
     ecmp_num = 0;
+    thread_tag_ecmpN = new double[thread_num];
+    memset(thread_tag_ecmpN, 0, sizeof(double)*thread_num);
     if(vc_num >= 100){
         thread_tag_num = new int[thread_num];
         memset(thread_tag_num, 0, sizeof(int)*thread_num);
+        thread_tag_kspN = new double[thread_num];
+        memset(thread_tag_kspN, 0, sizeof(double)*thread_num);
     }
 
     string file_dir_name("");
@@ -283,16 +291,23 @@ void Fc_tagger_kspz::pthread_up_down_ksp(int thread_num, int path_num, int vc_nu
     fclose(ofs);
     fclose(ofs_len);
     max_tag_num = 0;
+    ave_tag_ecmpN = 0;
+    ave_tag_kspN = 0;
     for(int i = 0; i < thread_num; i++){
         if(vc_num >= 100 && max_tag_num < thread_tag_num[i])
             max_tag_num = thread_tag_num[i];
+        if(vc_num >= 100)
+            ave_tag_kspN += thread_tag_kspN[i];
+        ave_tag_ecmpN += thread_tag_ecmpN[i];
         ecmp_num += thread_ecmp_num[i];
         delete graph_pr[i];
         graph_pr[i] = NULL;
     }
     cout << "Total number of ecmp:" << ecmp_num << endl;
+    cout << "Ave tag used for ecmp:" << ave_tag_ecmpN/ecmp_num << endl;
     if(vc_num >= 100){
         cout << "Max tag used for ksp:" << max_tag_num << endl;
+        cout << "Ave tag used for ksp:" << ave_tag_kspN/(total_pairs*path_num) << endl;
     }
     delete graph_pr;
     graph_pr = NULL;
@@ -300,6 +315,10 @@ void Fc_tagger_kspz::pthread_up_down_ksp(int thread_num, int path_num, int vc_nu
     thread_ecmp_num = NULL;
     delete thread_tag_num;
     thread_tag_num = NULL;
+    delete thread_tag_ecmpN;
+    thread_tag_ecmpN = NULL;
+    delete thread_tag_kspN;
+    thread_tag_kspN = NULL;
 }
 
 
