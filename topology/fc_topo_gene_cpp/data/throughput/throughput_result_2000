@@ -11,3 +11,12 @@ Throughtput: 0.309186
 ksp_tagger2
 Throughtput: 0.28328
 1109973068
+
+10 layer ksp
+Max tag used for ksp:5
+Ave tag used for ksp:2.53881
+1000196188
+10 layer ksp_tagger3
+Total number of ecmp:8908165
+Ave tag used for ecmp:2.28564
+1000504088

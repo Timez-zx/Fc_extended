@@ -51,12 +51,12 @@ int main(){
     int switches = 2000;
     int hosts = 14;
     int ports = 32;
-    int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
-    int layer_num = 6;
+    int vir_layer_degree[] = {1, 2, 2, 2, 2, 2, 2, 2, 2, 1};
+    int layer_num = 10;
     int is_random = 1;
     int random_seed = 5;
     Fc_tagger_kspz fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-    fc_test.fc_topo_gene_1v1(0);
+    fc_test.fc_topo_gene_1v1(1);
     fc_test.save_graph_infor();
     bool if_report = true;
     int report_inter = 10000;
