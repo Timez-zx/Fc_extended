@@ -62,8 +62,8 @@ int main(){
     int report_inter = 100000;
     bool if_store = true;
     bool store_part = false;
-    fc_test.pthread_up_down_ksp(16, 32, 2, if_report, report_inter, if_store);
-    fc_test.pthread_up_down_ksp(16, 32, 3, if_report, report_inter, if_store);
+    // fc_test.pthread_up_down_ksp(16, 32, 2, if_report, report_inter, if_store);
+    // fc_test.pthread_up_down_ksp(16, 32, 3, if_report, report_inter, if_store);
     fc_test.pthread_up_down_ksp(16, 32, 100, if_report, report_inter, if_store);
     // double wr_ave = fc_test.throughput_test_ksp("wr", 2, 32, 100);
     // wr_ave = fc_test.throughput_test_ksp("wr", 2, 32, 3);
