@@ -1,6 +1,8 @@
 ksp
 Throughtput: 0.307791
 1000196188
+Total number of ecmp:8668292
+Max tag used for ksp:5
 ksp_tagger3
 Throughtput: 0.309186
 1000724832
