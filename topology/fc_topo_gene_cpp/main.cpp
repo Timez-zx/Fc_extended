@@ -69,7 +69,7 @@ void throughput_result(){
         throughput[4][j] =  edge_disjoint_throught(fc_test);
     }
 
-    string file_name("data/throughput_result");
+    string file_name("data/throughput/throughput_result");
     ofstream ofs(file_name);
     for(int i = 0; i < 5; i++){
         ofs << label[i] << " ";
@@ -84,7 +84,7 @@ void throughput_result(){
 int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
-    int switches = 50;
+    int switches = 2000;
     int hosts = 14;
     int ports = 32;
     int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
@@ -92,7 +92,7 @@ int main(){
     int is_random = 1;
     int random_seed = 5;
     Fc_tagger_kspz fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-    fc_test.fc_topo_gene_1v1(0);
+    fc_test.fc_topo_gene_1v1(1);
     fc_test.save_graph_infor();
     bool if_report = true;
     int report_inter = 100000;
@@ -100,10 +100,10 @@ int main(){
     bool store_part = false;
     fc_test.pthread_up_down_ksp(16, 32, 2, if_report, report_inter, if_store);
     fc_test.pthread_up_down_ksp(16, 32, 3, if_report, report_inter, if_store);
-    fc_test.pthread_up_down_ksp(16, 32, 100, if_report, report_inter, if_store);
-    double wr_ave = fc_test.throughput_test_ksp("wr", 2, 32, 100);
-    wr_ave = fc_test.throughput_test_ksp("wr", 2, 32, 3);
-    wr_ave = fc_test.throughput_test_ksp("wr", 2, 32, 2);
+    // fc_test.pthread_up_down_ksp(16, 32, 100, if_report, report_inter, if_store);
+    // double wr_ave = fc_test.throughput_test_ksp("wr", 2, 32, 100);
+    // wr_ave = fc_test.throughput_test_ksp("wr", 2, 32, 3);
+    // wr_ave = fc_test.throughput_test_ksp("wr", 2, 32, 2);
 
 
     gettimeofday(&end, NULL);

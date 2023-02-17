@@ -45,7 +45,7 @@ if __name__ == "__main__":
       throughput_map[pattern][routing] = {}
       for switch in switches:
         throughput_map[pattern][routing][switch] = 0.0
-  th_f = open('../data/throughput_result', mode='r')
+  th_f = open('../data/throughput/throughput_result', mode='r')
   lines = th_f.read().splitlines()
   label = []
   count = 0
