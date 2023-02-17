@@ -36,7 +36,7 @@ class Fc_tagger_kspz: public Fc_base{
         Graph **graph_pr=NULL;
         int *thread_ecmp_num=NULL;
         int ecmp_num;
-        int *thread_max_tag_num=NULL;
+        int *thread_tag_num=NULL;
         int max_tag_num;
 };
 

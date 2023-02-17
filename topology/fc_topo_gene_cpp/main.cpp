@@ -56,10 +56,10 @@ int main(){
     int is_random = 1;
     int random_seed = 5;
     Fc_tagger_kspz fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-    fc_test.fc_topo_gene_1v1(1);
+    fc_test.fc_topo_gene_1v1(0);
     fc_test.save_graph_infor();
     bool if_report = true;
-    int report_inter = 100000;
+    int report_inter = 10000;
     bool if_store = true;
     bool store_part = false;
     // fc_test.pthread_up_down_ksp(16, 32, 2, if_report, report_inter, if_store);
