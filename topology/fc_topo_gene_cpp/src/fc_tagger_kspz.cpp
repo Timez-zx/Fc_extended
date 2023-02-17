@@ -325,25 +325,54 @@ double Fc_tagger_kspz::throughput_test_ksp(string type, int seed, int path_numbe
     int layer1, layer2;
     int new_node1, new_node2;
 
+    float *flow_matrix[switches];
+    for(int i = 0; i < switches; i++){
+        flow_matrix[i] = new float[switches];
+        memset(flow_matrix[i], 0, sizeof(float)*switches);
+    }
+    if(type == "aa"){
+        float pair_flow = hosts/float(switches-1);
+        for(int i = 0; i < switches; i++)
+            for(int j = 0; j < switches; j++)
+                if(i != j)
+                    flow_matrix[i][j] = pair_flow;
+    }
+    else if(type == "ur")
+        gene_uniform_random(flow_matrix, seed);
+    else if(type == "wr")
+        gene_worse_case(flow_matrix);
+
     int max_through = 10;
     GRBEnv *env = new GRBEnv();
     GRBModel model = GRBModel(*env);
-    GRBVar *flow_var[switches*switches];
+    GRBVar **flow_var;
+    flow_var = new GRBVar*[switches*switches];
+    int *path_num[switches];
+    for(int i = 0; i < switches; i++){
+        path_num[i] = new int[switches];
+    }
     GRBVar throughput = model.addVar(0, max_through, 0, GRB_CONTINUOUS, "throughput");
-    int path_num[switches][switches];
     int path_sum = 0;
     for(int i = 0; i < switches*(switches-1)/2; i++){
         node_len = pair_len[2*i+1];
         int count = 0;
         int path_count = 0;
-        flow_var[src*switches+dst] = model.addVars(pair_len[2*i], GRB_CONTINUOUS);
-        flow_var[dst*switches+src] = model.addVars(pair_len[2*i], GRB_CONTINUOUS);
-        path_num[src][dst] = pair_len[2*i];
-        path_num[dst][src] = pair_len[2*i];
         path_sum += pair_len[2*i];
-        for(int j = 0; j < pair_len[2*i]; j++){
-            flow_var[src*switches+dst][j].set(GRB_DoubleAttr_LB, 0.0);
-            flow_var[dst*switches+src][j].set(GRB_DoubleAttr_UB, 100);
+        if(flow_matrix[src][dst] > 0){
+            flow_var[src*switches+dst] = model.addVars(pair_len[2*i], GRB_CONTINUOUS);
+            path_num[src][dst] = pair_len[2*i];
+            for(int j = 0; j < pair_len[2*i]; j++){
+                flow_var[src*switches+dst][j].set(GRB_DoubleAttr_LB, 0.0);
+                flow_var[src*switches+dst][j].set(GRB_DoubleAttr_UB, 100);
+            }
+        }
+        if(flow_matrix[dst][src] > 0){
+            flow_var[dst*switches+src] = model.addVars(pair_len[2*i], GRB_CONTINUOUS);
+            path_num[dst][src] = pair_len[2*i];
+            for(int j = 0; j < pair_len[2*i]; j++){
+                flow_var[dst*switches+src][j].set(GRB_DoubleAttr_LB, 0.0);
+                flow_var[dst*switches+src][j].set(GRB_DoubleAttr_UB, 100);
+            }
         }
         while(count < node_len - 1){
             node1 = pair_infor[basic_len+count];
@@ -353,25 +382,29 @@ double Fc_tagger_kspz::throughput_test_ksp(string type, int seed, int path_numbe
             layer1 = node1/switches;
             layer2 = node2/switches;
             if(sw1 != sw2){
-                map_count = node1*(2*layer_num-1)*switches+node2;
-                if(path_map_link.find(map_count) == path_map_link.end()){
-                    vector<int> temp = {src*switches+dst, path_count};
-                    path_map_link[map_count] = temp;
+                if(flow_matrix[src][dst] > 0){
+                    map_count = node1*(2*layer_num-1)*switches+node2;
+                    if(path_map_link.find(map_count) == path_map_link.end()){
+                        vector<int> temp = {src*switches+dst, path_count};
+                        path_map_link[map_count] = temp;
+                    }
+                    else{
+                        path_map_link[map_count].push_back(src*switches+dst);
+                        path_map_link[map_count].push_back(path_count);
+                    }
                 }
-                else{
-                    path_map_link[map_count].push_back(src*switches+dst);
-                    path_map_link[map_count].push_back(path_count);
-                }
-                new_node1 = node1 + (layer_num-1-layer1)*2*switches;
-                new_node2 = node2 + (layer_num-1-layer2)*2*switches;
-                map_count = new_node2*(2*layer_num-1)*switches+new_node1;
-                if(path_map_link.find(map_count) == path_map_link.end()){
-                    vector<int> temp = {dst*switches+src, path_count};
-                    path_map_link[map_count] = temp;
-                }
-                else{
-                    path_map_link[map_count].push_back(dst*switches+src);
-                    path_map_link[map_count].push_back(path_count);
+                if(flow_matrix[dst][src] > 0){
+                    new_node1 = node1 + (layer_num-1-layer1)*2*switches;
+                    new_node2 = node2 + (layer_num-1-layer2)*2*switches;
+                    map_count = new_node2*(2*layer_num-1)*switches+new_node1;
+                    if(path_map_link.find(map_count) == path_map_link.end()){
+                        vector<int> temp = {dst*switches+src, path_count};
+                        path_map_link[map_count] = temp;
+                    }
+                    else{
+                        path_map_link[map_count].push_back(dst*switches+src);
+                        path_map_link[map_count].push_back(path_count);
+                    }
                 }
             }
             if(sw2 == dst){
@@ -390,35 +423,20 @@ double Fc_tagger_kspz::throughput_test_ksp(string type, int seed, int path_numbe
     fclose(ofs);
     fclose(ofs_len);
     cout << "Average path num: " << float(path_sum)*2/(switches*(switches-1)) << endl; 
-    float *flow_matrix[switches];
-    for(int i = 0; i < switches; i++){
-        flow_matrix[i] = new float[switches];
-        memset(flow_matrix[i], 0, sizeof(float)*switches);
-    }
-    if(type == "aa"){
-        float pair_flow = hosts/float(switches-1);
-        for(int i = 0; i < switches; i++)
-            for(int j = 0; j < switches; j++)
-                if(i != j)
-                    flow_matrix[i][j] = pair_flow;
-    }
-    else if(type == "ur")
-        gene_uniform_random(flow_matrix, seed);
-    else if(type == "wr")
-        gene_worse_case(flow_matrix);
   
     for(int i = 0; i < switches; i++){
         for(int j = 0; j < switches; j++){
             if(i != j){
-                GRBLinExpr constr = 0;
-                for (int k = 0; k < path_num[i][j]; k++) 
-                    constr += flow_var[i*switches+j][k];
-                constr -= throughput * flow_matrix[i][j];
-                model.addConstr(constr, GRB_EQUAL, 0);
+                if(flow_matrix[i][j] > 0){
+                    GRBLinExpr constr = 0;
+                    for (int k = 0; k < path_num[i][j]; k++) 
+                        constr += flow_var[i*switches+j][k];
+                    constr -= throughput * flow_matrix[i][j];
+                    model.addConstr(constr, GRB_EQUAL, 0);
+                }
             }
         }
     }  
-
     for(auto &link : path_map_link){
         GRBLinExpr constr = 0;
         for(int i = 0; i < link.second.size()/2; i++){
@@ -446,5 +464,9 @@ double Fc_tagger_kspz::throughput_test_ksp(string type, int seed, int path_numbe
 
     delete[] pair_len;
     delete[] pair_infor;
+    for(int i = 0; i < switches; i++){
+        delete[] path_num[i];
+    }
+    delete[] flow_var;
     return throught_result;
 }
