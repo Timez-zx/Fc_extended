@@ -1,7 +1,6 @@
 #include <sys/time.h>
 #include "src/fc_edge_disjoin_route.h"
 #include "src/fc_edge_disjoin_cost_route.h"
-// #include "src/fc_tagger_ksp.h"
 #include "src/fc_tagger_kspz.h"
 
 
@@ -37,49 +36,14 @@ double edge_disjoint_throught(Fc_edge_disjoin_route& fc){
 double ksp_tagger_throught(Fc_tagger_kspz& fc, int path_num, int vc_num){
     fc.fc_topo_gene_1v1(0);
     fc.save_graph_infor();
+    bool if_report = true;
+    int report_inter = 100000;
+    bool if_store = true;
+    bool store_part = false;
+    fc.pthread_up_down_ksp(16, path_num, vc_num, if_report, report_inter, if_store);
     return fc.throughput_test_ksp("wr", 2, path_num, vc_num);
 }
 
-
-void throughput_result(){
-    int switches = 50;
-    int hosts = 14;
-    int ports = 32;
-    int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
-    int layer_num = 6;
-    int is_random = 1;
-    int random_seed = 5;
-    
-    int switch_num[8] = {50, 100, 150, 200, 250, 300, 400, 500};
-    int vc_num[3] = {2, 3, 100};
-    string label[5] = {"ksp_tagger2", "ksp_tagger3", "ksp", "up_down_ksp", "edge_disjoint"};
-    double throughput[5][8];
-    for(int i = 0; i < 3; i++){
-        for(int j = 0; j < 8; j++){
-            Fc_tagger_kspz fc_test(switch_num[j], hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-            throughput[i][j] =  ksp_tagger_throught(fc_test, 32, vc_num[i]);
-        }
-    }
-    for(int j = 0; j < 8; j++){
-        Fc_topo_all_route fc_test(switch_num[j], hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-        throughput[3][j] =  up_down_ksp_throught(fc_test);
-    }
-    for(int j = 0; j < 8; j++){
-        Fc_edge_disjoin_route fc_test(switch_num[j], hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-        throughput[4][j] =  edge_disjoint_throught(fc_test);
-    }
-
-    string file_name("data/throughput/throughput_result");
-    ofstream ofs(file_name);
-    for(int i = 0; i < 5; i++){
-        ofs << label[i] << " ";
-        for(int j = 0; j < 8; j++){
-            ofs << throughput[i][j] << " ";
-        }
-        ofs << endl;
-    }
-    ofs.close();
-}
 
 int main(){
     struct timeval start, end;
@@ -100,7 +64,7 @@ int main(){
     bool store_part = false;
     fc_test.pthread_up_down_ksp(16, 32, 2, if_report, report_inter, if_store);
     fc_test.pthread_up_down_ksp(16, 32, 3, if_report, report_inter, if_store);
-    // fc_test.pthread_up_down_ksp(16, 32, 100, if_report, report_inter, if_store);
+    fc_test.pthread_up_down_ksp(16, 32, 100, if_report, report_inter, if_store);
     // double wr_ave = fc_test.throughput_test_ksp("wr", 2, 32, 100);
     // wr_ave = fc_test.throughput_test_ksp("wr", 2, 32, 3);
     // wr_ave = fc_test.throughput_test_ksp("wr", 2, 32, 2);
