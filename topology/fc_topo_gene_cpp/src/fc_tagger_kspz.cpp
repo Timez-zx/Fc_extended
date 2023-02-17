@@ -75,8 +75,11 @@ uint16_t Fc_tagger_kspz::search_up_down_ksp(int src, int dst, int path_num, int 
     uint16_t data_num = 0;
     int last_pass;
     double cost = ksp.Init(src, dst);
+    double min_cost = cost;
 
 	while(cost < 10000 & i < path_num){
+        if(cost == min_cost)
+            thread_ecmp_num[thread_label]++;
         vector<Link*> path_temp = ksp.GetPath();
         path_len = cost+1;
         for(int i = 0; i < path_temp.size(); i++){
@@ -234,6 +237,9 @@ void Fc_tagger_kspz::pthread_up_down_ksp(int thread_num, int path_num, int vc_nu
     for(int i = 0; i < thread_num; i++){
         graph_pr[i] = new Graph(topo_path);
     }
+    thread_ecmp_num = new int[thread_num];
+    memset(thread_ecmp_num, 0, sizeof(int)*thread_num);
+    ecmp_num = 0;
 
     string file_dir_name("");
     if(if_store){
@@ -272,11 +278,15 @@ void Fc_tagger_kspz::pthread_up_down_ksp(int thread_num, int path_num, int vc_nu
     fclose(ofs);
     fclose(ofs_len);
     for(int i = 0; i < thread_num; i++){
+        ecmp_num += thread_ecmp_num[i];
         delete graph_pr[i];
         graph_pr[i] = NULL;
     }
+    cout << "Total number of ecmp:" << ecmp_num << endl;
     delete graph_pr;
     graph_pr = NULL;
+    delete thread_ecmp_num;
+    thread_ecmp_num = NULL;
 }
 
 

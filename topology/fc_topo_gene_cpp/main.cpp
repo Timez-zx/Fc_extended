@@ -48,7 +48,7 @@ double ksp_tagger_throught(Fc_tagger_kspz& fc, int path_num, int vc_num){
 int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
-    int switches = 2000;
+    int switches = 500;
     int hosts = 14;
     int ports = 32;
     int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
