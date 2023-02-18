@@ -50,7 +50,7 @@ int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
 
-    int switches = 50;
+    int switches = 500;
     int hosts = 14;
     int ports = 32;
     int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
@@ -58,10 +58,20 @@ int main(){
     int is_random = 1;
     int random_seed = 5;
     // All class is ok
-    FcTaggerTest fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-    // If the number of switches are larger, use para 1
-    fc_test.fc_topo_gene_1v1(0);
-    fc_test.SaveTaggerGraph();
+    // FcTaggerTest fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    // // If the number of switches are larger, use para 1
+    // fc_test.fc_topo_gene_1v1(0);
+    // fc_test.SaveTaggerGraph();
+    Fc_tagger_kspz fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    fc_test.fc_topo_gene_1v1(1);
+    fc_test.save_graph_infor();
+    bool if_report = true;
+    int report_inter = 1000;
+    bool if_store = true;
+    bool store_part = false;
+    // if vc_num is large like 100, it is ksp. When vc_num is 2 or 3 or 4, it is ksp with tagger
+    fc_test.pthread_up_down_ksp(16, 32, 100, if_report, report_inter, if_store);
+    // double wr_ave = fc_test.throughput_test_ksp("wr", 2, 32, 100);
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     return 0;

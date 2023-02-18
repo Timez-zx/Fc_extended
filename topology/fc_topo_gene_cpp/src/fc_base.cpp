@@ -162,7 +162,7 @@ void Fc_base::fc_topo_gene_1v1(int fast_or_not){
         delete[] vertex_check[i];
     }
     delete[] vertex_check;
-    // cout << "Topology constructed" << endl;
+    cout << "Topology constructed" << endl;
 }
 
 

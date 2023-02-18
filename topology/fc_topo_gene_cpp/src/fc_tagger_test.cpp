@@ -67,7 +67,6 @@ uint16_t FcTaggerTest::SearchEcmp(int srcIn, int dstIn, int thLabel, uint16_t *p
         }
         pathInfor[pathLen] = dstIn;
         pathLen++;
-        pathNum++;
         cost = ksp.FindNextPath();
     }
     return pathLen;
