@@ -19,6 +19,8 @@ class FcTaggerTest: public Fc_base{
         // Save the topo infor in files for ksp function interface 
         void SaveTaggerGraph();
 
+        uint16_t SearchKsp(int srcIn, int dstIn, int pathNum, int thLabel, uint16_t *pathInfor);
+
 
     private:
         unordered_map<int,int> linkPortMap;

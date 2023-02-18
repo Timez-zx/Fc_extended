@@ -34,3 +34,22 @@ void FcTaggerTest::SaveTaggerGraph(){
     topoPath = "data/topo_infor/" + fileDirName + "/" + fileDirName+".txt";
 }
 
+
+uint16_t FcTaggerTest::SearchKsp(int srcIn, int dstIn, int pathNum, int thLabel, uint16_t *pathInfor){
+    KShortestPath ksp(graphPr[thLabel]);
+    double cost = ksp.Init(srcIn, dstIn);
+    int pathCount = 0, pathLen = 0;
+    while(cost < 10000 & pathCount < pathNum){
+        vector<Link*> pathTemp = ksp.GetPath();
+        for(int i = 0; i < pathTemp.size(); i++){
+            pathInfor[pathLen] = pathTemp[i]->source_id;
+            pathLen++;
+        }
+        pathInfor[pathLen] = dstIn;
+        pathLen++;
+        pathNum++;
+        cost = ksp.FindNextPath();
+    }
+    return pathLen;
+}
+
