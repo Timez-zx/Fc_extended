@@ -50,7 +50,7 @@ int main(){
     gettimeofday(&start, NULL);
     int vir_layer_degrees[3][4] = {{4,8,8,4}, {2,8,8,2}, {2,6,6,2}};
     int host[3] = {8, 12, 16};
-    int server[3] = {24000, 48000, 72000};
+    int server[3] = { 24000, 48000, 72000};
     for(int m = 0; m < 3; m++){
         for(int n = 0; n < 3; n++){
             int switches = server[m]/host[n];
@@ -72,9 +72,9 @@ int main(){
             distance_infor[0] = 2; // Tor to tor:x
             distance_infor[1] = 2; // Tor to tor:y
             distance_infor[2] = 2; // Ocs to tor:x
-            for(int i = 2; i <= 10; i++){
+            for(int i = 2; i < 3 ; i++){
                 distance_infor[3] = i;  // Ocs to ocs:y
-                for(int j = 30; j <= 150; j++){
+                for(int j = 10; j <= 150; j++){
                     int min_f = fc_test.cost_model(ocs_ports, distance_infor, j);
                     if(min_f < min_fiber){
                         min_fiber = min_f;
