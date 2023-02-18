@@ -25,15 +25,6 @@ Fc_base: base class for some evaluation function
 
 class Fc_base{
     public:
-        // Initial part
-        int switches;
-        int hosts;
-        int ports;
-        int* vir_layer_degree;
-        int layer_num;
-        int is_random;
-        int random_seed;
-
         Fc_base(int switches, int hosts, int ports, int* vir_layer_degree, int layer_num, int is_random, int random_seed):
         switches(switches), hosts(hosts), ports(ports), vir_layer_degree(vir_layer_degree), layer_num(layer_num),is_random(is_random), random_seed(random_seed){
             if(access("data", 0)){
@@ -69,6 +60,13 @@ class Fc_base{
         void b_bandwidth_onethread(int thread_label, int rand_interval, int cycle_times, int* band_find, int poss_base);
 
     protected:
+        int switches;
+        int hosts;
+        int ports;
+        int* vir_layer_degree;
+        int layer_num;
+        int is_random;
+        int random_seed;
         int* bipart_degree=NULL;
         int* topo_index=NULL;
         int** bit_map=NULL;
