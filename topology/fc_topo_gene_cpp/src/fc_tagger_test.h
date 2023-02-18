@@ -20,6 +20,7 @@ class FcTaggerTest: public Fc_base{
         void SaveTaggerGraph();
 
         uint16_t SearchKsp(int srcIn, int dstIn, int pathNum, int thLabel, uint16_t *pathInfor);
+        uint16_t SearchEcmp(int srcIn, int dstIn, int thLabel, uint16_t *pathInfor);
 
 
     private:

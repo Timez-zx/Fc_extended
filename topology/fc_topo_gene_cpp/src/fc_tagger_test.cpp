@@ -53,3 +53,23 @@ uint16_t FcTaggerTest::SearchKsp(int srcIn, int dstIn, int pathNum, int thLabel,
     return pathLen;
 }
 
+
+uint16_t FcTaggerTest::SearchEcmp(int srcIn, int dstIn, int thLabel, uint16_t *pathInfor){
+    KShortestPath ksp(graphPr[thLabel]);
+    double cost = ksp.Init(srcIn, dstIn);
+    double minCost = cost;
+    int pathLen = 0;
+    while(cost < 10000 & cost == minCost){
+        vector<Link*> pathTemp = ksp.GetPath();
+        for(int i = 0; i < pathTemp.size(); i++){
+            pathInfor[pathLen] = pathTemp[i]->source_id;
+            pathLen++;
+        }
+        pathInfor[pathLen] = dstIn;
+        pathLen++;
+        pathNum++;
+        cost = ksp.FindNextPath();
+    }
+    return pathLen;
+}
+
