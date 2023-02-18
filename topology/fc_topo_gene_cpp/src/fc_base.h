@@ -58,7 +58,7 @@ class Fc_base{
         // Evaluate the length of fiber and the number of tranceivers
         // distance_infor: [0] Tor to tor:x [1] Tor to tor:y [2] Ocs to tor:x [3] Ocs to ocs:y
         // column_num: the number of tors for a column
-        void cost_model(int ocs_ports, int* distance_infor, int column_num);
+        int cost_model(int ocs_ports, int* distance_infor, int column_num);
 
         // Use the heuristic to calculate the bisection bandwidth
         // rand_interval: the number of random seeds to decide the initial status
