@@ -11,7 +11,14 @@ typedef struct _SPNode{
     SwitchId switchId;
     PortId portId;
     TagId tagId;
-}SPNode;
+} SPNode;
+
+typedef struct _SPLink{
+    SPNode srcNode;
+    SPNode dstNode;
+} SPLink;
+
+
 
 
 
