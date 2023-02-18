@@ -5,8 +5,12 @@ void FcTaggerTest::SaveTaggerGraph(){
         cout << "Please generate graph infor first by fc_topo_gene_1v1!" << endl;
         exit(1);
     }
+    string fileDirName = gene_path_for_file("data/topo_infor/");
+    ofstream ofs("data/topo_infor/" + fileDirName + "/" + fileDirName+".txt");
     int degree, src, dst, basicIndex = 0;
     int *portLabel = new int[switches]();
+    ofs << "LinkID,SourceID,DestinationID,PeerID,Cost,Bandwidth,Delay,SRLGNum,SRLGs" << endl;
+    int count = 0;
     for(int i = 0; i < layer_num-1; i++){
         degree = bipart_degree[i];
         for(int j = 0; j < switches; j++){
@@ -16,10 +20,17 @@ void FcTaggerTest::SaveTaggerGraph(){
                 linkPortMap[src*switches+dst] = portLabel[src]*(ports-hosts)+portLabel[dst];
                 portLabel[src]++;
                 portLabel[dst]++;
+                ofs << count << "," <<src << "," << dst << "," << 0 << "," << 1 << ",0,0,0,0"<< endl;
+                count++;
+                ofs << count << "," <<dst << "," << src << "," << 0 << "," << 1 << ",0,0,0,0"<< endl;
+                count++;
             }
         }
         basicIndex += degree*switches;
     }
+    ofs.close();
     delete portLabel;
     portLabel = NULL;
+    topoPath = "data/topo_infor/" + fileDirName + "/" + fileDirName+".txt";
 }
+

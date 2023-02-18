@@ -22,7 +22,8 @@ class FcTaggerTest: public Fc_base{
 
     private:
         unordered_map<int,int> linkPortMap;
-        Graph **graph_pr=NULL;
+        string topoPath;
+        Graph **graphPr=NULL;
 };
 
 #endif
