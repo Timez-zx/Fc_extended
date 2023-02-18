@@ -32,6 +32,7 @@ class Fc_tagger_kspz: public Fc_base{
 
     private:
         unordered_map<int,int> link_to_layer_map;
+        unordered_map<int,int> link_to_port_map;
         string topo_path;
         Graph **graph_pr=NULL;
         int *thread_tag_num=NULL;

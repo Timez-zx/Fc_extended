@@ -2,6 +2,7 @@
 #include "src/fc_edge_disjoin_route.h"
 #include "src/fc_edge_disjoin_cost_route.h"
 #include "src/fc_tagger_kspz.h"
+#include "src/fc_tagger_test.h"
 
 
 // There are some demos in the demo, please refer file "demo".
@@ -49,6 +50,18 @@ int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
 
+    int switches = 50;
+    int hosts = 14;
+    int ports = 32;
+    int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
+    int layer_num = 6;
+    int is_random = 1;
+    int random_seed = 5;
+    // All class is ok
+    FcTaggerTest fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    // If the number of switches are larger, use para 1
+    fc_test.fc_topo_gene_1v1(0);
+    fc_test.SaveTaggerGraph();
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     return 0;
