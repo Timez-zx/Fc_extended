@@ -12,10 +12,10 @@ typedef struct _SPLink{
     int nextEdgeIdex;
 } SPLink;
 
-class TaggerGraph{
+class ReverseTaggerGraph{
     public:
-        explicit TaggerGraph();
-        ~TaggerGraph(){};
+        explicit ReverseTaggerGraph();
+        ~ReverseTaggerGraph(){};
 
 
 };

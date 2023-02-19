@@ -1,5 +1,5 @@
 #include "graph_tag.h"
 
-TaggerGraph::TaggerGraph(){
+ReverseTaggerGraph::ReverseTaggerGraph(){
     
 }
