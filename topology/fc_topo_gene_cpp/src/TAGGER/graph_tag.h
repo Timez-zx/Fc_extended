@@ -15,7 +15,7 @@ typedef struct _SPLink{
 
 class ReverseTaggerGraph{
     public:
-        explicit ReverseTaggerGraph();
+        explicit ReverseTaggerGraph(const std::string &file_path);
         ~ReverseTaggerGraph(){};
     
     private:
