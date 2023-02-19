@@ -223,7 +223,7 @@ void FcTaggerTest::mthreadKsp(int threadNum, int pathNum, bool ifReport, int rep
     fwrite(&finalData[0], sizeof(int), finalData.size(), ofs);
     cout << maxTag << endl;
     int sw = switches;
-    int totalPort = ports-hosts;
+    int totalPort = ports-hosts+1;
     fwrite(&maxTag, sizeof(int), 1, ofs);
     fwrite(&sw, sizeof(int), 1, ofs);
     fwrite(&totalPort, sizeof(int), 1, ofs);
@@ -423,7 +423,7 @@ void FcTaggerTest::mthreadEcmp(int threadNum, bool ifReport, int reportInter, bo
     fwrite(&finalData[0], sizeof(int), finalData.size(), ofs);
     cout << maxTag << endl;
     int sw = switches;
-    int totalPort = ports-hosts;
+    int totalPort = ports-hosts+1;
     fwrite(&maxTag, sizeof(int), 1, ofs);
     fwrite(&sw, sizeof(int), 1, ofs);
     fwrite(&totalPort, sizeof(int), 1, ofs);
