@@ -82,6 +82,57 @@ uint16_t FcTaggerTest::SearchKsp(int srcIn, int dstIn, int pathNum, int thLabel,
 }
 
 
+void FcTaggerTest::thread_up_down_ksp(vector<int*> routePairs, int thLabel, int pathNum, bool ifReport, int reportInter, bool ifStore, string storeFile){
+    FILE* ofs;
+    uint16_t dataNum;
+    int count = 0, storeCount = 0;
+    int* tempInfor = new int[switches*10000];
+    int** storeGraphInfo = new int*[reportInter];
+    vector<int> storeInfoLen;
+    if(ifStore){
+        string filePath("data/tagger_infor/" + storeFile + "/" + storeFile + to_string(thLabel));
+        ofs = fopen(filePath.c_str(), "w");
+    }
+    for(int i = 0; i < routePairs.size(); i++){
+        dataNum  = SearchKsp(routePairs[i][0], routePairs[i][1], pathNum, thLabel, tempInfor);
+        if(ifReport){
+            count++;
+            if(count % reportInter == 0){
+                cout << "The thread " << thLabel << " " <<count/double(routePairs.size()) << endl;
+            }
+        }
+        if(ifStore){
+            int *tempData = new int[dataNum];
+            memcpy(tempData, tempInfor, sizeof(int)*dataNum);
+            storeGraphInfo[storeCount] = tempData;
+            storeInfoLen.push_back(dataNum);
+            storeCount++;
+            if(storeCount == reportInter) {
+                for(int j = 0; j < reportInter; j++){
+                    fwrite(storeGraphInfo[j], sizeof(int), storeInfoLen[j], ofs);
+                    delete[] storeGraphInfo[j];
+                    storeGraphInfo[j] = NULL;
+                }
+                fflush(ofs);
+                storeInfoLen.clear();
+                storeCount = 0;
+            }
+        }
+    }
+    if(ifStore){
+        for(int j = 0; j < storeCount; j++){
+            fwrite(storeGraphInfo[j], sizeof(int), storeInfoLen[j], ofs);
+            delete[] storeGraphInfo[j];
+        }
+        fclose(ofs);
+    }
+    delete[] tempInfor;
+    tempInfor = NULL;
+    delete[] storeGraphInfo;
+    storeGraphInfo = NULL;
+}
+
+
 uint16_t FcTaggerTest::SearchEcmp(int srcIn, int dstIn, int thLabel, int *pathInfor){
     KShortestPath ksp(graphPr[thLabel]);
     double cost = ksp.Init(srcIn, dstIn);
