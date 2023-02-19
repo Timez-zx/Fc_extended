@@ -500,8 +500,8 @@ int Fc_base::cost_model(int ocs_ports, int* distance_infor, int column_num){
         }
         basic_index += degree*switches;
     }
-    // cout << "The cabling length of Fc topo: "<< fiber_len << "m" << endl;
-    // cout << "The number of tranceiver: "<< tranceiver_num << endl;
+    cout << "The cabling length of Fc topo: "<< fiber_len << "m" << endl;
+    cout << "The number of tranceiver: "<< tranceiver_num << endl;
     return fiber_len;
 }
 
