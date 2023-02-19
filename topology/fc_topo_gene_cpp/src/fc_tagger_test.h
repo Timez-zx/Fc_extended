@@ -22,7 +22,8 @@ class FcTaggerTest: public Fc_base{
         uint16_t SearchKsp(int srcIn, int dstIn, int pathNum, int thLabel, int *pathInfor);
         uint16_t SearchEcmp(int srcIn, int dstIn, int thLabel, int *pathInfor);
 
-        void thread_up_down_ksp(vector<int*> routePairs, int thLabel, int pathNum, bool ifReport, int reportInter, bool ifStore, string storeFile);
+        void threadKsp(vector<int*> routePairs, int thLabel, int pathNum, bool ifReport, int reportInter, bool ifStore, string storeFile);
+        void mthreadKsp(int threadNum, int pathNum, bool ifReport, int reportInter, bool ifStore);
 
 
     private:

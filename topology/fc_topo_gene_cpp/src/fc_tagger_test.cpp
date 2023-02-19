@@ -19,6 +19,7 @@ void FcTaggerTest::SaveTaggerGraph(){
                 dst = topo_index[basicIndex+j*degree+k];
                 linkPortMap[src*switches+dst] = portLabel[src]*(ports-hosts)+portLabel[dst];
                 linkPortMap[dst*switches+src] = portLabel[dst]*(ports-hosts)+portLabel[src];
+                // cout << src << " " << dst << " " << portLabel[src] << " " << portLabel[dst] << endl;
                 portLabel[src]++;
                 portLabel[dst]++;
                 ofs << count << "," <<src << "," << dst << "," << 0 << "," << 1 << ",0,0,0,0"<< endl;
@@ -71,18 +72,14 @@ uint16_t FcTaggerTest::SearchKsp(int srcIn, int dstIn, int pathNum, int thLabel,
         tempDst = pathTemp[0]->source_id;
         pathInfor[pathLen] = tempLen*switches*(ports-hosts+1)+tempDst*(ports-hosts+1)+linkPortMap[tempSrc*switches+tempDst]%(ports-hosts);
         pathLen++; 
-        pathNum++;
+        pathCount++;
         cost = ksp.FindNextPath();
     }
-    // for(int i = 0; i < pathLen; i++){
-    //     cout << pathInfor[i] << " ";
-    // }
-    // cout << endl;
     return pathLen;
 }
 
 
-void FcTaggerTest::thread_up_down_ksp(vector<int*> routePairs, int thLabel, int pathNum, bool ifReport, int reportInter, bool ifStore, string storeFile){
+void FcTaggerTest::threadKsp(vector<int*> routePairs, int thLabel, int pathNum, bool ifReport, int reportInter, bool ifStore, string storeFile){
     FILE* ofs;
     uint16_t dataNum;
     int count = 0, storeCount = 0;
@@ -130,6 +127,73 @@ void FcTaggerTest::thread_up_down_ksp(vector<int*> routePairs, int thLabel, int 
     tempInfor = NULL;
     delete[] storeGraphInfo;
     storeGraphInfo = NULL;
+}
+
+
+void FcTaggerTest::mthreadKsp(int threadNum, int pathNum, bool ifReport, int reportInter, bool ifStore){
+    if(topo_index == NULL){
+        cout << "Please generate topology!" << endl;
+        exit(1);
+    }
+    int totalPairs = switches*(switches-1)/2;
+    int average = ceil(totalPairs/float(threadNum));
+    int count = 0, alloIndex = 0;
+    vector<vector<int*> > threadPairs;
+    for(int i = 0; i < threadNum; i++){
+        vector<int*> pairs;
+        threadPairs.push_back(pairs);
+    }
+    int *temp = new int[2];
+    for(int i = 0; i < switches; i++){
+        for (int j = i+1; j < switches; j++){
+            temp = new int[2];
+            temp[0] = i;
+            temp[1] = j;
+            threadPairs[alloIndex].push_back(temp);
+            if(count < average - 1)
+                count++;
+            else{
+                count = 0;
+                alloIndex++;
+            }
+        } 
+    }
+
+    graphPr = new Graph*[threadNum];
+    for(int i = 0; i < threadNum; i++){
+        graphPr[i] = new Graph(topoPath);
+    }
+
+    string fileDirName("");
+    if(ifStore)
+        fileDirName += gene_path_for_file("data/tagger_infor/");
+    thread* th = new thread[threadNum];
+    for(int i = 0; i < threadNum; i++){
+        th[i] = thread(&FcTaggerTest::threadKsp, this, threadPairs[i], i, pathNum, ifReport, reportInter, ifStore, fileDirName);
+    }
+    for(int i = 0; i < threadNum; i++)
+        th[i].join();
+
+    string filePath("data/tagger_infor/" + fileDirName + "/" + fileDirName);
+    FILE* ofs = fopen(filePath.c_str(), "w");
+    int state;
+    for(int i = 0; i < threadNum; i++){
+        string inFilePath("data/tagger_infor/" + fileDirName + "/" + fileDirName + to_string(i));
+        string cmd("cat ");
+        cmd += inFilePath;
+        cmd += " >> ";
+        cmd += filePath;
+        state = system(cmd.c_str());
+        cmd = "rm " + inFilePath;
+        state = system(cmd.c_str());
+    }
+    fclose(ofs);
+    for(int i = 0; i < threadNum; i++){
+        delete graphPr[i];
+        graphPr[i] = NULL;
+    }
+    delete graphPr;
+    graphPr = NULL;
 }
 
 
