@@ -199,8 +199,12 @@ void FcTaggerTest::mthreadKsp(int threadNum, int pathNum, bool ifReport, int rep
         graphPr[i] = NULL;
     }
     cout << maxTag << endl;
+    int sw = switches;
+    int totalPort = ports-hosts;
     ofs = fopen(filePath.c_str(), "a");
     fwrite(&maxTag, sizeof(int), 1, ofs);
+    fwrite(&sw, sizeof(int), 1, ofs);
+    fwrite(&totalPort, sizeof(int), 1, ofs);
     fclose(ofs);
     delete graphPr;
     graphPr = NULL;
@@ -371,8 +375,12 @@ void FcTaggerTest::mthreadEcmp(int threadNum, bool ifReport, int reportInter, bo
         graphPr[i] = NULL;
     }
     cout << maxTag << endl;
+    int sw = switches;
+    int totalPort = ports-hosts;
     ofs = fopen(filePath.c_str(), "a");
     fwrite(&maxTag, sizeof(int), 1, ofs);
+    fwrite(&sw, sizeof(int), 1, ofs);
+    fwrite(&totalPort, sizeof(int), 1, ofs);
     fclose(ofs);
     delete graphPr;
     graphPr = NULL;

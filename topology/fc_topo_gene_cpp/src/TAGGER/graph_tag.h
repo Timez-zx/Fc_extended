@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
 
 using TaggerNodeId = int;
 
