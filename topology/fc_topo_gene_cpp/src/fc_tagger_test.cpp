@@ -198,10 +198,32 @@ void FcTaggerTest::mthreadKsp(int threadNum, int pathNum, bool ifReport, int rep
         delete graphPr[i];
         graphPr[i] = NULL;
     }
+    FILE* ifs = fopen(filePath.c_str(), "r");
+    fseek(ifs, 0, SEEK_END);
+    int lenSize = ftell(ifs);
+    rewind(ifs);
+    int *allData = new int[lenSize/4];
+    state = fread(allData, sizeof(int), lenSize, ifs);
+    fclose(ifs);
+    set<vector<int> > dataSet;
+    for(int i = 0; i < lenSize/8; i++){
+        vector<int> tempV(2);
+        tempV[0] = allData[2*i];
+        tempV[1] = allData[2*i+1];
+        dataSet.insert(tempV);
+    }
+    ofs = fopen(filePath.c_str(), "w");
+    vector<vector<int> > finalV;
+    vector<int> finalData;
+    finalV.assign(dataSet.begin(), dataSet.end());
+    for(int i = 0; i < finalV.size(); i++){
+        finalData.push_back(finalV[i][0]);
+        finalData.push_back(finalV[i][1]);
+    }
+    fwrite(&finalData[0], sizeof(int), finalData.size(), ofs);
     cout << maxTag << endl;
     int sw = switches;
     int totalPort = ports-hosts;
-    ofs = fopen(filePath.c_str(), "a");
     fwrite(&maxTag, sizeof(int), 1, ofs);
     fwrite(&sw, sizeof(int), 1, ofs);
     fwrite(&totalPort, sizeof(int), 1, ofs);
@@ -210,6 +232,8 @@ void FcTaggerTest::mthreadKsp(int threadNum, int pathNum, bool ifReport, int rep
     graphPr = NULL;
     delete thTagNum;
     thTagNum = NULL;
+    delete allData;
+    allData = NULL;
 }
 
 
@@ -374,10 +398,32 @@ void FcTaggerTest::mthreadEcmp(int threadNum, bool ifReport, int reportInter, bo
         delete graphPr[i];
         graphPr[i] = NULL;
     }
+    FILE* ifs = fopen(filePath.c_str(), "r");
+    fseek(ifs, 0, SEEK_END);
+    int lenSize = ftell(ifs);
+    rewind(ifs);
+    int *allData = new int[lenSize/4];
+    state = fread(allData, sizeof(int), lenSize, ifs);
+    fclose(ifs);
+    set<vector<int> > dataSet;
+    for(int i = 0; i < lenSize/8; i++){
+        vector<int> tempV(2);
+        tempV[0] = allData[2*i];
+        tempV[1] = allData[2*i+1];
+        dataSet.insert(tempV);
+    }
+    ofs = fopen(filePath.c_str(), "w");
+    vector<vector<int> > finalV;
+    vector<int> finalData;
+    finalV.assign(dataSet.begin(), dataSet.end());
+    for(int i = 0; i < finalV.size(); i++){
+        finalData.push_back(finalV[i][0]);
+        finalData.push_back(finalV[i][1]);
+    }
+    fwrite(&finalData[0], sizeof(int), finalData.size(), ofs);
     cout << maxTag << endl;
     int sw = switches;
     int totalPort = ports-hosts;
-    ofs = fopen(filePath.c_str(), "a");
     fwrite(&maxTag, sizeof(int), 1, ofs);
     fwrite(&sw, sizeof(int), 1, ofs);
     fwrite(&totalPort, sizeof(int), 1, ofs);
@@ -386,5 +432,7 @@ void FcTaggerTest::mthreadEcmp(int threadNum, bool ifReport, int reportInter, bo
     graphPr = NULL;
     delete thTagNum;
     thTagNum = NULL;
+    delete allData;
+    allData = NULL;
 }
 

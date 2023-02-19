@@ -2,6 +2,7 @@
 #define FC_TAGGER_TEST_
 
 #include <map>
+#include <set>
 #include "fc_base.h"
 #include "KSP_PROZ/shortest_path.h"
 
