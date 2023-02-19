@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cstring>
 #include <string>
 
 using TaggerNodeId = int;
@@ -15,8 +16,8 @@ typedef struct _SPLink{
 
 class ReverseTaggerGraph{
     public:
-        explicit ReverseTaggerGraph(const std::string &file_path);
-        ~ReverseTaggerGraph(){};
+        explicit ReverseTaggerGraph(const std::string &filePath);
+        ~ReverseTaggerGraph();
     
     private:
         TaggerNodeId *heads;
