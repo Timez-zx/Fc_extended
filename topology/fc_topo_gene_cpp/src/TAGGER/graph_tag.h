@@ -16,8 +16,10 @@ class ReverseTaggerGraph{
     public:
         explicit ReverseTaggerGraph();
         ~ReverseTaggerGraph(){};
-
-
+    
+    private:
+        TaggerNodeId *heads;
+        SPLink *edges;
 };
 
 
