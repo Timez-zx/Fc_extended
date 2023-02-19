@@ -50,7 +50,7 @@ int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
 
-    int switches = 50;
+    int switches = 500;
     int hosts = 14;
     int ports = 32;
     int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
@@ -60,7 +60,9 @@ int main(){
     FcTaggerTest fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     fc_test.fc_topo_gene_1v1(0);
     fc_test.SaveTaggerGraph();
-    fc_test.mthreadKsp(1, 2, 1, 10000, 1);
+    fc_test.mthreadKsp(16, 32, 1, 10000, 1);
+    // fc_test.mthreadEcmp(16, 1, 10000, 1);
+
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     return 0;
