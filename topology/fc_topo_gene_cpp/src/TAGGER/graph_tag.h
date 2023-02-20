@@ -15,22 +15,37 @@ typedef struct _SPLink{
     TaggerNodeId srcNode;
 } SPLink;
 
+
 class ReverseTaggerGraph{
     public:
         explicit ReverseTaggerGraph(const std::string &filePath);
         ~ReverseTaggerGraph();
-        const int &getMaxNode(){
+
+        const int &GetMaxNode(){
             return maxNode;
         }
-        const int &getEdgeNum(){
+
+        const int &GetEdgeNum(){
             return edgeNum;
         }
 
-        const int &getHead(const int &headIndex){
+        const int &GetmTagNum(){
+            return mTag;
+        }
+
+        const int &GetSwitchNum(){
+            return switchNum;
+        }
+
+        const int &GetPortNum(){
+            return portNum;
+        }
+
+        const int &GetHead(const int &headIndex){
             return heads[headIndex];
         }
 
-        const SPLink &getEdge(const int &edgeIndex){
+        const SPLink &GetEdge(const int &edgeIndex){
             return edges[edgeIndex];
         }
     
@@ -39,6 +54,9 @@ class ReverseTaggerGraph{
         SPLink *edges;
         int maxNode;
         int edgeNum;
+        int switchNum;
+        int portNum;
+        int mTag;
 };
 
 

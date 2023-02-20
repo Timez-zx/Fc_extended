@@ -66,6 +66,7 @@ int main(){
 
     SearchMinTag minT("data/tagger_infor/sw500_vir234432_rand5/sw500_vir234432_rand5_ecmp");
     minT.MinTag();
+    cout << minT.GetMinTag() + 1 << endl;
     
 
     gettimeofday(&end, NULL);

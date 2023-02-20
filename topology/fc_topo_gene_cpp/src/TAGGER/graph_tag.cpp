@@ -13,6 +13,9 @@ ReverseTaggerGraph::ReverseTaggerGraph(const std::string &filePath){
     memset(heads, 0xff, maxData*sizeof(TaggerNodeId));
     edges = new SPLink[(realSize-3)/2];
     maxNode = maxData;
+    mTag = allData[realSize-3];
+    switchNum = allData[realSize-2];
+    portNum = allData[realSize-1];
     edgeNum = (realSize-3)/2;
     int src,dst;
     for(int i = 0; i < (realSize-3)/2; i++){
@@ -67,19 +70,37 @@ const bool ContractTaggerGraph::DetectCycle(const int& start, const int& end){
 
 void SearchMinTag::MinTag(){
     minTag = 0;
-    int maxNode = rGraph->getMaxNode();
-    int edgeNum = rGraph->getEdgeNum();
+    int maxNode = rGraph->GetMaxNode();
+    int edgeNum = rGraph->GetEdgeNum();
     ContractTaggerGraph cGraph(maxNode, edgeNum);
     SPLink tempEdge;
     int dst, src;
+    int switchNum, portNum;
+    bool state;
+    int addEdgeCount;
+    int tempMinTag = minTag;
+    switchNum = rGraph->GetSwitchNum();
+    portNum = rGraph->GetPortNum();
+
     for(int i = 0; i < maxNode; i++){
-        dst = i;
-        for(int j = rGraph->getHead(i); j != -1; j = tempEdge.nextEdgeIdex){
-            tempEdge = rGraph->getEdge(j);
-            src = tempEdge.toNode;
+        dst = i%(switchNum*portNum)+minTag*switchNum*portNum;
+        addEdgeCount = 0;
+        if(i%(switchNum*portNum) == 0 && minTag > tempMinTag)
+            tempMinTag++;
+        for(int j = rGraph->GetHead(i); j != -1; j = tempEdge.nextEdgeIdex){
+            tempEdge = rGraph->GetEdge(j);
+            src = tempEdge.toNode%(switchNum*portNum)+tempMinTag*switchNum*portNum;;
+            cGraph.AddEdge(src, dst);
+            addEdgeCount++;
+            state = cGraph.DetectCycle(dst, src);
+            if(state){
+                for(int k = 0; k < addEdgeCount; k++)
+                    cGraph.DeleEdge();
+                minTag++;
+                i--;
+                break;
+            }
         }
     }
-
-
 }
 
