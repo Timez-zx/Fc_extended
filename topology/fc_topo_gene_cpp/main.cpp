@@ -51,7 +51,7 @@ int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
 
-    // int switches = 50;
+    // int switches = 1000;
     // int hosts = 14;
     // int ports = 32;
     // int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
@@ -64,10 +64,10 @@ int main(){
     // fc_test.mthreadKsp(16, 32, 1, 10000, 1);
     // fc_test.mthreadEcmp(16, 1, 10000, 1);
 
-    SearchMinTag minT("data/tagger_infor/sw50_vir234432_rand5/sw50_vir234432_rand5_ksp32");
+    SearchMinTag minT("data/tagger_infor/sw1000_vir234432_rand5/sw1000_vir234432_rand5_ksp32");
     cout << minT.MinTag() << " " << minT.GetMaxTag() << endl;
 
-    SearchMinTag minTE("data/tagger_infor/sw50_vir234432_rand5/sw50_vir234432_rand5_ecmp");
+    SearchMinTag minTE("data/tagger_infor/sw1000_vir234432_rand5/sw1000_vir234432_rand5_ecmp");
     cout << minTE.MinTag() << " " << minTE.GetMaxTag() << endl;
     
 
