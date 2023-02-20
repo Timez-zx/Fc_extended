@@ -33,6 +33,18 @@ class ReverseTaggerGraph{
 };
 
 
+class ContractTaggerGraph{
+    public:
+        explicit ContractTaggerGraph(const int &maxNode, const int &edgeNum);
+        ~ContractTaggerGraph();
+
+    
+    private:
+        TaggerNodeId *heads;
+        SPLink *edges;
+};
+
+
 
 
 

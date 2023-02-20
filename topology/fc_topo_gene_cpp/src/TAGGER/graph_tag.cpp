@@ -33,5 +33,19 @@ ReverseTaggerGraph::~ReverseTaggerGraph(){
     heads = NULL;
     delete edges;
     edges = NULL;
-
 }
+
+
+ContractTaggerGraph::ContractTaggerGraph(const int &maxNode, const int &edgeNum){
+    heads = new TaggerNodeId[maxNode];
+    edges = new SPLink[edgeNum];
+}
+
+
+ContractTaggerGraph::~ContractTaggerGraph(){
+    delete heads;
+    heads = NULL;
+    delete edges;
+    edges = NULL;
+}
+
