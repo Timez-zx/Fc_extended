@@ -12,6 +12,7 @@ using TaggerNodeId = int;
 typedef struct _SPLink{
     TaggerNodeId toNode;
     int nextEdgeIdex;
+    TaggerNodeId srcNode;
 } SPLink;
 
 class ReverseTaggerGraph{
@@ -38,10 +39,22 @@ class ContractTaggerGraph{
         explicit ContractTaggerGraph(const int &maxNode, const int &edgeNum);
         ~ContractTaggerGraph();
 
-    
+        inline void AddEdge(const int &src, const int &dst){
+            edges[edgesCount].toNode = dst;
+            edges[edgesCount].nextEdgeIdex = heads[src];
+            edges[edgesCount].srcNode = src;
+            heads[src] = edgesCount++;
+        }
+
+        inline void DeleEdge(){
+            edgesCount--;
+            heads[edges[edgesCount].srcNode] = edges[edgesCount].nextEdgeIdex;
+        }
+
     private:
         TaggerNodeId *heads;
         SPLink *edges;
+        int edgesCount;
 };
 
 

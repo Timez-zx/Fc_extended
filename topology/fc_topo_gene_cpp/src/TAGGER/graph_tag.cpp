@@ -38,7 +38,9 @@ ReverseTaggerGraph::~ReverseTaggerGraph(){
 
 ContractTaggerGraph::ContractTaggerGraph(const int &maxNode, const int &edgeNum){
     heads = new TaggerNodeId[maxNode];
+    memset(heads, 0xff, maxNode*sizeof(TaggerNodeId));
     edges = new SPLink[edgeNum];
+    edgesCount = 0;
 }
 
 
