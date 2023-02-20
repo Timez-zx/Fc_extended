@@ -51,3 +51,16 @@ ContractTaggerGraph::~ContractTaggerGraph(){
     edges = NULL;
 }
 
+
+const bool ContractTaggerGraph::DetectCycle(const int& start, const int& end){
+    for(int i = heads[start]; i != -1; i = edges[i].nextEdgeIdex){
+        if(edges[i].toNode == end)
+            return true;
+        else{
+            if(DetectCycle(edges[i].toNode, end))
+                return true;
+        }
+    }
+    return false;
+}
+

@@ -51,6 +51,8 @@ class ContractTaggerGraph{
             heads[edges[edgesCount].srcNode] = edges[edgesCount].nextEdgeIdex;
         }
 
+        const bool DetectCycle(const int& start, const int& end);
+
     private:
         TaggerNodeId *heads;
         SPLink *edges;
