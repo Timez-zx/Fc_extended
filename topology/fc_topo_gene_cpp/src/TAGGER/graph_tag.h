@@ -98,14 +98,9 @@ class SearchMinTag{
             rGraph = NULL;
         }
 
-        const int& GetMinTag(){
-            return minTag;
-        }
-
-        void MinTag();
+        int MinTag();
     private:
         ReverseTaggerGraph *rGraph;
-        int minTag;
         
 };
 
