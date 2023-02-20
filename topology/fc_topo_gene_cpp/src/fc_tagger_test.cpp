@@ -198,21 +198,27 @@ void FcTaggerTest::mthreadKsp(int threadNum, int pathNum, bool ifReport, int rep
         delete graphPr[i];
         graphPr[i] = NULL;
     }
+    int batchSize = 100000;
     FILE* ifs = fopen(filePath.c_str(), "r");
     fseek(ifs, 0, SEEK_END);
-    int lenSize = ftell(ifs);
+    long long int lenSize = ftell(ifs);
+    long long int remainSize = lenSize/4;
+    int *allData = new int[batchSize];
+    int readSize;
     rewind(ifs);
-    int *allData = new int[lenSize/4];
-    state = fread(allData, sizeof(int), lenSize, ifs);
-    fclose(ifs);
     set<vector<int> > dataSet;
-    for(int i = 0; i < lenSize/8; i++){
-        vector<int> tempV(2);
-        tempV[0] = allData[2*i];
-        tempV[1] = allData[2*i+1];
-        dataSet.insert(tempV);
+    while(remainSize > 0){
+        readSize = batchSize >= remainSize ? remainSize:batchSize;
+        state = fread(allData, sizeof(int), readSize, ifs);
+        for(int i = 0; i < readSize/2; i++){
+            vector<int> tempV(2);
+            tempV[0] = allData[2*i];
+            tempV[1] = allData[2*i+1];
+            dataSet.insert(tempV);
+        }
+        remainSize -= readSize;
     }
-    ofs = fopen(filePath.c_str(), "w");
+    fclose(ifs);
     vector<vector<int> > finalV;
     vector<int> finalData;
     finalV.assign(dataSet.begin(), dataSet.end());
@@ -220,6 +226,7 @@ void FcTaggerTest::mthreadKsp(int threadNum, int pathNum, bool ifReport, int rep
         finalData.push_back(finalV[i][0]);
         finalData.push_back(finalV[i][1]);
     }
+    ofs = fopen(filePath.c_str(), "w");
     fwrite(&finalData[0], sizeof(int), finalData.size(), ofs);
     cout << maxTag << endl;
     int sw = switches;
@@ -398,20 +405,27 @@ void FcTaggerTest::mthreadEcmp(int threadNum, bool ifReport, int reportInter, bo
         delete graphPr[i];
         graphPr[i] = NULL;
     }
+    int batchSize = 100000;
     FILE* ifs = fopen(filePath.c_str(), "r");
     fseek(ifs, 0, SEEK_END);
-    int lenSize = ftell(ifs);
+    long long int lenSize = ftell(ifs);
+    long long int remainSize = lenSize/4;
+    int *allData = new int[batchSize];
+    int readSize;
     rewind(ifs);
-    int *allData = new int[lenSize/4];
-    state = fread(allData, sizeof(int), lenSize, ifs);
-    fclose(ifs);
     set<vector<int> > dataSet;
-    for(int i = 0; i < lenSize/8; i++){
-        vector<int> tempV(2);
-        tempV[0] = allData[2*i];
-        tempV[1] = allData[2*i+1];
-        dataSet.insert(tempV);
+    while(remainSize > 0){
+        readSize = batchSize >= remainSize ? remainSize:batchSize;
+        state = fread(allData, sizeof(int), readSize, ifs);
+        for(int i = 0; i < readSize/2; i++){
+            vector<int> tempV(2);
+            tempV[0] = allData[2*i];
+            tempV[1] = allData[2*i+1];
+            dataSet.insert(tempV);
+        }
+        remainSize -= readSize;
     }
+    fclose(ifs);
     ofs = fopen(filePath.c_str(), "w");
     vector<vector<int> > finalV;
     vector<int> finalData;
