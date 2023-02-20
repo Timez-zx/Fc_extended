@@ -68,7 +68,7 @@ const bool ContractTaggerGraph::DetectCycle(const int& start, const int& end){
 }
 
 
-int SearchMinTag::MinTag(){
+const int SearchMinTag::MinTag(){
     int maxNode = rGraph->GetMaxNode();
     int edgeNum = rGraph->GetEdgeNum();
     ContractTaggerGraph cGraph(maxNode, edgeNum);

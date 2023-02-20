@@ -98,7 +98,15 @@ class SearchMinTag{
             rGraph = NULL;
         }
 
-        int MinTag();
+        const int MinTag();
+
+        const int GetMaxTag(){
+            int maxTag;
+            maxTag = rGraph->GetmTagNum();
+            return maxTag; 
+        }
+
+
     private:
         ReverseTaggerGraph *rGraph;
         
