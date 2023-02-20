@@ -25,6 +25,14 @@ class ReverseTaggerGraph{
         const int &getEdgeNum(){
             return edgeNum;
         }
+
+        const int &getHead(const int &headIndex){
+            return heads[headIndex];
+        }
+
+        const SPLink &getEdge(const int &edgeIndex){
+            return edges[edgeIndex];
+        }
     
     private:
         TaggerNodeId *heads;
@@ -58,6 +66,31 @@ class ContractTaggerGraph{
         SPLink *edges;
         int edgesCount;
 };
+
+
+class SearchMinTag{
+    public:
+        SearchMinTag(const std::string &filePath){
+            rGraph = new ReverseTaggerGraph(filePath);
+            MinTag();
+        }
+
+        ~SearchMinTag(){
+            delete rGraph;
+            rGraph = NULL;
+        }
+
+        const int& GetMinTag(){
+            return minTag;
+        }
+
+        void MinTag();
+    private:
+        ReverseTaggerGraph *rGraph;
+        int minTag;
+        
+};
+
 
 
 

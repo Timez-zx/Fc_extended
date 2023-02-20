@@ -64,8 +64,9 @@ int main(){
     // // fc_test.mthreadKsp(16, 32, 1, 10000, 1);
     // fc_test.mthreadEcmp(16, 1, 10000, 1);
 
-    ReverseTaggerGraph RGraph("data/tagger_infor/sw500_vir234432_rand5/sw500_vir234432_rand5_ecmp");
-    cout << RGraph.getEdgeNum() << endl;
+    SearchMinTag minT("data/tagger_infor/sw500_vir234432_rand5/sw500_vir234432_rand5_ecmp");
+    minT.MinTag();
+    
 
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;

@@ -64,3 +64,22 @@ const bool ContractTaggerGraph::DetectCycle(const int& start, const int& end){
     return false;
 }
 
+
+void SearchMinTag::MinTag(){
+    minTag = 0;
+    int maxNode = rGraph->getMaxNode();
+    int edgeNum = rGraph->getEdgeNum();
+    ContractTaggerGraph cGraph(maxNode, edgeNum);
+    SPLink tempEdge;
+    int dst, src;
+    for(int i = 0; i < maxNode; i++){
+        dst = i;
+        for(int j = rGraph->getHead(i); j != -1; j = tempEdge.nextEdgeIdex){
+            tempEdge = rGraph->getEdge(j);
+            src = tempEdge.toNode;
+        }
+    }
+
+
+}
+
