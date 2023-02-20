@@ -12,6 +12,8 @@ ReverseTaggerGraph::ReverseTaggerGraph(const std::string &filePath){
     heads = new TaggerNodeId[maxData];
     memset(heads, 0xff, maxData*sizeof(TaggerNodeId));
     edges = new SPLink[(realSize-3)/2];
+    maxNode = maxData;
+    edgeNum = (realSize-3)/2;
     int src,dst;
     for(int i = 0; i < (realSize-3)/2; i++){
         src = allData[2*i];

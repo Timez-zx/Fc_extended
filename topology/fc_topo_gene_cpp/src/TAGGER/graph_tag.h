@@ -18,10 +18,18 @@ class ReverseTaggerGraph{
     public:
         explicit ReverseTaggerGraph(const std::string &filePath);
         ~ReverseTaggerGraph();
+        const int &getMaxNode(){
+            return maxNode;
+        }
+        const int &getEdgeNum(){
+            return edgeNum;
+        }
     
     private:
         TaggerNodeId *heads;
         SPLink *edges;
+        int maxNode;
+        int edgeNum;
 };
 
 

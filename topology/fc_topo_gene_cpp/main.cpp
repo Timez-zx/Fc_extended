@@ -65,6 +65,7 @@ int main(){
     // fc_test.mthreadEcmp(16, 1, 10000, 1);
 
     ReverseTaggerGraph RGraph("data/tagger_infor/sw500_vir234432_rand5/sw500_vir234432_rand5_ecmp");
+    cout << RGraph.getEdgeNum() << endl;
 
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
