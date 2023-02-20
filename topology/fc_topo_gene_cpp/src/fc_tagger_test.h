@@ -20,11 +20,11 @@ class FcTaggerTest: public Fc_base{
         // Save the topo infor in files for ksp function interface 
         void SaveTaggerGraph();
 
-        int SearchKsp(int srcIn, int dstIn, int pathNum, int thLabel, int *pathInfor);
+        int SearchKsp(int srcIn, int dstIn, int pathNum, int vcNum, int thLabel, int *pathInfor);
         int SearchEcmp(int srcIn, int dstIn, int thLabel, int *pathInfor);
 
-        void threadKsp(vector<int*> routePairs, int thLabel, int pathNum, bool ifReport, int reportInter, bool ifStore, string storeFile);
-        void mthreadKsp(int threadNum, int pathNum, bool ifReport, int reportInter, bool ifStore);
+        void threadKsp(vector<int*> routePairs, int thLabel, int pathNum, int vcNum, bool ifReport, int reportInter, bool ifStore, string storeFile);
+        void mthreadKsp(int threadNum, int pathNum, int vcNum, bool ifReport, int reportInter, bool ifStore);
 
         void threadEcmp(vector<int*> routePairs, int thLabel, bool ifReport, int reportInter, bool ifStore, string storeFile);
         void mthreadEcmp(int threadNum, bool ifReport, int reportInter, bool ifStore);

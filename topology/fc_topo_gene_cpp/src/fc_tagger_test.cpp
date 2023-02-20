@@ -37,7 +37,7 @@ void FcTaggerTest::SaveTaggerGraph(){
 }
 
 
-int FcTaggerTest::SearchKsp(int srcIn, int dstIn, int pathNum, int thLabel, int *pathInfor){
+int FcTaggerTest::SearchKsp(int srcIn, int dstIn, int pathNum, int vcNum, int thLabel, int *pathInfor){
     KShortestPath ksp(graphPr[thLabel]);
     double cost = ksp.Init(srcIn, dstIn);
     int pathCount = 0, pathLen = 0;
@@ -46,6 +46,7 @@ int FcTaggerTest::SearchKsp(int srcIn, int dstIn, int pathNum, int thLabel, int 
         if(cost + 1 > thTagNum[thLabel])
             thTagNum[thLabel] = cost+1;
         vector<Link*> pathTemp = ksp.GetPath();
+        
         tempLen = pathTemp.size();
         pathInfor[pathLen] = 0*switches*(ports-hosts+1)+srcIn*(ports-hosts+1)+ports-hosts;
         pathLen++; 
@@ -81,7 +82,7 @@ int FcTaggerTest::SearchKsp(int srcIn, int dstIn, int pathNum, int thLabel, int 
 }
 
 
-void FcTaggerTest::threadKsp(vector<int*> routePairs, int thLabel, int pathNum, bool ifReport, int reportInter, bool ifStore, string storeFile){
+void FcTaggerTest::threadKsp(vector<int*> routePairs, int thLabel, int pathNum, int vcNum, bool ifReport, int reportInter, bool ifStore, string storeFile){
     FILE* ofs;
     int dataNum;
     int count = 0, storeCount = 0;
@@ -93,7 +94,7 @@ void FcTaggerTest::threadKsp(vector<int*> routePairs, int thLabel, int pathNum, 
         ofs = fopen(filePath.c_str(), "w");
     }
     for(int i = 0; i < routePairs.size(); i++){
-        dataNum  = SearchKsp(routePairs[i][0], routePairs[i][1], pathNum, thLabel, tempInfor);
+        dataNum  = SearchKsp(routePairs[i][0], routePairs[i][1], pathNum, vcNum, thLabel, tempInfor);
         if(ifReport){
             count++;
             if(count % reportInter == 0){
@@ -132,7 +133,7 @@ void FcTaggerTest::threadKsp(vector<int*> routePairs, int thLabel, int pathNum, 
 }
 
 
-void FcTaggerTest::mthreadKsp(int threadNum, int pathNum, bool ifReport, int reportInter, bool ifStore){
+void FcTaggerTest::mthreadKsp(int threadNum, int pathNum, int vcNum, bool ifReport, int reportInter, bool ifStore){
     if(topo_index == NULL){
         cout << "Please generate topology!" << endl;
         exit(1);
@@ -173,7 +174,7 @@ void FcTaggerTest::mthreadKsp(int threadNum, int pathNum, bool ifReport, int rep
         fileDirName += gene_path_for_file("data/tagger_infor/");
     thread* th = new thread[threadNum];
     for(int i = 0; i < threadNum; i++){
-        th[i] = thread(&FcTaggerTest::threadKsp, this, threadPairs[i], i, pathNum, ifReport, reportInter, ifStore, fileDirName);
+        th[i] = thread(&FcTaggerTest::threadKsp, this, threadPairs[i], i, pathNum, vcNum, ifReport, reportInter, ifStore, fileDirName);
     }
     for(int i = 0; i < threadNum; i++)
         th[i].join();
