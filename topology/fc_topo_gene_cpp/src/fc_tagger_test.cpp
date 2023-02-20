@@ -19,6 +19,8 @@ void FcTaggerTest::SaveTaggerGraph(){
                 dst = topo_index[basicIndex+j*degree+k];
                 linkPortMap[src*switches+dst] = portLabel[src]*(ports-hosts)+portLabel[dst];
                 linkPortMap[dst*switches+src] = portLabel[dst]*(ports-hosts)+portLabel[src];
+                linkLayerMap[src*switches+dst] = (layer_num-i-1)*layer_num+layer_num-i-2;
+                linkLayerMap[dst*switches+src] = (layer_num-i-2)*layer_num+layer_num-i-1;
                 // cout << src << " " << dst << " " << portLabel[src] << " " << portLabel[dst] << endl;
                 portLabel[src]++;
                 portLabel[dst]++;
@@ -41,42 +43,78 @@ int FcTaggerTest::SearchKsp(int srcIn, int dstIn, int pathNum, int vcNum, int th
     KShortestPath ksp(graphPr[thLabel]);
     double cost = ksp.Init(srcIn, dstIn);
     int pathCount = 0, pathLen = 0;
-    int tempDst, tempSrc, tempLen;
+    int tempDst, tempSrc, tempLen, pathLenU;
+    int pathU[1000], layerPass[1000];
+    int srcInter, dstInter, srcLayer, dstLayer, lastPass, vcUsed, pastLayer;
     while(cost < 10000 & pathCount < pathNum){
         if(cost + 1 > thTagNum[thLabel])
             thTagNum[thLabel] = cost+1;
+        pathLenU = cost+1;
+        lastPass = -1;
+        vcUsed = 1;
+        pastLayer = 0;
         vector<Link*> pathTemp = ksp.GetPath();
-        
         tempLen = pathTemp.size();
-        pathInfor[pathLen] = 0*switches*(ports-hosts+1)+srcIn*(ports-hosts+1)+ports-hosts;
-        pathLen++; 
-        for(int i = 0; i < tempLen-1; i++){
-            tempSrc = pathTemp[i]->source_id;
-            tempDst = pathTemp[i]->ter_id;
-            pathInfor[pathLen] = (i+1)*switches*(ports-hosts+1)+tempDst*(ports-hosts+1)+linkPortMap[tempSrc*switches+tempDst]%(ports-hosts);
-            pathInfor[pathLen+1] = pathInfor[pathLen]; 
-            pathLen += 2;
+        for(int i = 0; i < pathLenU-1; i++){
+            pathU[i] = pathTemp[i]->source_id;
         }
-        tempSrc = pathTemp[tempLen-1]->source_id;
-        tempDst = pathTemp[tempLen-1]->ter_id;
-        pathInfor[pathLen] = tempLen*switches*(ports-hosts+1)+tempDst*(ports-hosts+1)+linkPortMap[tempSrc*switches+tempDst]%(ports-hosts);
-        pathLen++;
+        pathU[tempLen] = dstIn;
+        for(int i = 0; i < pathLenU-1; i++){
+            srcInter = pathU[i];
+            dstInter = pathU[i+1];
+            srcLayer = linkLayerMap[srcInter*switches+dstInter]/layer_num;
+            dstLayer = linkLayerMap[srcInter*switches+dstInter]%layer_num;
+            layerPass[2*i] = srcLayer;
+            layerPass[2*i+1] = dstLayer;
+        }
+        vector<int> extractLayerPass;
+        for(int i = 0; i < 2*(pathLenU-1); i++){
+            if(layerPass[i] != lastPass)
+                extractLayerPass.push_back(layerPass[i]);
+            lastPass = layerPass[i];
+        }
+        for(int i = 0; i < extractLayerPass.size()-1; i++){
+            srcLayer = extractLayerPass[i];
+            if(srcLayer < pastLayer && srcLayer < extractLayerPass[i+1]){
+                vcUsed++;
+            }
+            pastLayer = srcLayer;
+        }  
+        if(vcUsed > vcNum){
+            cost = ksp.FindNextPath();
+            continue;
+        }
+        else{
+            pathInfor[pathLen] = 0*switches*(ports-hosts+1)+srcIn*(ports-hosts+1)+ports-hosts;
+            pathLen++; 
+            for(int i = 0; i < tempLen-1; i++){
+                tempSrc = pathTemp[i]->source_id;
+                tempDst = pathTemp[i]->ter_id;
+                pathInfor[pathLen] = (i+1)*switches*(ports-hosts+1)+tempDst*(ports-hosts+1)+linkPortMap[tempSrc*switches+tempDst]%(ports-hosts);
+                pathInfor[pathLen+1] = pathInfor[pathLen]; 
+                pathLen += 2;
+            }
+            tempSrc = pathTemp[tempLen-1]->source_id;
+            tempDst = pathTemp[tempLen-1]->ter_id;
+            pathInfor[pathLen] = tempLen*switches*(ports-hosts+1)+tempDst*(ports-hosts+1)+linkPortMap[tempSrc*switches+tempDst]%(ports-hosts);
+            pathLen++;
 
-        pathInfor[pathLen] = 0*switches*(ports-hosts+1)+dstIn*(ports-hosts+1)+ports-hosts;
-        pathLen++; 
-        for(int i = tempLen-1; i > 0; i--){
-            tempSrc = pathTemp[i]->ter_id;
-            tempDst = pathTemp[i]->source_id;
-            pathInfor[pathLen] = (tempLen-i)*switches*(ports-hosts+1)+tempDst*(ports-hosts+1)+linkPortMap[tempSrc*switches+tempDst]%(ports-hosts);
-            pathInfor[pathLen+1] = pathInfor[pathLen]; 
-            pathLen += 2;
+            pathInfor[pathLen] = 0*switches*(ports-hosts+1)+dstIn*(ports-hosts+1)+ports-hosts;
+            pathLen++;
+            for(int i = tempLen-1; i > 0; i--){
+                tempSrc = pathTemp[i]->ter_id;
+                tempDst = pathTemp[i]->source_id;
+                pathInfor[pathLen] = (tempLen-i)*switches*(ports-hosts+1)+tempDst*(ports-hosts+1)+linkPortMap[tempSrc*switches+tempDst]%(ports-hosts);
+                pathInfor[pathLen+1] = pathInfor[pathLen]; 
+                pathLen += 2;
+            }
+            tempSrc = pathTemp[0]->ter_id;
+            tempDst = pathTemp[0]->source_id;
+            pathInfor[pathLen] = tempLen*switches*(ports-hosts+1)+tempDst*(ports-hosts+1)+linkPortMap[tempSrc*switches+tempDst]%(ports-hosts);
+            pathLen++; 
+            pathCount++;
+            cost = ksp.FindNextPath();
         }
-        tempSrc = pathTemp[0]->ter_id;
-        tempDst = pathTemp[0]->source_id;
-        pathInfor[pathLen] = tempLen*switches*(ports-hosts+1)+tempDst*(ports-hosts+1)+linkPortMap[tempSrc*switches+tempDst]%(ports-hosts);
-        pathLen++; 
-        pathCount++;
-        cost = ksp.FindNextPath();
     }
     return pathLen;
 }
@@ -179,7 +217,7 @@ void FcTaggerTest::mthreadKsp(int threadNum, int pathNum, int vcNum, bool ifRepo
     for(int i = 0; i < threadNum; i++)
         th[i].join();
 
-    string filePath("data/tagger_infor/" + fileDirName + "/" + fileDirName + "_ksp" + to_string(pathNum));
+    string filePath("data/tagger_infor/" + fileDirName + "/" + fileDirName + "_ksp" + to_string(pathNum) + "_vc" + to_string(vcNum));
     FILE* ofs = fopen(filePath.c_str(), "w");
     fclose(ofs);
     int state;

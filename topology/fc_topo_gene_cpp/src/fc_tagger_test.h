@@ -32,6 +32,7 @@ class FcTaggerTest: public Fc_base{
 
     private:
         unordered_map<int,int> linkPortMap;
+        unordered_map<int,int> linkLayerMap;
         int *thTagNum;
         string topoPath;
         Graph **graphPr=NULL;

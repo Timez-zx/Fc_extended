@@ -61,10 +61,10 @@ int main(){
     FcTaggerTest fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     fc_test.fc_topo_gene_1v1(0);
     fc_test.SaveTaggerGraph();
-    fc_test.mthreadKsp(16, 32, 1, 3, 10000, 1);
+    fc_test.mthreadKsp(16, 32, 2, 1, 10000, 1);
     // fc_test.mthreadEcmp(16, 1, 10000, 1);
 
-    SearchMinTag minT("data/tagger_infor/sw100_vir234432_rand4/sw100_vir234432_rand4_ksp32");
+    SearchMinTag minT("data/tagger_infor/sw100_vir234432_rand4/sw100_vir234432_rand4_ksp32_vc2");
     cout << minT.MinTag() << " " << minT.GetMaxTag() << endl;
 
     // SearchMinTag minTE("data/tagger_infor/sw2000_vir610106_rand3/sw2000_vir610106_rand3_ecmp");
