@@ -22,8 +22,8 @@ CLEAN_PATHK=data/tagger_infor/*
 default: $(ALL_SRC) $(ALL_HEADER) main.cpp
 	g++  $(CFLAGS_U) $(ALL_SRC) main.cpp -o $(OUT) -I $(ORTOOL_INCLUDE_U) -I $(GUROBI_INCLUDE_U) -L $(ORTOOL_LIB_U) -L $(GUROBI_LIB_U) -lortools -lpthread -lgurobi_c++ -lgurobi95
 
-tagger: $(ALL_SRC_T) $(ALL_HEADER_T) main.cpp
-	g++ $(CFLAGS_U) $(ALL_SRC_T) main.cpp -o $(OUT)
+tagger: $(ALL_SRC_T) $(ALL_HEADER_T) main_tagger.cpp
+	g++ $(CFLAGS_U) $(ALL_SRC_T) main_tagger.cpp -o $(OUT)
 
 clean:
 	$(RM) $(OUT)
