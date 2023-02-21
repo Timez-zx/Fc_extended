@@ -79,6 +79,15 @@ class ContractTaggerGraph{
 
         const bool DetectCycle(const int& start, const int& end);
 
+        const int &GetHead(const int &headIndex){
+            return heads[headIndex];
+        }
+
+        const SPLink &GetEdge(const int &edgeIndex){
+            return edges[edgeIndex];
+        }
+
+
     private:
         TaggerNodeId *heads;
         SPLink *edges;
@@ -99,6 +108,8 @@ class SearchMinTag{
         }
 
         const int MinTag();
+
+        const int MinimumTag();
 
         const int GetMaxTag(){
             int maxTag;
