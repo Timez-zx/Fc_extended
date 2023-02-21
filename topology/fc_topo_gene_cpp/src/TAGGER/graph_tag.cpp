@@ -111,6 +111,7 @@ const int SearchMinTag::MinimumTag(){
     maxTag = maxNode/(switchNum*portNum);
     int *allNodeTag = new int[maxNode]();
     int cycleCount, sameEdgeCount;
+    std::cout << edgeNum << std::endl;
     for(int i = 0; i < maxTag ; i++){
         // std::cout << initTag << std::endl;
         cycleCount = 0;
