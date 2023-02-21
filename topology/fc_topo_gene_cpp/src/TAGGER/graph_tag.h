@@ -99,7 +99,6 @@ class SearchMinTag{
     public:
         SearchMinTag(const std::string &filePath){
             rGraph = new ReverseTaggerGraph(filePath);
-            MinTag();
         }
 
         ~SearchMinTag(){
@@ -107,7 +106,6 @@ class SearchMinTag{
             rGraph = NULL;
         }
 
-        const int MinTag();
 
         const int MinimumTag();
 

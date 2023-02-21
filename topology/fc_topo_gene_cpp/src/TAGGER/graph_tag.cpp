@@ -68,48 +68,6 @@ const bool ContractTaggerGraph::DetectCycle(const int& start, const int& end){
 }
 
 
-const int SearchMinTag::MinTag(){
-    int maxNode = rGraph->GetMaxNode();
-    int edgeNum = rGraph->GetEdgeNum();
-    ContractTaggerGraph cGraph(maxNode, edgeNum);
-    SPLink tempEdge;
-    int dst, src, srcTag=0, dstTag=0;
-    int switchNum, portNum;
-    bool state;
-    int addEdgeCount;
-    int lastCycleLoca=0, tempToNode;
-    switchNum = rGraph->GetSwitchNum();
-    portNum = rGraph->GetPortNum();
-
-    for(int i = 0; i < maxNode; i++){
-        dst = i%(switchNum*portNum)+dstTag*switchNum*portNum;
-        addEdgeCount = 0;
-        // if(i%(switchNum*portNum) == 0 && dstTag > srcTag)
-        //     srcTag++;
-        for(int j = rGraph->GetHead(i); j != -1; j = tempEdge.nextEdgeIdex){
-            tempEdge = rGraph->GetEdge(j);
-            tempToNode = tempEdge.toNode;
-            if(tempToNode >= lastCycleLoca)
-                src = tempToNode%(switchNum*portNum)+dstTag*switchNum*portNum;
-            else
-                src = tempToNode%(switchNum*portNum)+(dstTag-1)*switchNum*portNum;
-            cGraph.AddEdge(src, dst);
-            addEdgeCount++;
-            state = cGraph.DetectCycle(dst, src);
-            if(state){
-                for(int k = 0; k < addEdgeCount; k++)
-                    cGraph.DeleEdge();
-                dstTag++;
-                lastCycleLoca = i;
-                i--;
-                break;
-            }
-        }
-    }
-    return dstTag + 1;
-}
-
-
 const int SearchMinTag::MinimumTag(){
     int maxNode = rGraph->GetMaxNode();
     int edgeNum = rGraph->GetEdgeNum();

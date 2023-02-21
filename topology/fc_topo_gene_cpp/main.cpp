@@ -68,8 +68,6 @@ int main(){
     SearchMinTag minT("data/tagger_infor/sw100_vir234432_rand5/sw100_vir234432_rand5_ksp4_vc100");
     cout << minT.MinimumTag() << " " << minT.GetMaxTag() << endl;
 
-    // SearchMinTag minTE("data/tagger_infor/sw2000_vir610106_rand3/sw2000_vir610106_rand3_ecmp");
-    // cout << minTE.MinTag() << " " << minTE.GetMaxTag() << endl;
     
 
     gettimeofday(&end, NULL);
