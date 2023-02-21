@@ -1,50 +1,54 @@
 #include <sys/time.h>
-#include "src/fc_edge_disjoin_route.h"
-#include "src/fc_edge_disjoin_cost_route.h"
-#include "src/fc_tagger_kspz.h"
-#include "src/fc_tagger_test.h"
+#include <iostream>
+// #include "src/fc_edge_disjoin_route.h"
+// #include "src/fc_edge_disjoin_cost_route.h"
+// #include "src/fc_tagger_kspz.h"
+// #include "src/fc_tagger_test.h"
 #include "src/TAGGER/graph_tag.h"
+ 
+
+using namespace std;
 
 
-// There are some demos in the demo, please refer file "demo".
-double up_down_ksp_throught(Fc_topo_all_route& fc){
-    fc.fc_topo_gene_1v1(0);
-    fc.path_infor_gene();
-    fc.build_search_dic();
-    bool if_report = true;
-    int report_inter = 5000;
-    bool if_store = true;
-    string mode = "ksp";
-    int ksp_num = 32;
-    fc.pthread_for_all_path(16, if_report, report_inter, if_store, mode, ksp_num);
-    return fc.throughput_test("wr", 2);
-} 
+// // There are some demos in the demo, please refer file "demo".
+// double up_down_ksp_throught(Fc_topo_all_route& fc){
+//     fc.fc_topo_gene_1v1(0);
+//     fc.path_infor_gene();
+//     fc.build_search_dic();
+//     bool if_report = true;
+//     int report_inter = 5000;
+//     bool if_store = true;
+//     string mode = "ksp";
+//     int ksp_num = 32;
+//     fc.pthread_for_all_path(16, if_report, report_inter, if_store, mode, ksp_num);
+//     return fc.throughput_test("wr", 2);
+// } 
 
 
-double edge_disjoint_throught(Fc_edge_disjoin_route& fc){
-    fc.fc_topo_gene_1v1(0);
-    fc.path_infor_gene();
-    fc.build_search_dic();
-    bool if_report = true;
-    int report_inter = 5000;
-    bool if_store = true;
-    bool store_part = false;
-    fc.pthread_for_all_route(16, if_report, report_inter, if_store, store_part);
-    fc.find_all_route(16, 5000);
-    return fc.throughput_test("wr", 2);
-} 
+// double edge_disjoint_throught(Fc_edge_disjoin_route& fc){
+//     fc.fc_topo_gene_1v1(0);
+//     fc.path_infor_gene();
+//     fc.build_search_dic();
+//     bool if_report = true;
+//     int report_inter = 5000;
+//     bool if_store = true;
+//     bool store_part = false;
+//     fc.pthread_for_all_route(16, if_report, report_inter, if_store, store_part);
+//     fc.find_all_route(16, 5000);
+//     return fc.throughput_test("wr", 2);
+// } 
 
 
-double ksp_tagger_throught(Fc_tagger_kspz& fc, int path_num, int vc_num){
-    fc.fc_topo_gene_1v1(0);
-    fc.save_graph_infor();
-    bool if_report = true;
-    int report_inter = 100000;
-    bool if_store = true;
-    bool store_part = false;
-    fc.pthread_up_down_ksp(16, path_num, vc_num, if_report, report_inter, if_store);
-    return fc.throughput_test_ksp("wr", 2, path_num, vc_num);
-}
+// double ksp_tagger_throught(Fc_tagger_kspz& fc, int path_num, int vc_num){
+//     fc.fc_topo_gene_1v1(0);
+//     fc.save_graph_infor();
+//     bool if_report = true;
+//     int report_inter = 100000;
+//     bool if_store = true;
+//     bool store_part = false;
+//     fc.pthread_up_down_ksp(16, path_num, vc_num, if_report, report_inter, if_store);
+//     return fc.throughput_test_ksp("wr", 2, path_num, vc_num);
+// }
 
 
 int main(){
@@ -65,7 +69,7 @@ int main(){
     // fc_test.mthreadKsp(16, 32, 3, 1, 10000, 1);
     // fc_test.mthreadEcmp(16, 1, 10000, 1);
 
-    SearchMinTag minT("/home/zx/Fc_exp/fc_extended/topology/fc_topo_gene_cpp/data/tagger_infor/sw2000_vir234432_rand5/sw2000_vir234432_rand5_ecmp");
+    SearchMinTag minT("/home/zx/Fc_exp/fc_extended/topology/fc_topo_gene_cpp/data/tagger_infor/sw1500_vir234432_rand4/sw1500_vir234432_rand4_ksp32_vc100");
     cout << minT.MinimumTag() << " " << minT.GetMaxTag() << endl;
 
     

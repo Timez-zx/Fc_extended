@@ -138,6 +138,7 @@ const int SearchMinTag::MinimumTag(){
             }
         }
         if(changeTag){
+            std::cout << i << std::endl;
             for(int j = (initTag+1)*switchNum*portNum; j < (initTag+2)*switchNum*portNum; j++){
                 src = j;
                 for(int k = cGraph.GetHead(j); k != -1; k = tempEdge.nextEdgeIdex){
