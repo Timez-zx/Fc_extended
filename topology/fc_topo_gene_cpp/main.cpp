@@ -51,7 +51,7 @@ int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
 
-    // int switches = 50;
+    // int switches = 100;
     // int hosts = 14;
     // int ports = 32;
     // int vir_layer_degree[] = {2, 3, 4, 4, 3, 2};
@@ -61,11 +61,11 @@ int main(){
     // FcTaggerTest fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
     // fc_test.fc_topo_gene_1v1(0);
     // fc_test.SaveTaggerGraph();
-    // fc_test.mthreadKsp(16, 4, 100, 1, 10000, 1);
+    // fc_test.mthreadKsp(16, 3, 2, 1, 10000, 1);
     // fc_test.mthreadKsp(16, 32, 3, 1, 10000, 1);
     // fc_test.mthreadEcmp(16, 1, 10000, 1);
 
-    SearchMinTag minT("data/tagger_infor/sw100_vir234432_rand5/sw100_vir234432_rand5_ksp4_vc100");
+    SearchMinTag minT("data/tagger_infor/sw50_vir234432_rand5/sw50_vir234432_rand5_ksp2_vc100");
     cout << minT.MinimumTag() << " " << minT.GetMaxTag() << endl;
 
     
