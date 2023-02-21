@@ -101,6 +101,7 @@ class ContractTaggerGraph{
 
     private:
         TaggerNodeId *heads;
+        int *visited;
         SPLink *edges;
         int edgesCount;
         int cmaxNode;

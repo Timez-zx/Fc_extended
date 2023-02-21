@@ -41,6 +41,7 @@ ReverseTaggerGraph::~ReverseTaggerGraph(){
 
 ContractTaggerGraph::ContractTaggerGraph(const int &maxNode, const int &edgeNum){
     heads = new TaggerNodeId[maxNode];
+    visited = new int[maxNode]();
     memset(heads, 0xff, maxNode*sizeof(TaggerNodeId));
     cmaxNode = maxNode;
     edges = new SPLink[edgeNum];
@@ -53,6 +54,8 @@ ContractTaggerGraph::~ContractTaggerGraph(){
     heads = NULL;
     delete edges;
     edges = NULL;
+    delete visited;
+    visited = NULL;
 }
 
 
@@ -70,7 +73,7 @@ const bool ContractTaggerGraph::DetectCycle(const int& start, const int& end){
 
 
 const bool ContractTaggerGraph::DetectCycleStack(const int& start, const int& end){
-    int *visited = new int[cmaxNode]();
+    memset(visited, 0, cmaxNode*sizeof(int));
     std::stack<int> tempStack;
     int topVertex, nearVertex;
     tempStack.push(start);
@@ -90,8 +93,6 @@ const bool ContractTaggerGraph::DetectCycleStack(const int& start, const int& en
             }
         }
     }
-    delete visited;
-    visited = NULL;
     return false;
 }
 

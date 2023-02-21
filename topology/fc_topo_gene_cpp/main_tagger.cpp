@@ -1,5 +1,6 @@
 #include <sys/time.h>
 #include <iostream>
+#include <unistd.h>
 #include "src/TAGGER/graph_tag.h"
  
 
