@@ -65,7 +65,7 @@ int main(){
     // fc_test.mthreadKsp(16, 32, 3, 1, 10000, 1);
     // fc_test.mthreadEcmp(16, 1, 10000, 1);
 
-    SearchMinTag minT("data/tagger_infor/sw500_vir234432_rand4/sw500_vir234432_rand4_ksp32_vc100");
+    SearchMinTag minT("/home/zx/Fc_exp/fc_extended/topology/fc_topo_gene_cpp/data/tagger_infor/sw2000_vir234432_rand5/sw2000_vir234432_rand5_ecmp");
     cout << minT.MinimumTag() << " " << minT.GetMaxTag() << endl;
 
     

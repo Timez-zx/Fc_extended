@@ -121,7 +121,6 @@ const int SearchMinTag::MinimumTag(){
             }
             state = cGraphTemp.DetectCycleStack(dst, dst);
             if(state){
-                // std::cout << j << std::endl;
                 for(int m = 0; m < addEdgeCount; m++)
                     cGraphTemp.DeleEdge();
                 allNodeTag[j]++;
