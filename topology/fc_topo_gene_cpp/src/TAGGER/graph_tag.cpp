@@ -79,31 +79,32 @@ const int SearchMinTag::MinimumTag(){
     switchNum = rGraph->GetSwitchNum();
     portNum = rGraph->GetPortNum();
     maxTag = maxNode/(switchNum*portNum);
-    int *allNodeTag = new int[switchNum*portNum]();
+    int *allNodeTag = new int[maxNode]();
     for(int i = 0; i < maxTag; i++){
         // std::cout << initTag << std::endl;
         for(int j = i*switchNum*portNum; j < (i+1)*switchNum*portNum; j++){
-            dst = j%(switchNum*portNum)+allNodeTag[j%(switchNum*portNum)]*switchNum*portNum;
+            dst = j%(switchNum*portNum)+allNodeTag[j]*switchNum*portNum;
             addEdgeCount = 0;
             for(int k = rGraph->GetHead(j); k != -1; k = tempEdge.nextEdgeIdex){
                 tempEdge = rGraph->GetEdge(k);
-                src = tempEdge.toNode%(switchNum*portNum)+allNodeTag[tempEdge.toNode%(switchNum*portNum)]*switchNum*portNum;
+                src = tempEdge.toNode%(switchNum*portNum)+allNodeTag[tempEdge.toNode]*switchNum*portNum;
                 cGraphTemp.AddEdge(src, dst);
                 addEdgeCount++;
             }
             state = cGraphTemp.DetectCycle(dst, dst);
             if(state){
+                std::cout << j << std::endl;
                 for(int m = 0; m < addEdgeCount; m++)
                     cGraphTemp.DeleEdge();
-                allNodeTag[j%(switchNum*portNum)]++;
+                allNodeTag[j]++;
             }
             for(int k = rGraph->GetHead(j); k != -1; k = tempEdge.nextEdgeIdex){
                 tempEdge = rGraph->GetEdge(k);
-                src = tempEdge.toNode%(switchNum*portNum)+allNodeTag[tempEdge.toNode%(switchNum*portNum)]*switchNum*portNum;
-                cGraph.AddEdge(src, j%(switchNum*portNum)+allNodeTag[j%(switchNum*portNum)]*switchNum*portNum);
+                src = tempEdge.toNode%(switchNum*portNum)+allNodeTag[tempEdge.toNode]*switchNum*portNum;
+                cGraph.AddEdge(src, j%(switchNum*portNum)+allNodeTag[j]*switchNum*portNum);
             }
         }
-        for(int j = 0; j < switchNum*portNum; j++){
+        for(int j = i*switchNum*portNum; j < (i+1)*switchNum*portNum; j++){
             if(allNodeTag[j] != initTag){
                 changeTag = 1;
                 break;
@@ -121,14 +122,14 @@ const int SearchMinTag::MinimumTag(){
                 }
             }
             initTag++;
-            for(int j = 0; j < switchNum*portNum; j++){
+            for(int j = (i+1)*switchNum*portNum; j < (i+2)*switchNum*portNum; j++){
                 allNodeTag[j] = initTag;
             }
             changeTag = 0;
         }
     }
     int minTag = 0;
-    for(int i = 0; i < switchNum*portNum; i++){
+    for(int i = 0; i < maxNode; i++){
         if(allNodeTag[i] > minTag)
             minTag = allNodeTag[i];
     }
