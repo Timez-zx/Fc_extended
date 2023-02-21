@@ -10,6 +10,11 @@
 using TaggerNodeId = int;
 
 
+typedef struct _SPLinkR{
+    TaggerNodeId toNode;
+    int nextEdgeIdex;
+} SPLinkR;
+
 typedef struct _SPLink{
     TaggerNodeId toNode;
     int nextEdgeIdex;
@@ -46,13 +51,13 @@ class ReverseTaggerGraph{
             return heads[headIndex];
         }
 
-        const SPLink &GetEdge(const int &edgeIndex){
+        const SPLinkR &GetEdge(const int &edgeIndex){
             return edges[edgeIndex];
         }
     
     private:
         TaggerNodeId *heads;
-        SPLink *edges;
+        SPLinkR *edges;
         int maxNode;
         int edgeNum;
         int switchNum;

@@ -11,7 +11,7 @@ ReverseTaggerGraph::ReverseTaggerGraph(const std::string &filePath){
     int maxData = allData[realSize-3]*allData[realSize-2]*allData[realSize-1];
     heads = new TaggerNodeId[maxData];
     memset(heads, 0xff, maxData*sizeof(TaggerNodeId));
-    edges = new SPLink[(realSize-3)/2];
+    edges = new SPLinkR[(realSize-3)/2];
     maxNode = maxData;
     mTag = allData[realSize-3];
     switchNum = allData[realSize-2];
@@ -103,7 +103,8 @@ const int SearchMinTag::MinimumTag(){
     ContractTaggerGraph cGraphTemp(maxNode, edgeNum);
     int switchNum, portNum, maxTag, addEdgeCount, initTag = 0;
     int src, dst, state, changeTag = 0;
-    SPLink tempEdge;
+    SPLinkR tempEdge;
+    SPLink tempEdgeC;
     switchNum = rGraph->GetSwitchNum();
     portNum = rGraph->GetPortNum();
     maxTag = maxNode/(switchNum*portNum);
@@ -141,9 +142,9 @@ const int SearchMinTag::MinimumTag(){
             std::cout << i << std::endl;
             for(int j = (initTag+1)*switchNum*portNum; j < (initTag+2)*switchNum*portNum; j++){
                 src = j;
-                for(int k = cGraph.GetHead(j); k != -1; k = tempEdge.nextEdgeIdex){
-                    tempEdge = cGraph.GetEdge(k);
-                    dst = tempEdge.toNode;
+                for(int k = cGraph.GetHead(j); k != -1; k = tempEdgeC.nextEdgeIdex){
+                    tempEdgeC = cGraph.GetEdge(k);
+                    dst = tempEdgeC.toNode;
                     if(dst/(switchNum*portNum) == src /(switchNum*portNum)){
                         cGraphTemp.AddEdge(src, dst);
                     }
