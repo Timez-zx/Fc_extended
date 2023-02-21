@@ -5,6 +5,7 @@
 #include <vector>
 #include <cstring>
 #include <string>
+#include <stack>
 
 using TaggerNodeId = int;
 
@@ -79,6 +80,8 @@ class ContractTaggerGraph{
 
         const bool DetectCycle(const int& start, const int& end);
 
+        const bool DetectCycleStack(const int& start, const int& end);
+
         const int &GetHead(const int &headIndex){
             return heads[headIndex];
         }
@@ -87,11 +90,15 @@ class ContractTaggerGraph{
             return edges[edgeIndex];
         }
 
+        const int &GetCmaxNode(){
+            return cmaxNode;
+        }
 
     private:
         TaggerNodeId *heads;
         SPLink *edges;
         int edgesCount;
+        int cmaxNode;
 };
 
 

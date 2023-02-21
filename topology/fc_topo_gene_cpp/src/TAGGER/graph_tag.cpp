@@ -42,6 +42,7 @@ ReverseTaggerGraph::~ReverseTaggerGraph(){
 ContractTaggerGraph::ContractTaggerGraph(const int &maxNode, const int &edgeNum){
     heads = new TaggerNodeId[maxNode];
     memset(heads, 0xff, maxNode*sizeof(TaggerNodeId));
+    cmaxNode = maxNode;
     edges = new SPLink[edgeNum];
     edgesCount = 0;
 }
@@ -64,6 +65,33 @@ const bool ContractTaggerGraph::DetectCycle(const int& start, const int& end){
                 return true;
         }
     }
+    return false;
+}
+
+
+const bool ContractTaggerGraph::DetectCycleStack(const int& start, const int& end){
+    int *visited = new int[cmaxNode]();
+    std::stack<int> tempStack;
+    int topVertex, nearVertex;
+    tempStack.push(start);
+    visited[start] = 1;
+    while(!tempStack.empty()){
+        topVertex = tempStack.top();
+        tempStack.pop();
+        for(int i = heads[topVertex]; i != -1; i = edges[i].nextEdgeIdex){
+            nearVertex = edges[i].toNode;
+            if(nearVertex == end)
+                return true;
+            else{
+                if(!visited[nearVertex]){
+                    tempStack.push(nearVertex);
+                    visited[nearVertex] = 1;
+                }
+            }
+        }
+    }
+    delete visited;
+    visited = NULL;
     return false;
 }
 
@@ -91,7 +119,7 @@ const int SearchMinTag::MinimumTag(){
                 cGraphTemp.AddEdge(src, dst);
                 addEdgeCount++;
             }
-            state = cGraphTemp.DetectCycle(dst, dst);
+            state = cGraphTemp.DetectCycleStack(dst, dst);
             if(state){
                 std::cout << j << std::endl;
                 for(int m = 0; m < addEdgeCount; m++)
