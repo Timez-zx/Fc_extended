@@ -78,11 +78,17 @@ const bool ContractTaggerGraph::DetectCycleStack(const int& start, const int& en
     int topVertex, nearVertex;
     tempStack.push(start);
     visited[start] = 1;
+    // if(start >= 1700){
+    //     std::cout << "start:" << start << std::endl;
+    // }
     while(!tempStack.empty()){
         topVertex = tempStack.top();
         tempStack.pop();
         for(int i = heads[topVertex]; i != -1; i = edges[i].nextEdgeIdex){
             nearVertex = edges[i].toNode;
+            // if(start >= 1700){
+            //     std::cout << nearVertex << std::endl;
+            // }
             if(nearVertex == end)
                 return true;
             else{
@@ -110,12 +116,12 @@ const int SearchMinTag::MinimumTag(){
     portNum = rGraph->GetPortNum();
     maxTag = maxNode/(switchNum*portNum);
     int *allNodeTag = new int[maxNode]();
-    int cycleCount, sameEdgeCount;
-    std::cout << edgeNum << std::endl;
+    int cycleCount, sameEdgeCount, diffEdgeCount;
     for(int i = 0; i < maxTag ; i++){
         // std::cout << initTag << std::endl;
         cycleCount = 0;
         sameEdgeCount = 0;
+        diffEdgeCount = 0;
         for(int j = i*switchNum*portNum; j < (i+1)*switchNum*portNum; j++){
             dst = j%(switchNum*portNum)+allNodeTag[j]*switchNum*portNum;
             addEdgeCount = 0;
@@ -127,11 +133,12 @@ const int SearchMinTag::MinimumTag(){
             }
             state = cGraphTemp.DetectCycleStack(dst, dst);
             if(state){
+                // std::cout << j << std::endl;
                 cycleCount++;
                 for(int m = 0; m < addEdgeCount; m++)
                     cGraphTemp.DeleEdge();
                 allNodeTag[j]++;
-                allNodeTag[j-switchNum*portNum]++;
+                // allNodeTag[j-switchNum*portNum]++;
             }
             for(int k = rGraph->GetHead(j); k != -1; k = tempEdge.nextEdgeIdex){
                 tempEdge = rGraph->GetEdge(k);
@@ -156,7 +163,11 @@ const int SearchMinTag::MinimumTag(){
                         cGraphTemp.AddEdge(src, dst);
                         sameEdgeCount++;
                     }
+                    else{
+                        diffEdgeCount++;
+                    }
                 }
+
             }
             initTag++;
             for(int j = (i+1)*switchNum*portNum; j < maxNode; j++){
@@ -164,7 +175,7 @@ const int SearchMinTag::MinimumTag(){
             }
             changeTag = 0;
         }
-        std::cout << cycleCount << " " << sameEdgeCount << std::endl;
+        std::cout << cycleCount << " " << sameEdgeCount << " " << diffEdgeCount << std::endl;
     }
     int minTag = 0;
     for(int i = 0; i < maxNode; i++){
