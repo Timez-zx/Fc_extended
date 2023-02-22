@@ -13,7 +13,7 @@ int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
 
-    SearchMinTag minT("/home/zx/Fc_exp/fc_extended/topology/fc_topo_gene_cpp/data/tagger_infor/sw2000_vir234432_rand5/sw2000_vir234432_rand5_ecmp");
+    SearchMinTag minT("/home/zx/Fc_exp/fc_extended/topology/fc_topo_gene_cpp/data/tagger_infor/sw100_vir2662_rand5/sw100_vir2662_rand5_ksp32_vc100");
     cout << minT.MinimumTag() << " " << minT.GetMaxTag() << endl;
 
     
