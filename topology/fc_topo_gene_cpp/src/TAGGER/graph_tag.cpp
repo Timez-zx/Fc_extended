@@ -128,6 +128,8 @@ const int SearchMinTag::MinimumTag(){
             for(int k = rGraph->GetHead(j); k != -1; k = tempEdge.nextEdgeIdex){
                 tempEdge = rGraph->GetEdge(k);
                 src = tempEdge.toNode%(switchNum*portNum)+allNodeTag[tempEdge.toNode]*switchNum*portNum;
+                if(allNodeTag[tempEdge.toNode] != allNodeTag[j])
+                    src += switchNum*portNum;
                 cGraphTemp.AddEdge(src, dst);
                 addEdgeCount++;
             }
