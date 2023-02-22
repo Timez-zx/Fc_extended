@@ -143,7 +143,7 @@ const int SearchMinTag::MinimumTag(){
             for(int k = rGraph->GetHead(j); k != -1; k = tempEdge.nextEdgeIdex){
                 tempEdge = rGraph->GetEdge(k);
                 src = tempEdge.toNode%(switchNum*portNum)+allNodeTag[tempEdge.toNode]*switchNum*portNum;
-                cGraph.AddEdge(src, j%(switchNum*portNum)+allNodeTag[j]*switchNum*portNum);
+                cGraph.AddEdge(src+switchNum*portNum, j%(switchNum*portNum)+allNodeTag[j]*switchNum*portNum);
             }
         }
         for(int j = i*switchNum*portNum; j < (i+1)*switchNum*portNum; j++){
