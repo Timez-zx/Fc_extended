@@ -26,15 +26,15 @@ ReverseTaggerGraph::ReverseTaggerGraph(const std::string &filePath){
         heads[dst] = i;
     }
     fclose(ifs);
-    delete allData;
+    delete[] allData;
     allData = NULL;
 }
 
 
 ReverseTaggerGraph::~ReverseTaggerGraph(){
-    delete heads;
+    delete[] heads;
     heads = NULL;
-    delete edges;
+    delete[] edges;
     edges = NULL;
 }
 
@@ -50,11 +50,11 @@ ContractTaggerGraph::ContractTaggerGraph(const int &maxNode, const int &edgeNum)
 
 
 ContractTaggerGraph::~ContractTaggerGraph(){
-    delete heads;
+    delete[] heads;
     heads = NULL;
-    delete edges;
+    delete[] edges;
     edges = NULL;
-    delete visited;
+    delete[] visited;
     visited = NULL;
 }
 
@@ -169,7 +169,7 @@ const int SearchMinTag::MinimumTag(){
         if(allNodeTag[i] > minTag)
             minTag = allNodeTag[i];
     }
-    delete allNodeTag;
+    delete[] allNodeTag;
     allNodeTag = NULL;
     return minTag+1;
 }
