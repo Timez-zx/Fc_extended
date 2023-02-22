@@ -122,6 +122,8 @@ class SearchMinTag{
 
         const int MinimumTag();
 
+        const int MiniTag();
+
         const int GetMaxTag(){
             int maxTag;
             maxTag = rGraph->GetmTagNum();
