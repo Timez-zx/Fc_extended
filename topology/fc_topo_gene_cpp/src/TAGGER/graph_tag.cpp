@@ -151,10 +151,8 @@ const int SearchMinTag::MinimumTag(){
                 for(int k = cGraph.GetHead(j); k != -1; k = tempEdgeC.nextEdgeIdex){
                     tempEdgeC = cGraph.GetEdge(k);
                     dst = tempEdgeC.toNode;
-                    if(dst/(switchNum*portNum) == src/(switchNum*portNum)){
-                        cGraphTemp.AddEdge(src, dst);
-                        sameEdgeCount++;
-                    }
+                    cGraphTemp.AddEdge(src, dst);
+                    sameEdgeCount++;
                 }
 
             }
