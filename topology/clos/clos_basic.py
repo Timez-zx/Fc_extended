@@ -102,6 +102,31 @@ class clos_basic():
         print(num_tors+num_aggrs+num_cores_per_pod*num_pods_layer3+num_cores_layer4)
         print(num_tors, num_aggrs, num_cores_per_pod*num_pods_layer3, num_cores_layer4)
         print(num_cores_per_pod*num_pods_layer3*eps_port_count/2/2)
+
+    def get_fiber_price(self, fiber_len):
+        if(fiber_len <= 1):
+            return 48.5/12
+        elif(fiber_len > 1 and fiber_len <= 2):
+            return 51.5/12
+        elif(fiber_len > 2 and fiber_len <= 3):
+            return 53.5/12
+        elif(fiber_len > 3 and fiber_len <= 5):
+            return 56.5/12
+        elif(fiber_len > 5 and fiber_len <= 10):
+            return 63.5/12
+        elif(fiber_len > 10 and fiber_len <= 15):
+            return 68.5/12
+        elif(fiber_len > 15 and fiber_len <= 20):
+            return 76.5/12
+        elif(fiber_len > 20 and fiber_len <= 30):
+            return 88.5/12
+        elif(fiber_len > 30 and fiber_len <= 50):
+            return 113.5/12
+        elif(fiber_len > 50 and fiber_len <= 100):
+            return 198.5/12
+        else:
+            return (198.5/12)+150/(12*99)*50*((fiber_len-100)//50+1)
+
         
 
     def topo_cost_3layer(self, Tor_hosts, inter_distance):
@@ -120,6 +145,7 @@ class clos_basic():
         if(Tor_hosts < mini_tor_host):
             print("Tor hosts must be larger than", mini_tor_host)
             exit(1)
+        total_cost = 0
         num_tors = math.ceil(num_servers / Tor_hosts)
         copper_length = num_servers*2
         num_pods = math.ceil(num_tors / eps_port_count * 2)
@@ -136,6 +162,7 @@ class clos_basic():
                 tor_loc = (math.floor(tor/2)+1)*inter_distance
                 fiber_length += tor_loc*(eps_port_count - Tor_hosts)
                 tranceiver_num += 2*(eps_port_count - Tor_hosts)
+                total_cost += self.get_fiber_price(tor_loc)*(eps_port_count - Tor_hosts)
         
         for core in range(num_cores):
             core_loc = math.floor((core+48)/96)*inter_distance
@@ -144,11 +171,17 @@ class clos_basic():
                     aggre_loc = (math.floor(pod/2)+1)*inter_distance
                     link_len = core_loc + aggre_loc
                     fiber_length += link_len
+                    total_cost += self.get_fiber_price(link_len)
                     tranceiver_num += 2
+        
+        total_cost += tranceiver_num*500
+        total_cost += num_servers*189
+        total_cost += (num_cores+num_aggrs+num_tors)*59099
         print("sw", num_cores+num_aggrs+num_tors)
         print("The cable length of clos:", fiber_length/1000)
         print("The copper length of clos:", copper_length/1000)
         print("The number of tranceiver:", tranceiver_num)
+        print("The total cost:", math.ceil(total_cost))
         print()
 
 
@@ -180,6 +213,7 @@ class clos_basic():
             print("Please use more ports for hosts, at least", mini_tor_host)
             exit(1)
 
+        total_cost = 0
         host_per_tor = Tor_hosts
         copper_length = num_servers*2
         num_tors = math.ceil(num_servers / host_per_tor)
@@ -189,15 +223,8 @@ class clos_basic():
         num_ports_per_pod = int(num_aggrs_per_pod*eps_port_count/2)
         num_aggr_links_per_core = math.floor(512/num_pods_layer2)
         num_cores_per_group = math.ceil(num_ports_per_pod / num_aggr_links_per_core)
-        print(num_cores_per_group)
         num_cores = num_cores_per_group * 48
-        # print(num_pods_layer2, num_ports_per_pod)
-        # print(num_aggr_links_per_core, num_cores_per_group)
-
-
-        copper_length = num_servers*2
-        print(copper_length/1000)
-        copper_length += num_cores_per_group*16*32*inter_distance
+        copper_length += num_cores_per_group*16*32*2
         fiber_length = 0
         tranceiver_num = 0
         num_tors_pods = math.ceil(num_tors/num_pods_layer2)
@@ -206,6 +233,7 @@ class clos_basic():
                 tor_loc = (math.floor(tor/2)+1)*inter_distance
                 fiber_length += tor_loc*(eps_port_count - Tor_hosts)
                 tranceiver_num += 2*(eps_port_count - Tor_hosts)
+                total_cost += self.get_fiber_price(tor_loc)*(eps_port_count - Tor_hosts)
 
         for core in range(num_cores_per_group):
             core_loc = math.floor((core+48)/96)*inter_distance
@@ -213,13 +241,17 @@ class clos_basic():
                 for pod in range(num_pods_layer2):
                     aggre_loc = (math.floor(pod/2)+1)*inter_distance
                     link_len = core_loc + aggre_loc
+                    total_cost += self.get_fiber_price(link_len)
                     fiber_length += link_len
                     tranceiver_num += 2
-
-        print("switch_num",num_tors,num_aggrs,num_cores)
+        total_cost += tranceiver_num*500
+        total_cost += (copper_length/2)*189
+        total_cost += (num_cores+num_aggrs+num_tors)*59099
+        print("switch_num",num_tors+num_aggrs+num_cores)
         print("The cable length of clos:", fiber_length/1000)
         print("The copper length of clos:", copper_length/1000)
         print("The number of tranceiver:", tranceiver_num)
+        print("The total cost:", math.ceil(total_cost))
         print()
         
 
