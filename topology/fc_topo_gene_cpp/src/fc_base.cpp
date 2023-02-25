@@ -456,6 +456,36 @@ void Fc_base::gene_worse_case(float **flow_matrix){
 }
 
 
+double Fc_base::get_fiber_cost(int fiber_len){
+    int increaseCount;
+    if(fiber_len <= 1)
+        return 48.5/12;
+    else if(fiber_len > 1 and fiber_len <= 2)
+        return 51.5/12;
+    else if(fiber_len > 2 and fiber_len <= 3)
+        return 53.5/12;
+    else if(fiber_len > 3 and fiber_len <= 5)
+        return 56.5/12;
+    else if(fiber_len > 5 and fiber_len <= 10)
+        return 63.5/12;
+    else if(fiber_len > 10 and fiber_len <= 15)
+        return 68.5/12;
+    else if(fiber_len > 15 and fiber_len <= 20)
+        return 76.5/12;
+    else if(fiber_len > 20 and fiber_len <= 30)
+        return 88.5/12;
+    else if(fiber_len > 30 and fiber_len <= 50)
+        return 113.5/12;
+    else if(fiber_len > 50 and fiber_len <= 100)
+        return 198.5/12;
+    else{
+        increaseCount = (fiber_len-100)/50+1;
+        return (198.5/12)+150.0/(12*99)*50*increaseCount;
+    }
+
+}
+
+
 int Fc_base::cost_model(int ocs_ports, int* distance_infor, int column_num){
     if(topo_index == NULL){
         cout << "Please generate topology!" << endl;
@@ -473,6 +503,10 @@ int Fc_base::cost_model(int ocs_ports, int* distance_infor, int column_num){
     int ocs_y = 0;
     int fiber_len_src, fiber_len_dst;
     int fiber_len = 0;
+    double total_cost = 0;
+    total_cost += 59099*switches;
+    total_cost += 59099*ocs_number;
+    total_cost += switches*hosts*189;
     for(int i = 0; i < layer_num-1; i++){
         degree = bipart_degree[i];
         for(int j = 0; j < switches; j++){
@@ -487,6 +521,7 @@ int Fc_base::cost_model(int ocs_ports, int* distance_infor, int column_num){
                 fiber_len_dst = dst_x + abs(dst_y-ocs_y);
                 fiber_len += fiber_len_dst+fiber_len_src;
                 tranceiver_num += 2;
+                total_cost += get_fiber_cost(fiber_len_src+fiber_len_dst);
                 if(ocs_port_count == ocs_ports - 2){
                     ocs_port_count = 0;
                     ocs_label++;
@@ -500,8 +535,11 @@ int Fc_base::cost_model(int ocs_ports, int* distance_infor, int column_num){
         }
         basic_index += degree*switches;
     }
+    total_cost += tranceiver_num*1100;
     cout << "The cabling length of Fc topo: "<< fiber_len << "m" << endl;
     cout << "The number of tranceiver: "<< tranceiver_num << endl;
+    cout << "Total Cost: "<< total_cost << endl;
+
     return fiber_len;
 }
 
