@@ -16,7 +16,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <string>
-#include "gurobi_c++.h"
+// #include "gurobi_c++.h"
 using namespace std;
 
 /*
@@ -42,7 +42,7 @@ class Fc_base{
 
         // three mode: seed is to generate the uniform random flow metrix
         // all to all - "aa", uniform random - "ur", near-worst - "wr" 
-        double throughput_test(string type, int seed);
+        // double throughput_test(string type, int seed);
         void gene_uniform_random(float **flow_matrix, int seed);
         void gene_worse_case(float **flow_matrix);
 

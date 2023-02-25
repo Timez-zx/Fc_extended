@@ -3,8 +3,8 @@ CFLAGS_U= -O3 -P -std=c++17
 ALL_SRC = $(wildcard src/*.cpp) $(wildcard src/KSP_PROZ/*.cpp)  $(wildcard src/TAGGER/*.cpp)
 ALL_HEADER = $(wildcard src/*.h) $(wildcard src/KSP_PROZ/*.h)   $(wildcard src/TAGGER/*.h)
 
-ALL_SRC_T = $(wildcard src/TAGGER/*.cpp)
-ALL_HEADER_T = $(wildcard src/TAGGER/*.h)
+ALL_SRC_T = $(wildcard src/TAGGER/*.cpp) $(wildcard src/fc_base.cpp)
+ALL_HEADER_T = $(wildcard src/TAGGER/*.h)  $(wildcard src/fc_base.h)
 
 OUT=main
 
@@ -21,6 +21,7 @@ CLEAN_PATHK=data/tagger_infor/*
 
 default: $(ALL_SRC) $(ALL_HEADER) main.cpp
 	g++  $(CFLAGS_U) $(ALL_SRC) main.cpp -o $(OUT) -I $(ORTOOL_INCLUDE_U) -I $(GUROBI_INCLUDE_U) -L $(ORTOOL_LIB_U) -L $(GUROBI_LIB_U) -lortools -lpthread -lgurobi_c++ -lgurobi95
+
 
 tagger: $(ALL_SRC_T) $(ALL_HEADER_T) main_tagger.cpp
 	g++ $(CFLAGS_U) $(ALL_SRC_T) main_tagger.cpp -o $(OUT)
