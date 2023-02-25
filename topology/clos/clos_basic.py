@@ -126,9 +126,15 @@ class clos_basic():
             return 198.5/12
         else:
             return (198.5/12)+150/(12*99)*50*((fiber_len-100)//50+1)
+    
+
+    def get_tranceiver_price(self, fiber_len):
+        if(fiber_len <= 100):
+            return 499
+        else:
+            return 799
 
         
-
     def topo_cost_3layer(self, Tor_hosts, inter_distance):
         print("Infor", self.servers, Tor_hosts)
         eps_port_count = self.ports
@@ -162,6 +168,7 @@ class clos_basic():
                 tor_loc = (math.floor(tor/2)+1)*inter_distance
                 fiber_length += tor_loc*(eps_port_count - Tor_hosts)
                 tranceiver_num += 2*(eps_port_count - Tor_hosts)
+                total_cost += 2*self.get_tranceiver_price(tor_loc)*(eps_port_count - Tor_hosts)
                 total_cost += self.get_fiber_price(tor_loc)*(eps_port_count - Tor_hosts)
         
         for core in range(num_cores):
@@ -171,17 +178,18 @@ class clos_basic():
                     aggre_loc = (math.floor(pod/2)+1)*inter_distance
                     link_len = core_loc + aggre_loc
                     fiber_length += link_len
+                    total_cost += 2*self.get_tranceiver_price(link_len)
                     total_cost += self.get_fiber_price(link_len)
                     tranceiver_num += 2
         
-        total_cost += tranceiver_num*500
+        # total_cost += tranceiver_num*500
         total_cost += num_servers*189
         total_cost += (num_cores+num_aggrs+num_tors)*59099
         print("sw", num_cores+num_aggrs+num_tors)
         print("The cable length of clos:", fiber_length/1000)
         print("The copper length of clos:", copper_length/1000)
         print("The number of tranceiver:", tranceiver_num)
-        print("The total cost:", math.ceil(total_cost))
+        print("The total cost:", math.ceil(total_cost)/10**6)
         print()
 
 
@@ -233,6 +241,7 @@ class clos_basic():
                 tor_loc = (math.floor(tor/2)+1)*inter_distance
                 fiber_length += tor_loc*(eps_port_count - Tor_hosts)
                 tranceiver_num += 2*(eps_port_count - Tor_hosts)
+                total_cost += 2*self.get_tranceiver_price(tor_loc)*(eps_port_count - Tor_hosts)
                 total_cost += self.get_fiber_price(tor_loc)*(eps_port_count - Tor_hosts)
 
         for core in range(num_cores_per_group):
@@ -241,17 +250,18 @@ class clos_basic():
                 for pod in range(num_pods_layer2):
                     aggre_loc = (math.floor(pod/2)+1)*inter_distance
                     link_len = core_loc + aggre_loc
+                    total_cost += 2*self.get_tranceiver_price(link_len)
                     total_cost += self.get_fiber_price(link_len)
                     fiber_length += link_len
                     tranceiver_num += 2
-        total_cost += tranceiver_num*500
+        # total_cost += tranceiver_num*500
         total_cost += (copper_length/2)*189
         total_cost += (num_cores+num_aggrs+num_tors)*59099
         print("switch_num",num_tors+num_aggrs+num_cores)
         print("The cable length of clos:", fiber_length/1000)
         print("The copper length of clos:", copper_length/1000)
         print("The number of tranceiver:", tranceiver_num)
-        print("The total cost:", math.ceil(total_cost))
+        print("The total cost:", math.ceil(total_cost)/10**6)
         print()
         
 
@@ -261,12 +271,13 @@ class clos_basic():
 
 
 if __name__ == "__main__":
-    servers = [2400, 2400, 2400, 4800, 4800, 4800, 7200, 7200, 7200]
+    servers = [1152, 2400, 2400, 2400, 4800, 4800, 4800, 7200, 7200, 7200]
     servers2 = [24000, 24000, 24000, 48000, 48000, 48000, 72000, 72000, 72000]
+    ports1 = [18, 16, 22, 25, 16, 21, 25, 16, 21 ,25]
     ports = [16, 22, 25, 16, 21, 25, 16, 21 ,25]
-    for i in range(9):
+    for i in range(10):
         clos_temp = clos_basic(100000, servers[i], 32)
-        clos_temp.topo_cost_3layer(ports[i], 2)
+        clos_temp.topo_cost_3layer(ports1[i], 2)
     
     for i in range(9):
         clos_temp = clos_basic(100000, servers2[i], 32)
