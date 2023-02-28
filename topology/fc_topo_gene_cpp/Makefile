@@ -3,8 +3,8 @@ CFLAGS_U= -O3 -P -std=c++17
 ALL_SRC = $(wildcard src/*.cpp) $(wildcard src/KSP_PROZ/*.cpp)  $(wildcard src/TAGGER/*.cpp)
 ALL_HEADER = $(wildcard src/*.h) $(wildcard src/KSP_PROZ/*.h)   $(wildcard src/TAGGER/*.h)
 
-ALL_SRC_T = $(wildcard src/TAGGER/*.cpp) #$(wildcard src/fc_base.cpp)
-ALL_HEADER_T = $(wildcard src/TAGGER/*.h) # $(wildcard src/fc_base.h)
+ALL_SRC_T = $(wildcard src/TAGGER/*.cpp)
+ALL_HEADER_T = $(wildcard src/TAGGER/*.h)
 
 OUT=main
 
