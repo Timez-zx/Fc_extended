@@ -14,7 +14,7 @@ int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
 
-    SearchMinTag minT("data/tagger_infor/sw150_vir3663_rand3/sw150_vir3663_rand3_ksp32_vc100");
+    SearchMinTag minT("/home/zx/Fc_exp/fc_extended/topology/fc_topo_gene_cpp/data/tagger_infor/sw5000_vir3663_rand3/sw5000_vir3663_rand3_ksp32_vc100");
     cout << minT.MiniTag() << " " << minT.GetMaxTag() << endl;
 
     // int serverL[] = {1152, 2400, 4800, 7200, 24000, 48000, 72000};

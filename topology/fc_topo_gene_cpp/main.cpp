@@ -54,7 +54,7 @@ int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
 
-    int switches = 150;
+    int switches = 10000;
     int hosts = 14;
     int ports = 32;
     int vir_layer_degree[] = {3, 6, 6, 3};
@@ -62,10 +62,10 @@ int main(){
     int is_random = 1;
     int random_seed = 3;
     FcTaggerTest fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-    fc_test.fc_topo_gene_1v1(0);
+    fc_test.fc_topo_gene_1v1(1);
     fc_test.SaveTaggerGraph();
     // fc_test.mthreadKsp(16, 64, 100, 1, 10000, 1);
-    fc_test.mthreadKsp(16, 32, 100, 1, 10000, 1);
+    fc_test.mthreadKsp(1, 32, 3, 1, 100, 1);
     // fc_test.mthreadEcmp(16, 1, 10000, 1);
 
     
