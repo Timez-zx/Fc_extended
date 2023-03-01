@@ -2,6 +2,7 @@
 #define FC_WITH_FLAT_EDGE_H_
 
 #include <vector>
+#include <numeric>
 #include "basic_gene_fc.h"
 
 class FcWithFlatEdge: public BasicGeneFc{
@@ -14,7 +15,7 @@ class FcWithFlatEdge: public BasicGeneFc{
         int layerNum;
         int totalUpPort;
         std::vector<int> upDownDegree; 
-        std::vector<int> flatEdgeNum; 
+        std::vector<int> flatEdgeLayerNum; 
 };
 
 
