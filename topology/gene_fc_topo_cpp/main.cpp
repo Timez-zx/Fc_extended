@@ -14,7 +14,7 @@ int main(){
     int layerNum = 4;
     int totalPort = 18;
     vector<int> upDownDegree = {2, 4, 4, 2};
-    vector<int> flatEdge = {10, 10, 10, 1000};
+    vector<int> flatEdge = {10, 10, 10, 10};
     FcWithFlatEdge fcFlat(switches, layerNum, totalPort, upDownDegree, flatEdge);
     fcFlat.GeneTopo();
 

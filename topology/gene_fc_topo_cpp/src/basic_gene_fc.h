@@ -2,6 +2,21 @@
 #define BASIC_GENE_FC_H_
 #include <iostream>
 
+typedef struct _SwNode
+{
+    int swLabel;
+    int layerLabel;
+    _SwNode(int swLabelIn, int layerLabelIn):swLabel(swLabelIn), layerLabel(layerLabelIn){}
+} SwNode;
+
+typedef struct _SwLink
+{
+    SwNode srcNode;
+    SwNode dstNode;
+    _SwLink(const SwNode& srcNodeIn, const SwNode& dstNodeIn): srcNode(srcNodeIn), dstNode(dstNodeIn){}
+} SwLink;
+
+
 class BasicGeneFc{
     public:
         virtual ~BasicGeneFc() {}
