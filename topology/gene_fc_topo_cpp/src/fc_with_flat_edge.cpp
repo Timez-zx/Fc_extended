@@ -17,12 +17,6 @@ void FcWithFlatEdge::GeneTopo() {
         std::cerr << "Too many flat edges, Please change the number of flat edges, at most " << maxFlatEdge << "!\n";
         exit(1);
     }
-    for(auto layerEdgeNum:flatEdgeLayerNum){
-        if(layerEdgeNum >= switches){
-            std::cerr << "For uniformity, the flat edge number of a layer should be less than switches number: " << switches << "!\n";
-            exit(1);
-        }
-    }
     linkInfor.reserve(totalUpDownDegree*switches/2+flatEdgeNum);
 
     std::vector<std::vector<int> > possibleConnect(switches);
@@ -147,16 +141,23 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
     int maxOutDegree = flatDegree/2,  maxInDegree = flatDegree/2;
     int src, dst, srcIndex, dstIndex, remainFlatEdge, layerCount = 0, geneEdgeNum, deadCycleBreak=0;
     std::vector<int> randSwVec(switches), outRemainDegrees(switches), inRemainDegrees(switches);
-    std::vector<int> tempSrcVec, tempDstVec;
+    std::vector<int> tempSrcVec, tempDstVec, diffOutToIn(switches), diffSortIndex(switches);
     for(int i = 0; i < switches; i++){
         outRemainDegrees[i] = maxOutDegree;
         inRemainDegrees[i] = maxInDegree;
-        randSwVec[i] = i;
+        // randSwVec[i] = i;
     }
 
     while(layerCount < layerNum){
         remainFlatEdge = flatEdgeLayerNum[layerCount];
-        shuffle(randSwVec.begin(), randSwVec.end(), std::default_random_engine(randomSeed));
+        // shuffle(randSwVec.begin(), randSwVec.end(), std::default_random_engine(randomSeed));
+        for(int i = 0; i < switches; i++){
+            diffSortIndex[i] = i;
+            diffOutToIn[i] = outRemainDegrees[i] - inRemainDegrees[i];
+        }
+        std::sort(diffSortIndex.begin(), diffSortIndex.end(),
+            [&](const int& a, const int& b) {return (diffOutToIn[a] > diffOutToIn[b]);});
+        randSwVec.assign(diffSortIndex.begin(), diffSortIndex.end());
         srcIndex = 0;
         dstIndex = 1;
         geneEdgeNum = 0;
@@ -168,6 +169,10 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
             if(FindVecEle(possibleConnect[src], dst) && outRemainDegrees[src] > 0 && inRemainDegrees[dst] > 0){
                 tempSrcVec.push_back(src);
                 tempDstVec.push_back(dst);
+                outRemainDegrees[src]--;
+                inRemainDegrees[dst]--;
+                RemoveVecEle(possibleConnect[src], dst);
+                RemoveVecEle(possibleConnect[dst], src);
                 remainFlatEdge--;
                 geneEdgeNum++;
                 if(srcIndex == switches-1){
@@ -197,18 +202,22 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
             for(int i = 0; i < flatEdgeLayerNum[layerCount]; i++){
                 linkInfor.push_back(SwLink(SwNode(tempSrcVec[i], layerCount), SwNode(tempDstVec[i], -1*layerCount)));
                 linkInfor.push_back(SwLink(SwNode(tempDstVec[i], -1*layerCount), SwNode(tempSrcVec[i], layerCount)));
-                RemoveVecEle(possibleConnect[tempSrcVec[i]], tempDstVec[i]);
-                RemoveVecEle(possibleConnect[tempDstVec[i]], tempSrcVec[i]);
-                outRemainDegrees[tempSrcVec[i]]--;
-                inRemainDegrees[tempDstVec[i]]--;
             }
             layerCount++;
         }
-        else
+        else{
+            for(int i = 0; i < geneEdgeNum; i++){
+                outRemainDegrees[tempSrcVec[i]]++;
+                inRemainDegrees[tempDstVec[i]]++;
+                possibleConnect[tempSrcVec[i]].push_back(tempDstVec[i]);
+                possibleConnect[tempDstVec[i]].push_back(tempSrcVec[i]);
+            }
             deadCycleBreak++;
+        }
         if(deadCycleBreak > 1e2){
-            std::cerr <<  "Can't construct, please change the rand seed!" << std::endl;
+            std::cerr <<  "Can't construct, please change the rand seed!"  <<std::endl;
             exit(1);
         }
     }
+    std::cout << linkInfor.size() << "\n";
 }
