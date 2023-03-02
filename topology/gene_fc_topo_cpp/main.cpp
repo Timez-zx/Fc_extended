@@ -16,8 +16,9 @@ int main(){
     vector<int> upDownDegree = {1, 2, 2, 1};
     vector<int> flatEdge = {10, 10, 10, 10};
     FcWithFlatEdge fcFlat(switches, layerNum, totalPort, upDownDegree, flatEdge);
+    // fcFlat.StartFastMode();
     fcFlat.GeneTopo();
-
+    
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     return 0;
