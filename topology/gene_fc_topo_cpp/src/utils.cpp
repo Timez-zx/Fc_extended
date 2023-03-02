@@ -7,8 +7,3 @@ void PrintVectorInt(const std::vector<int> &vec) {
     std::copy(vec.begin(), vec.end(), it);
     std::cout << std::endl;
 }
-
-
-void RemoveVecEle(std::vector<int> &vec, int value) {
-    vec.erase(remove(vec.begin(), vec.end(), value), vec.end()); 
-}

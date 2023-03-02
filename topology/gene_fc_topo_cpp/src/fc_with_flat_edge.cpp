@@ -143,5 +143,8 @@ void FcWithFlatEdge::GeneUpDownTopo(std::vector<std::vector<int> > &possibleConn
 
 
 void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnect) {
+    int totalUpDownDegree = accumulate(upDownDegree.begin(), upDownDegree.end(),0);
+    int flatDegree = totalUpPort - totalUpDownDegree;
+    int maxOutDegree = flatDegree/2,  maxInDegree = flatDegree/2;
 
 }

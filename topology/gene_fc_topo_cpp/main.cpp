@@ -17,7 +17,7 @@ int main(){
     vector<int> flatEdge = {10, 10, 10, 10};
     FcWithFlatEdge fcFlat(switches, layerNum, totalPort, upDownDegree, flatEdge);
     // fcFlat.StartFastMode();
-    fcFlat.ChangeRandomSeed(1);
+    fcFlat.ChangeRandomSeed(6);
     fcFlat.GeneTopo();
     
     gettimeofday(&end, NULL);
