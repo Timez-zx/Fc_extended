@@ -139,6 +139,7 @@ void FcWithFlatEdge::GeneUpDownTopo(std::vector<std::vector<int> > &possibleConn
         delete[] vertexConnect[i];
     }
     delete[] vertexConnect;
+    std::cout <<"Up down edge constructed!\n";
 }
 
 
@@ -146,31 +147,69 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
     int totalUpDownDegree = accumulate(upDownDegree.begin(), upDownDegree.end(),0);
     int flatDegree = totalUpPort - totalUpDownDegree;
     int maxOutDegree = flatDegree/2,  maxInDegree = flatDegree/2;
-    int src, dst, remainFlatEdge;
+    int src, dst, srcIndex, dstIndex, remainFlatEdge, layerCount = 0, geneEdgeNum, deadCycleBreak=0;
     std::vector<int> randSwVec(switches), outRemainDegrees(switches), inRemainDegrees(switches);
+    std::vector<int> tempSrcVec, tempDstVec;
     for(int i = 0; i < switches; i++){
         outRemainDegrees[i] = maxOutDegree;
         inRemainDegrees[i] = maxInDegree;
         randSwVec[i] = i;
     }
 
-    for(int i = 0; i < layerNum; i++){
-        remainFlatEdge = flatEdgeLayerNum[i];
+    while(layerCount < layerNum){
+        remainFlatEdge = flatEdgeLayerNum[layerCount];
         shuffle(randSwVec.begin(), randSwVec.end(), std::default_random_engine(randomSeed));
-        PrintVectorInt(randSwVec);
+        srcIndex = 0;
+        dstIndex = 1;
+        geneEdgeNum = 0;
+        tempSrcVec.clear();
+        tempDstVec.clear();
+        while(remainFlatEdge > 0){
+            src = randSwVec[srcIndex];
+            dst = randSwVec[dstIndex];
+            if(FindVecEle(possibleConnect[src], dst) && outRemainDegrees[src] > 0 && inRemainDegrees[dst] > 0){
+                tempSrcVec.push_back(src);
+                tempDstVec.push_back(dst);
+                remainFlatEdge--;
+                geneEdgeNum++;
+                if(srcIndex == switches-1){
+                    srcIndex = 0;
+                    dstIndex = 1;
+                }
+                else{
+                    srcIndex++;
+                    dstIndex = srcIndex + 1;
+                }
+            }
+            else{
+                if(dstIndex >= switches-1){
+                    if(srcIndex == switches -1)
+                        break;
+                    else{
+                        srcIndex++;
+                        dstIndex = srcIndex+1;
+                    }
+                }
+                else{
+                    dstIndex++;
+                }
+            }
+        }
+        if(geneEdgeNum == flatEdgeLayerNum[layerCount]){
+            layerCount++;
+            for(int i = 0; i < flatEdgeLayerNum[layerCount-1]; i++){
+                RemoveVecEle(possibleConnect[tempSrcVec[i]], tempDstVec[i]);
+                RemoveVecEle(possibleConnect[tempDstVec[i]], tempSrcVec[i]);
+                outRemainDegrees[tempSrcVec[i]]--;
+                inRemainDegrees[tempDstVec[i]]--;
+            }
+        }
+        else
+            deadCycleBreak++;
+        if(deadCycleBreak > 1e2){
+            std::cerr <<  "Can't construct, please change the rand seed!" << std::endl;
+            exit(1);
+        }
     }
-    // shuffle(randSwVec.begin(), randSwVec.end(), std::default_random_engine(randomSeed));
-    // PrintVectorInt(randSwVec);
-    // for(int i = 0; i < switches-1; i++){
-    //     src = randSwVec[i];
-    //     for(int j = i; j < switches; j++){
-    //         dst = randSwVec[j];
-    //         if(FindVecEle(possibleConnect[src], dst)){
-    //             std::cout << src << " " << dst << std::endl;
-    //             RemoveVecEle(possibleConnect[src], dst);
-    //             RemoveVecEle(possibleConnect[dst], src);
-    //             break;
-    //         }
-    //     }
-    // }
+    std::cout <<"Flat edge constructed!\n";
 }
