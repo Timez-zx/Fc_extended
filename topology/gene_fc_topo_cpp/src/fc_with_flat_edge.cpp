@@ -150,6 +150,5 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
     for(int i = 0; i < switches; i++)
         randSwVec[i] = i;
     shuffle(randSwVec.begin(), randSwVec.end(), std::default_random_engine(randomSeed));
-    PrintVectorInt(randSwVec);
 
 }
