@@ -41,9 +41,9 @@ void FcWithFlatEdge::GeneTopo() {
         RemoveVecEle(possibleConnect[i], i);
     }
     GeneUpDownTopo(possibleConnect);
-
-
 }
+
+
 
 void FcWithFlatEdge::GeneUpDownTopo(std::vector<std::vector<int> > &possibleConnect){
     int lastLayerRemainDegree = 0;
@@ -103,9 +103,13 @@ void FcWithFlatEdge::GeneUpDownTopo(std::vector<std::vector<int> > &possibleConn
                 vertexConnect[src][dst] = true;
                 vertexConnect[dst][src] = true;
                 swDegreeLabel[dst] = 1;
+                linkInfor.push_back(SwLink(SwNode(src, i), SwNode(dst, i-1)));
+                linkInfor.push_back(SwLink(SwNode(dst, i-1), SwNode(src, i)));
                 RemoveVecEle(possibleConnect[src], dst);
                 RemoveVecEle(possibleConnect[dst], src);
                 RemoveVecEle(srcChoose, src);
+                
+
                 if(fastTopoBuild)
                     src++;
                 else{

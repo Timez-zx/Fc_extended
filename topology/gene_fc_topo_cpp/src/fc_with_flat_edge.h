@@ -26,6 +26,7 @@ class FcWithFlatEdge: public BasicGeneFc{
         std::vector<int> flatEdgeLayerNum;
 
         std::vector<SwLink> linkInfor;
+
 };
 
 
