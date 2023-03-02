@@ -15,12 +15,15 @@ class FcWithFlatEdge: public BasicGeneFc{
         ~FcWithFlatEdge(){};
         void GeneTopo() override;
         void StartFastMode(){fastTopoBuild = true;}
+        void ChangeRandomSeed(int seed){randomSeed = seed;}
     private:
         void GeneUpDownTopo(std::vector<std::vector<int> > &possibleConnect);
+        void GeneFlatTopo(std::vector<std::vector<int> > &possibleConnect);
     private:
         int switches;
         int layerNum;
         int totalUpPort;
+        int randomSeed = 0;
         bool fastTopoBuild = false;
         std::vector<int> upDownDegree; 
         std::vector<int> flatEdgeLayerNum;
