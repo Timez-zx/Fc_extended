@@ -1,9 +1,7 @@
 #include <sys/time.h>
 #include <iostream>
 #include <unistd.h>
-#include <iterator>
 #include "src/fc_with_flat_edge.h"
-#include "src/utils.h"
 using namespace std;
 
 

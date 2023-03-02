@@ -5,6 +5,7 @@
 #include <numeric>
 #include <cstring>
 #include <algorithm>
+#include "utils.h"
 #include "basic_gene_fc.h"
 
 class FcWithFlatEdge: public BasicGeneFc{

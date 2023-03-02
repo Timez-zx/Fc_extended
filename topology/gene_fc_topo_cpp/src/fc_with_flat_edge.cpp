@@ -25,9 +25,17 @@ void FcWithFlatEdge::GeneTopo() {
     }
     linkInfor.reserve(totalUpDownDegree*switches/2+flatEdgeNum);
 
+    std::vector<std::vector<int> > possibleConnect(switches);
+    std::vector<int> tempVec(switches);
     int lastLayerRemainDegree = 0;
     int layerDegree, twoCount, zeroCount, deadCycleBreak;
     int *swDegrees = new int[switches];
+    for(int i = 0; i < switches; i++)
+        tempVec[i] = i;
+    for(int i = 0; i < switches; i++){
+        possibleConnect[i].assign(tempVec.begin(), tempVec.end());
+        RemoveVecEle(possibleConnect[i], i);
+    }
     for(int i = layerNum - 1; i > 0; i--){
         layerDegree = upDownDegree[i] - lastLayerRemainDegree;
         for(int j = 0; j < layerDegree; j++){
