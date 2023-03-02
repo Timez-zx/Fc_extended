@@ -146,5 +146,10 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
     int totalUpDownDegree = accumulate(upDownDegree.begin(), upDownDegree.end(),0);
     int flatDegree = totalUpPort - totalUpDownDegree;
     int maxOutDegree = flatDegree/2,  maxInDegree = flatDegree/2;
+    std::vector<int> randSwVec(switches);
+    for(int i = 0; i < switches; i++)
+        randSwVec[i] = i;
+    shuffle(randSwVec.begin(), randSwVec.end(), std::default_random_engine(randomSeed));
+    PrintVectorInt(randSwVec);
 
 }
