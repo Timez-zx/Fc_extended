@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <numeric>
+#include <cstring>
+#include <algorithm>
 #include "basic_gene_fc.h"
 
 class FcWithFlatEdge: public BasicGeneFc{
@@ -15,7 +17,9 @@ class FcWithFlatEdge: public BasicGeneFc{
         int layerNum;
         int totalUpPort;
         std::vector<int> upDownDegree; 
-        std::vector<int> flatEdgeLayerNum; 
+        std::vector<int> flatEdgeLayerNum;
+
+        std::vector<SwLink> linkInfor;
 };
 
 
