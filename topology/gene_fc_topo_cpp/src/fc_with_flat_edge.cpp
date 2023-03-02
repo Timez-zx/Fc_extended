@@ -35,8 +35,8 @@ void FcWithFlatEdge::GeneTopo() {
         RemoveVecEle(possibleConnect[i], i);
     }
     srand(randomSeed);
-    GeneUpDownTopo(possibleConnect);
     GeneFlatTopo(possibleConnect);
+    GeneUpDownTopo(possibleConnect);
 }
 
 
@@ -150,7 +150,6 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
 
     while(layerCount < layerNum){
         remainFlatEdge = flatEdgeLayerNum[layerCount];
-        // shuffle(randSwVec.begin(), randSwVec.end(), std::default_random_engine(randomSeed));
         for(int i = 0; i < switches; i++){
             diffSortIndex[i] = i;
             diffOutToIn[i] = outRemainDegrees[i] - inRemainDegrees[i];
@@ -206,6 +205,9 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
             layerCount++;
         }
         else{
+            std::cout <<  geneEdgeNum << " "<< layerCount << "\n";
+            PrintVectorInt(outRemainDegrees);
+            PrintVectorInt(inRemainDegrees);
             for(int i = 0; i < geneEdgeNum; i++){
                 outRemainDegrees[tempSrcVec[i]]++;
                 inRemainDegrees[tempDstVec[i]]++;
@@ -214,7 +216,7 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
             }
             deadCycleBreak++;
         }
-        if(deadCycleBreak > 1e2){
+        if(deadCycleBreak > 0){
             std::cerr <<  "Can't construct, please change the rand seed!"  <<std::endl;
             exit(1);
         }
