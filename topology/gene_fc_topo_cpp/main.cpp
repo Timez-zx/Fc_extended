@@ -10,17 +10,20 @@ using namespace std;
 int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
-    int switches = 200;
+    int switches = 500;
     int layerNum = 7;
     int totalPort = 18;
     vector<int> upDownDegree = {1, 2, 2, 2, 2, 2, 1};
-    vector<int> flatEdge = {100, 100, 100, 100, 100, 100, 0};
+    vector<int> flatEdge = {25, 25, 25, 25, 25, 25, 0};
+    for(int i = 0; i < layerNum; i++)
+        flatEdge[i] *= switches/50;
     FcWithFlatEdge fcFlat(switches, layerNum, totalPort, upDownDegree, flatEdge);
     // fcFlat.StartFastMode();
-    fcFlat.ChangeRandomSeed(4);
+    fcFlat.ChangeRandomSeed(3);
     fcFlat.GeneTopo();
     fcFlat.SaveTopoInfor();
-    fcFlat.MthreadKsp(1, 32, 100, 1, 1000);
+    fcFlat.MthreadKsp(8, 32, 1, 1, 1000);
+    fcFlat.throughputTest("wr", 1, 32, 1, 14);
     
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;

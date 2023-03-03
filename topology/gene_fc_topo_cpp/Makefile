@@ -5,7 +5,7 @@ ALL_HEADER = $(wildcard src/*.h)  $(wildcard src/KSP_PROZ/*.h)
 
 OUT=main
 
-CLEANPATH=data/topo_infor/* data/all_graph_route_ksp/*
+CLEANPATH=data/topo_infor/* data/all_graph_route_ksp/* data/worst_flow_infor/*
 
 GUROBI_UBUNTU=~/Optimizer/gurobi952/linux64
 GUROBI_LIB_U=$(GUROBI_UBUNTU)/lib/
