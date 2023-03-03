@@ -11,15 +11,15 @@ int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
     int switches = 500;
-    int layerNum = 6;
+    int layerNum = 5;
     int totalPort = 18;
-    vector<int> upDownDegree = {1, 2, 2, 2, 2, 1};
-    vector<int> flatEdge = {40, 40, 40, 40, 40, 0};
+    vector<int> upDownDegree = {1, 2, 2, 2, 1};
+    vector<int> flatEdge = {55, 55, 55, 55, 30};
     for(int i = 0; i < layerNum; i++)
         flatEdge[i] *= switches/50;
     FcWithFlatEdge fcFlat(switches, layerNum, totalPort, upDownDegree, flatEdge);
     // fcFlat.StartFastMode();
-    fcFlat.ChangeRandomSeed(5);
+    fcFlat.ChangeRandomSeed(6);
     fcFlat.GeneTopo();
     fcFlat.SaveTopoInfor();
     fcFlat.MthreadKsp(8, 32, 1, 1, 1000);

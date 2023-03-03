@@ -208,10 +208,10 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
     int totalUpDownDegree = accumulate(upDownDegree.begin(), upDownDegree.end(),0);
     int flatDegree = totalUpPort - totalUpDownDegree;
     int maxOutDegree = flatDegree/2,  maxInDegree = flatDegree/2;
-    int src, dst, remainFlatEdge, layerCount = 0, deadCycleBreak=0, edgeCount;
+    int src, dst, remainFlatEdge, layerCount = layerNum, deadCycleBreak=0, edgeCount;
     std::vector<int> outRemainDegrees(switches), inRemainDegrees(switches);
     std::vector<int> outDegreeSw(switches), inDegreeSw(switches), acycleHeads(switches);
-    std::vector<Edge> acycleEdges(flatDegree*switches/2); 
+    std::vector<Edge> acycleEdges(flatDegree*switches); 
     for(int i = 0; i < switches; i++){
         outRemainDegrees[i] = maxOutDegree;
         inRemainDegrees[i] = maxInDegree;
@@ -219,12 +219,12 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
         inDegreeSw[i] = i;
         acycleHeads[i] = -1;
     }
-    while(layerCount < layerNum){
+    while(layerCount >= 0){
         remainFlatEdge = flatEdgeLayerNum[layerCount];
         edgeCount = 0;
         acycleHeads.clear();
         acycleEdges.clear();
-        acycleEdges.resize(flatDegree*switches/2);
+        acycleEdges.resize(flatDegree*switches);
         acycleHeads.resize(switches);
         memset(&acycleHeads[0], 0xff, switches*sizeof(int));
         while(remainFlatEdge > 0){
@@ -250,6 +250,8 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
                 continue;
             }
             else{
+                if(layerCount == layerNum - 1)
+                    AddEdges(acycleHeads, acycleEdges, dst, src, edgeCount);
                 linkInfor.push_back(SwLink(SwNode(src, layerCount), SwNode(dst, layerCount)));
                 edgeLabel.push_back(1);
                 linkInfor.push_back(SwLink(SwNode(dst, layerCount), SwNode(src, layerCount)));
@@ -267,7 +269,7 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
                 remainFlatEdge--;
             }
         }
-        layerCount++;
+        layerCount--;
     }
     std::cout <<"Flat edge constructed!\n";
 }
