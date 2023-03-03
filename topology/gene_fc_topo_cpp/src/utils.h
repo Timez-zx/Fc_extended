@@ -17,6 +17,11 @@ void RemoveVecEle(std::vector<T> &vec, T &value){
 }
 
 template <typename T>
+void show(T value){
+    std::cout << value << std::endl; 
+}
+
+template <typename T>
 bool FindVecEle(std::vector<T> &vec, T &value){
     return (std::find(vec.begin(), vec.end(), value) != vec.end()); 
 }
