@@ -19,6 +19,7 @@ int main(){
     // fcFlat.StartFastMode();
     fcFlat.ChangeRandomSeed(5);
     fcFlat.GeneTopo();
+    fcFlat.SaveTopoInfor();
     
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;

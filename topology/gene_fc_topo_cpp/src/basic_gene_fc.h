@@ -1,6 +1,9 @@
 #ifndef BASIC_GENE_FC_H_
 #define BASIC_GENE_FC_H_
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <unistd.h>
 
 typedef struct _SwNode
 {

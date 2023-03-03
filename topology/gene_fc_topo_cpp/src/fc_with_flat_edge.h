@@ -32,9 +32,12 @@ class FcWithFlatEdge: public BasicGeneFc{
         void GeneTopo() override;
         void StartFastMode(){fastTopoBuild = true;}
         void ChangeRandomSeed(int seed){randomSeed = seed;}
+        void SaveTopoInfor();
     private:
         void GeneUpDownTopo(std::vector<std::vector<int> > &possibleConnect);
         void GeneFlatTopo(std::vector<std::vector<int> > &possibleConnect);
+        std::string GenePathKsp(const std::string& path, int pathNum, int vcNum);
+        std::string GenePath(const std::string& path);
     private:
         int switches;
         int layerNum;
@@ -43,8 +46,9 @@ class FcWithFlatEdge: public BasicGeneFc{
         bool fastTopoBuild = false;
         std::vector<int> upDownDegree; 
         std::vector<int> flatEdgeLayerNum;
-
         std::vector<SwLink> linkInfor;
+
+        std::string topoPath;
 
 };
 

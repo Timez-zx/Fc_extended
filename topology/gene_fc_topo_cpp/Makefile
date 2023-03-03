@@ -5,6 +5,8 @@ ALL_HEADER = $(wildcard src/*.h)
 
 OUT=main
 
+CLEANPATH=data/topo_infor/*
+
 GUROBI_UBUNTU=~/Optimizer/gurobi952/linux64
 GUROBI_LIB_U=$(GUROBI_UBUNTU)/lib/
 GUROBI_INCLUDE_U=$(GUROBI_UBUNTU)/include/
@@ -14,6 +16,7 @@ default: $(ALL_SRC) $(ALL_HEADER) main.cpp
 
 
 clean:
-	$(RM) $(OUT)
+	$(RM) $(OUT) 
+	$(RM) -r $(CLEANPATH)
 
 

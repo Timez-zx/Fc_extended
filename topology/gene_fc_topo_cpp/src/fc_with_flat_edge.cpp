@@ -228,3 +228,76 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
         layerCount++;
     }
 }
+
+
+std::string FcWithFlatEdge::GenePathKsp(const std::string& path, int pathNum, int vcNum){
+    if(access(path.c_str(), 0)){
+        std::string cmd("mkdir ");
+        cmd += path;
+        int temp = system(cmd.c_str());
+    }
+    std::string fileDirPath("");
+    fileDirPath += "sw";
+    fileDirPath += std::to_string(switches);
+    fileDirPath += "_vir";
+    for(int i = 0; i < layerNum; i++)
+        fileDirPath += std::to_string(upDownDegree[i]);
+    fileDirPath += "_rand";
+    fileDirPath += std::to_string(randomSeed);
+    fileDirPath += "_";
+    fileDirPath += std::to_string(pathNum);
+    fileDirPath += "_";
+    fileDirPath += std::to_string(vcNum);
+    if(access((path + fileDirPath).c_str(), 0)){
+        std::string cmd("mkdir ");
+        cmd += path;
+        cmd += fileDirPath;
+        int temp = system(cmd.c_str());
+    }
+    return fileDirPath;
+}
+
+
+std::string FcWithFlatEdge::GenePath(const std::string &path){
+    if(access(path.c_str(), 0)){
+        std::string cmd("mkdir ");
+        cmd += path;
+        int temp = system(cmd.c_str());
+    }
+    std::string fileDirName("");
+    fileDirName += "sw";
+    fileDirName += std::to_string(switches);
+    fileDirName += "_vir";
+    for(int i = 0; i < layerNum; i++)
+        fileDirName += std::to_string(upDownDegree[i]);
+    fileDirName += "_rand";
+    fileDirName += std::to_string(randomSeed);
+    if(access((path + fileDirName).c_str(), 0)){
+        std::string cmd("mkdir ");
+        cmd += path;
+        cmd += fileDirName;
+        int temp = system(cmd.c_str());
+    }
+    return fileDirName;
+}
+
+
+void FcWithFlatEdge::SaveTopoInfor(){
+    if(linkInfor.size() == 0){
+        std::cout << "Please generate graph topology!" << std::endl;
+        exit(1);
+    }
+    std::string fileDirPath = GenePath("data/topo_infor/");
+    std::ofstream ofs("data/topo_infor/" + fileDirPath + "/" + fileDirPath+".txt");
+    int degree;
+    int basic_index = 0;
+    int src, dst;
+    ofs << "LinkID,SourceID,DestinationID,PeerID,Cost,Bandwidth,Delay,SRLGNum,SRLGs" << std::endl;
+    for(int i = 0; i < linkInfor.size(); i++){
+        src = linkInfor[i].srcNode.swLabel;
+        dst = linkInfor[i].dstNode.swLabel;
+        ofs << i << "," << src << "," << dst << "," << 0 << "," << 1 << ",0,0,0,0"<< std::endl;
+    }
+    ofs.close();
+    topoPath = "data/topo_infor/" + fileDirPath + "/" + fileDirPath+".txt";
+}
