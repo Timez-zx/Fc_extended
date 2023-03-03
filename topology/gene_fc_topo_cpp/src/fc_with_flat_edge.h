@@ -38,12 +38,13 @@ void DeleLastEdges(std::vector<int>& heads, std::vector<Edge>& edges, int &edgeC
 class FcWithFlatEdge: public BasicGeneFc{
     public:
         FcWithFlatEdge(const int switchIn, const int layerIn, const int totalPortIn, const std::vector<int>& upDownIn, const std::vector<int>& flatIn);
-        ~FcWithFlatEdge(){};
+        ~FcWithFlatEdge();
         void GeneTopo() override;
         void StartFastMode(){fastTopoBuild = true;}
         void ChangeRandomSeed(int seed){randomSeed = seed;}
         void SaveTopoInfor();
         void MthreadKsp(int threadNum, int pathNum, int vcNum, bool ifReport, int reportInter);
+        double throughputTest(const std::string& type, int seed, int pathNum, int vcNum, int hosts);
     private:
         void GeneUpDownTopo(std::vector<std::vector<int> > &possibleConnect);
         void GeneFlatTopo(std::vector<std::vector<int> > &possibleConnect);
@@ -51,11 +52,15 @@ class FcWithFlatEdge: public BasicGeneFc{
         std::string GenePath(const std::string& path);
         void ThreadKsp(const std::vector<Pair> &routePairs, int threadLabel, int pathNum, int vcNum, bool ifReport, int reportInter, std::string storeFile);
         uint16_t SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_t *pathInfor, int threadLabel);
+
+        void GeneUniformRandom(float **flowMatrix, int seed, int hosts);
+        void GeneWorseCase(float **flowMatrix, int hosts);
     private:
         int switches;
         int layerNum;
         int totalUpPort;
         int randomSeed = 0;
+        int** bitMap=NULL;
         bool fastTopoBuild = false;
         std::vector<int> upDownDegree; 
         std::vector<int> flatEdgeLayerNum;
