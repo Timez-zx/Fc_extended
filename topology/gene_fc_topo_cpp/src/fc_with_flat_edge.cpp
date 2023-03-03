@@ -76,8 +76,8 @@ void FcWithFlatEdge::GeneTopo() {
         RemoveVecEle(possibleConnect[i], i);
     }
     srand(randomSeed);
-    GeneFlatTopo(possibleConnect);
     GeneUpDownTopo(possibleConnect);
+    GeneFlatTopo(possibleConnect);
 }
 
 
@@ -213,6 +213,8 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
                 continue;
             }
             else{
+                linkInfor.push_back(SwLink(SwNode(src, layerCount), SwNode(dst, -1*layerCount)));
+                linkInfor.push_back(SwLink(SwNode(dst, -1*layerCount), SwNode(src, layerCount)));
                 outRemainDegrees[src]--;
                 inRemainDegrees[dst]--;
                 if(outRemainDegrees[src] == 0)
