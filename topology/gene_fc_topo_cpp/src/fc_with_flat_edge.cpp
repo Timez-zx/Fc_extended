@@ -208,7 +208,7 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
     int totalUpDownDegree = accumulate(upDownDegree.begin(), upDownDegree.end(),0);
     int flatDegree = totalUpPort - totalUpDownDegree;
     int maxOutDegree = flatDegree/2,  maxInDegree = flatDegree/2;
-    int src, dst, remainFlatEdge, layerCount = layerNum, deadCycleBreak=0, edgeCount;
+    int src, dst, remainFlatEdge, layerCount = layerNum-1, deadCycleBreak=0, edgeCount;
     std::vector<int> outRemainDegrees(switches), inRemainDegrees(switches);
     std::vector<int> outDegreeSw(switches), inDegreeSw(switches), acycleHeads(switches);
     std::vector<Edge> acycleEdges(flatDegree*switches); 
