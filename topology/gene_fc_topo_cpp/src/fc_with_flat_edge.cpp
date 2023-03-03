@@ -140,8 +140,8 @@ void FcWithFlatEdge::GeneUpDownTopo(std::vector<std::vector<int> > &possibleConn
                 vertexConnect[src][dst] = true;
                 vertexConnect[dst][src] = true;
                 swDegreeLabel[dst] = 1;
-                linkInfor.push_back(SwLink(SwNode(src, i+1), SwNode(dst, i)));
-                linkInfor.push_back(SwLink(SwNode(dst, i), SwNode(src, i+1)));
+                linkInfor.push_back(SwLink(SwNode(src, i), SwNode(dst, i-1)));
+                linkInfor.push_back(SwLink(SwNode(dst, i-1), SwNode(src, i)));
                 RemoveVecEle(possibleConnect[src], dst);
                 RemoveVecEle(possibleConnect[dst], src);
                 RemoveVecEle(srcChoose, src);
@@ -212,8 +212,8 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
                 continue;
             }
             else{
-                linkInfor.push_back(SwLink(SwNode(src, (layerCount+1)), SwNode(dst, -1*(layerCount+1))));
-                linkInfor.push_back(SwLink(SwNode(dst, -1*(layerCount+1)), SwNode(src, layerCount+1)));
+                linkInfor.push_back(SwLink(SwNode(src, layerCount), SwNode(dst, layerCount)));
+                linkInfor.push_back(SwLink(SwNode(dst, layerCount), SwNode(src, layerCount)));
                 outRemainDegrees[src]--;
                 inRemainDegrees[dst]--;
                 if(outRemainDegrees[src] == 0)
@@ -227,34 +227,6 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
         }
         layerCount++;
     }
-}
-
-
-std::string FcWithFlatEdge::GenePathKsp(const std::string& path, int pathNum, int vcNum){
-    if(access(path.c_str(), 0)){
-        std::string cmd("mkdir ");
-        cmd += path;
-        int temp = system(cmd.c_str());
-    }
-    std::string fileDirPath("");
-    fileDirPath += "sw";
-    fileDirPath += std::to_string(switches);
-    fileDirPath += "_vir";
-    for(int i = 0; i < layerNum; i++)
-        fileDirPath += std::to_string(upDownDegree[i]);
-    fileDirPath += "_rand";
-    fileDirPath += std::to_string(randomSeed);
-    fileDirPath += "_";
-    fileDirPath += std::to_string(pathNum);
-    fileDirPath += "_";
-    fileDirPath += std::to_string(vcNum);
-    if(access((path + fileDirPath).c_str(), 0)){
-        std::string cmd("mkdir ");
-        cmd += path;
-        cmd += fileDirPath;
-        int temp = system(cmd.c_str());
-    }
-    return fileDirPath;
 }
 
 
@@ -291,13 +263,44 @@ void FcWithFlatEdge::SaveTopoInfor(){
     std::ofstream ofs("data/topo_infor/" + fileDirPath + "/" + fileDirPath+".txt");
     int degree;
     int basic_index = 0;
-    int src, dst;
+    int src, dst, srcLayer, dstLayer;
     ofs << "LinkID,SourceID,DestinationID,PeerID,Cost,Bandwidth,Delay,SRLGNum,SRLGs" << std::endl;
     for(int i = 0; i < linkInfor.size(); i++){
         src = linkInfor[i].srcNode.swLabel;
+        srcLayer = linkInfor[i].srcNode.layerLabel;
         dst = linkInfor[i].dstNode.swLabel;
+        dstLayer = linkInfor[i].dstNode.layerLabel;
+        swPairToLayerPair[GetHash(src, dst, switches)] = GetHash(srcLayer, dstLayer, layerNum);
         ofs << i << "," << src << "," << dst << "," << 0 << "," << 1 << ",0,0,0,0"<< std::endl;
     }
     ofs.close();
     topoPath = "data/topo_infor/" + fileDirPath + "/" + fileDirPath+".txt";
+}
+
+
+std::string FcWithFlatEdge::GenePathKsp(const std::string& path, int pathNum, int vcNum){
+    if(access(path.c_str(), 0)){
+        std::string cmd("mkdir ");
+        cmd += path;
+        int temp = system(cmd.c_str());
+    }
+    std::string fileDirPath("");
+    fileDirPath += "sw";
+    fileDirPath += std::to_string(switches);
+    fileDirPath += "_vir";
+    for(int i = 0; i < layerNum; i++)
+        fileDirPath += std::to_string(upDownDegree[i]);
+    fileDirPath += "_rand";
+    fileDirPath += std::to_string(randomSeed);
+    fileDirPath += "_";
+    fileDirPath += std::to_string(pathNum);
+    fileDirPath += "_";
+    fileDirPath += std::to_string(vcNum);
+    if(access((path + fileDirPath).c_str(), 0)){
+        std::string cmd("mkdir ");
+        cmd += path;
+        cmd += fileDirPath;
+        int temp = system(cmd.c_str());
+    }
+    return fileDirPath;
 }

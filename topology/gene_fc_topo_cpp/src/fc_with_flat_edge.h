@@ -7,6 +7,7 @@
 #include <stack>
 #include <cstring>
 #include <algorithm>
+#include <unordered_map>
 #include "utils.h"
 #include "basic_gene_fc.h"
 
@@ -49,6 +50,8 @@ class FcWithFlatEdge: public BasicGeneFc{
         std::vector<SwLink> linkInfor;
 
         std::string topoPath;
+
+        std::unordered_map<int,int> swPairToLayerPair;
 
 };
 

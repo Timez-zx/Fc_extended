@@ -7,6 +7,10 @@
 
 void PrintVectorInt(const std::vector<int> &vec);
 
+int GetHash(int src, int dst, int basic);
+
+void GetValue(int hashValue, int basic, std::vector<int>& valueContain);
+
 template <typename T>
 void RemoveVecEle(std::vector<T> &vec, T &value){
     vec.erase(remove(vec.begin(), vec.end(), value), vec.end()); 
