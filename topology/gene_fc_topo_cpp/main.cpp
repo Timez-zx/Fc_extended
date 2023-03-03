@@ -20,7 +20,7 @@ int main(){
     fcFlat.ChangeRandomSeed(4);
     fcFlat.GeneTopo();
     fcFlat.SaveTopoInfor();
-    fcFlat.MthreadKsp(8, 32, 1, 1, 1000);
+    fcFlat.MthreadKsp(1, 32, 100, 1, 1000);
     
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
