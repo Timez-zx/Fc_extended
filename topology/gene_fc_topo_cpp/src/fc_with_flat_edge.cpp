@@ -140,8 +140,8 @@ void FcWithFlatEdge::GeneUpDownTopo(std::vector<std::vector<int> > &possibleConn
                 vertexConnect[src][dst] = true;
                 vertexConnect[dst][src] = true;
                 swDegreeLabel[dst] = 1;
-                linkInfor.push_back(SwLink(SwNode(src, i), SwNode(dst, i-1)));
-                linkInfor.push_back(SwLink(SwNode(dst, i-1), SwNode(src, i)));
+                linkInfor.push_back(SwLink(SwNode(src, i+1), SwNode(dst, i)));
+                linkInfor.push_back(SwLink(SwNode(dst, i), SwNode(src, i+1)));
                 RemoveVecEle(possibleConnect[src], dst);
                 RemoveVecEle(possibleConnect[dst], src);
                 RemoveVecEle(srcChoose, src);
@@ -191,7 +191,6 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
         inDegreeSw[i] = i;
         acycleHeads[i] = -1;
     }
-
     while(layerCount < layerNum){
         remainFlatEdge = flatEdgeLayerNum[layerCount];
         edgeCount = 0;
@@ -213,8 +212,8 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
                 continue;
             }
             else{
-                linkInfor.push_back(SwLink(SwNode(src, layerCount), SwNode(dst, -1*layerCount)));
-                linkInfor.push_back(SwLink(SwNode(dst, -1*layerCount), SwNode(src, layerCount)));
+                linkInfor.push_back(SwLink(SwNode(src, (layerCount+1)), SwNode(dst, -1*(layerCount+1))));
+                linkInfor.push_back(SwLink(SwNode(dst, -1*(layerCount+1)), SwNode(src, layerCount+1)));
                 outRemainDegrees[src]--;
                 inRemainDegrees[dst]--;
                 if(outRemainDegrees[src] == 0)
