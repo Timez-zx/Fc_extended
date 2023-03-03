@@ -10,7 +10,7 @@ using namespace std;
 int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
-    int switches = 400;
+    int switches = 500;
     int layerNum = 5;
     int totalPort = 18;
     vector<int> upDownDegree = {1, 2, 2, 2, 1};
@@ -19,7 +19,7 @@ int main(){
         flatEdge[i] *= switches/50;
     FcWithFlatEdge fcFlat(switches, layerNum, totalPort, upDownDegree, flatEdge);
     // fcFlat.StartFastMode();
-    fcFlat.ChangeRandomSeed(6);
+    fcFlat.ChangeRandomSeed(12);
     fcFlat.GeneTopo();
     fcFlat.SaveTopoInfor();
     fcFlat.MthreadKsp(8, 32, 1, 1, 1000);
