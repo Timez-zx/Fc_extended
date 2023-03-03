@@ -7,10 +7,15 @@ using namespace std;
 
 
 
-int main(){
+int main(int argc, char* argv[]){
+    int switches = 500;
+    int randSeed = 1;
+    if(argc == 3){
+        switches = atoi(argv[1]);
+        randSeed = atoi(argv[2]);
+    }
     struct timeval start, end;
     gettimeofday(&start, NULL);
-    int switches = 500;
     int layerNum = 5;
     int totalPort = 18;
     vector<int> upDownDegree = {1, 2, 2, 2, 1};
@@ -19,7 +24,7 @@ int main(){
         flatEdge[i] *= switches/50;
     FcWithFlatEdge fcFlat(switches, layerNum, totalPort, upDownDegree, flatEdge);
     // fcFlat.StartFastMode();
-    fcFlat.ChangeRandomSeed(12);
+    fcFlat.ChangeRandomSeed(randSeed);
     fcFlat.GeneTopo();
     fcFlat.SaveTopoInfor();
     fcFlat.MthreadKsp(8, 32, 1, 1, 1000);
