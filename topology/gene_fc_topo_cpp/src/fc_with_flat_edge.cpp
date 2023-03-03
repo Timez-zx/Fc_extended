@@ -228,6 +228,4 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
         }
         layerCount++;
     }
-
-    std::cout << linkInfor.size() << "\n";
 }
