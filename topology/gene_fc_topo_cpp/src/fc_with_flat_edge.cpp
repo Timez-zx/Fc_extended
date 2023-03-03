@@ -256,7 +256,7 @@ std::string FcWithFlatEdge::GenePath(const std::string &path){
 
 void FcWithFlatEdge::SaveTopoInfor(){
     if(linkInfor.size() == 0){
-        std::cout << "Please generate graph topology!" << std::endl;
+        std::cerr << "Please generate graph topology!" << std::endl;
         exit(1);
     }
     std::string fileDirPath = GenePath("data/topo_infor/");
@@ -303,4 +303,76 @@ std::string FcWithFlatEdge::GenePathKsp(const std::string& path, int pathNum, in
         int temp = system(cmd.c_str());
     }
     return fileDirPath;
+}
+
+
+void FcWithFlatEdge::MthreadKsp(int threadNum, int pathNum, int vcNum, bool ifReport, int reportInter){
+    if(linkInfor.size() == 0){
+        std::cerr << "Please generate graph topology!" << std::endl;
+        exit(1);
+    }
+    int totalPairs = switches*(switches-1)/2;
+    int average = ceil(totalPairs/float(threadNum));
+    int count = 0;
+    int alloIndex = 0;
+    std::vector<std::vector<Pair> > threadPairs(threadNum);
+    for(int i = 0; i < switches; i++){
+        for (int j = i+1; j < switches; j++)
+        {
+            threadPairs[alloIndex].push_back(Pair(i, j));
+            if(count < average - 1)
+                count++;
+            else{
+                count = 0;
+                alloIndex++;
+            }
+        } 
+    }
+
+    graphPr = new Graph*[threadNum];
+    for(int i = 0; i < threadNum; i++)
+        graphPr[i] = new Graph(topoPath);
+    
+    std::string fileDirName("");
+    fileDirName += GenePathKsp("data/all_graph_route_ksp/", pathNum, vcNum);
+
+    std::thread* th = new std::thread[threadNum];
+    // for(int i = 0; i < threadNum; i++){
+    //     th[i] = std::thread(&FcWithFlatEdge::thread_up_down_ksp, this, thread_pairs[i], i, path_num, vc_num, if_report, report_inter, if_store, file_dir_name);
+    // }
+    // for(int i = 0; i < threadNum; i++)
+    //     th[i].join();
+
+    std::string filePath("data/all_graph_route_ksp/" + fileDirName + "/" + fileDirName);
+    std::string lenPath(filePath + "_num"); 
+    int state;
+    FILE* ofs = fopen(filePath.c_str(), "w");
+    FILE* ofsLen = fopen(lenPath.c_str(), "w");
+    for(int i = 0; i < threadNum; i++){
+        std::string inFilePath("data/all_graph_route_ksp/" + fileDirName + "/" + fileDirName + std::to_string(i));
+        std::string inLenPath(inFilePath + "_num");
+        std::string cmd1("cat ");
+        std::string cmd2("cat ");
+        cmd1 += inFilePath;
+        cmd1 += " >> ";
+        cmd1 += filePath;
+        cmd2 += inLenPath;
+        cmd2 += " >> ";
+        cmd2 += lenPath;
+        state = system(cmd1.c_str());
+        state = system(cmd2.c_str());
+        cmd1 = "rm " + inFilePath;
+        cmd2 = "rm " + inLenPath;
+        state = system(cmd1.c_str());
+        state = system(cmd2.c_str());
+    }
+    fclose(ofs);
+    fclose(ofsLen);
+    for(int i = 0; i < threadNum; i++){
+        delete[] graphPr[i];
+        graphPr[i] = NULL;
+    }
+    delete[] graphPr;
+    graphPr = NULL;
+
 }

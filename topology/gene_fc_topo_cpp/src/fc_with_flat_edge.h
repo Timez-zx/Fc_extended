@@ -5,11 +5,13 @@
 #include <numeric>
 #include <random>
 #include <stack>
+#include <thread>
 #include <cstring>
 #include <algorithm>
 #include <unordered_map>
 #include "utils.h"
 #include "basic_gene_fc.h"
+#include "KSP_PROZ/shortest_path.h"
 
 typedef struct _Edge
 {
@@ -18,6 +20,12 @@ typedef struct _Edge
     int srcNode;
 } Edge;
 
+typedef struct _Pair
+{
+    int src;
+    int dst;
+    _Pair(int srcIn, int dstIn): src(srcIn), dst(dstIn){}
+} Pair;
 
 bool DetectCycleStack(const std::vector<int>& heads, const std::vector<Edge>& edges, int start);
 
@@ -34,6 +42,7 @@ class FcWithFlatEdge: public BasicGeneFc{
         void StartFastMode(){fastTopoBuild = true;}
         void ChangeRandomSeed(int seed){randomSeed = seed;}
         void SaveTopoInfor();
+        void MthreadKsp(int threadNum, int pathNum, int vcNum, bool ifReport, int reportInter);
     private:
         void GeneUpDownTopo(std::vector<std::vector<int> > &possibleConnect);
         void GeneFlatTopo(std::vector<std::vector<int> > &possibleConnect);
@@ -52,6 +61,8 @@ class FcWithFlatEdge: public BasicGeneFc{
         std::string topoPath;
 
         std::unordered_map<int,int> swPairToLayerPair;
+
+        Graph **graphPr=NULL;
 
 };
 
