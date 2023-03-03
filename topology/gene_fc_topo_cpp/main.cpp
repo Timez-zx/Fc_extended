@@ -10,11 +10,11 @@ using namespace std;
 int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
-    int switches = 20;
+    int switches = 100;
     int layerNum = 4;
-    int totalPort = 10;
-    vector<int> upDownDegree = {1, 2, 2, 1};
-    vector<int> flatEdge = {10, 10, 10, 10};
+    int totalPort = 18;
+    vector<int> upDownDegree = {2, 5, 5, 2};
+    vector<int> flatEdge = {30, 30, 30, 30};
     FcWithFlatEdge fcFlat(switches, layerNum, totalPort, upDownDegree, flatEdge);
     // fcFlat.StartFastMode();
     fcFlat.ChangeRandomSeed(1);

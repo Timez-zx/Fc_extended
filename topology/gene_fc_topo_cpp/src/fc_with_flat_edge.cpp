@@ -1,5 +1,46 @@
 #include "fc_with_flat_edge.h"
 
+
+void AddEdges(std::vector<int>& heads, std::vector<Edge>& edges, int src, int dst, int &edgeCount){
+    edges[edgeCount].toNode = dst;
+    edges[edgeCount].nextEdgeIdex = heads[src];
+    edges[edgeCount].srcNode = src;
+    heads[src] = edgeCount++;
+}
+
+
+void DeleLastEdges(std::vector<int>& heads, std::vector<Edge>& edges, int &edgeCount){
+    edgeCount--;
+    heads[edges[edgeCount].srcNode] = edges[edgeCount].nextEdgeIdex;
+}
+
+
+bool DetectCycleStack(const std::vector<int>& heads, const std::vector<Edge>& edges, int start){
+    std::vector<int> visited(heads.size());
+    memset(&visited[0], 0, heads.size()*sizeof(int));
+    std::stack<int> tempStack;
+    int topVertex, nearVertex;
+    tempStack.push(start);
+    visited[start] = 1;
+    while(!tempStack.empty()){
+        topVertex = tempStack.top();
+        tempStack.pop();
+        for(int i = heads[topVertex]; i != -1; i = edges[i].nextEdgeIdex){
+            nearVertex = edges[i].toNode;
+            if(nearVertex == start)
+                return true;
+            else{
+                if(!visited[nearVertex]){
+                    tempStack.push(nearVertex);
+                    visited[nearVertex] = 1;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+
 FcWithFlatEdge::FcWithFlatEdge(const int switchIn, const int layerIn, const int totalPortIn, const std::vector<int>& upDownIn, const std::vector<int>& flatIn) {
     switches = switchIn;
     layerNum = layerIn;
@@ -139,87 +180,47 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
     int totalUpDownDegree = accumulate(upDownDegree.begin(), upDownDegree.end(),0);
     int flatDegree = totalUpPort - totalUpDownDegree;
     int maxOutDegree = flatDegree/2,  maxInDegree = flatDegree/2;
-    int src, dst, srcIndex, dstIndex, remainFlatEdge, layerCount = 0, geneEdgeNum, deadCycleBreak=0;
-    std::vector<int> randSwVec(switches), outRemainDegrees(switches), inRemainDegrees(switches);
-    std::vector<int> tempSrcVec, tempDstVec, diffOutToIn(switches), diffSortIndex(switches);
+    int src, dst, remainFlatEdge, layerCount = 0, deadCycleBreak=0, edgeCount;
+    std::vector<int> outRemainDegrees(switches), inRemainDegrees(switches);
+    std::vector<int> outDegreeSw(switches), inDegreeSw(switches), acycleHeads(switches);
+    std::vector<Edge> acycleEdges(flatDegree*switches/2); 
     for(int i = 0; i < switches; i++){
         outRemainDegrees[i] = maxOutDegree;
         inRemainDegrees[i] = maxInDegree;
-        // randSwVec[i] = i;
+        outDegreeSw[i] = i;
+        inDegreeSw[i] = i;
+        acycleHeads[i] = -1;
     }
 
     while(layerCount < layerNum){
         remainFlatEdge = flatEdgeLayerNum[layerCount];
-        for(int i = 0; i < switches; i++){
-            diffSortIndex[i] = i;
-            diffOutToIn[i] = outRemainDegrees[i] - inRemainDegrees[i];
-        }
-        std::sort(diffSortIndex.begin(), diffSortIndex.end(),
-            [&](const int& a, const int& b) {return (diffOutToIn[a] > diffOutToIn[b]);});
-        randSwVec.assign(diffSortIndex.begin(), diffSortIndex.end());
-        srcIndex = 0;
-        dstIndex = 1;
-        geneEdgeNum = 0;
-        tempSrcVec.clear();
-        tempDstVec.clear();
+        edgeCount = 0;
         while(remainFlatEdge > 0){
-            src = randSwVec[srcIndex];
-            dst = randSwVec[dstIndex];
-            if(FindVecEle(possibleConnect[src], dst) && outRemainDegrees[src] > 0 && inRemainDegrees[dst] > 0){
-                tempSrcVec.push_back(src);
-                tempDstVec.push_back(dst);
+            src = outDegreeSw[rand()%outDegreeSw.size()];
+            dst = inDegreeSw[rand()%inDegreeSw.size()];
+            while(!FindVecEle(possibleConnect[src], dst)){
+                src = outDegreeSw[rand()%outDegreeSw.size()];
+                dst = inDegreeSw[rand()%inDegreeSw.size()];
+            }
+            AddEdges(acycleHeads, acycleEdges, src, dst, edgeCount);
+            if(DetectCycleStack(acycleHeads, acycleEdges, dst)){
+                DeleLastEdges(acycleHeads, acycleEdges, edgeCount);
+                continue;
+            }
+            else{
                 outRemainDegrees[src]--;
                 inRemainDegrees[dst]--;
+                if(outRemainDegrees[src] == 0)
+                    RemoveVecEle(outDegreeSw, src);
+                if(inRemainDegrees[dst] == 0)
+                    RemoveVecEle(inDegreeSw, dst);
                 RemoveVecEle(possibleConnect[src], dst);
                 RemoveVecEle(possibleConnect[dst], src);
                 remainFlatEdge--;
-                geneEdgeNum++;
-                if(srcIndex == switches-1){
-                    srcIndex = 0;
-                    dstIndex = 1;
-                }
-                else{
-                    srcIndex++;
-                    dstIndex = srcIndex + 1;
-                }
-            }
-            else{
-                if(dstIndex >= switches-1){
-                    if(srcIndex == switches -1)
-                        break;
-                    else{
-                        srcIndex++;
-                        dstIndex = srcIndex+1;
-                    }
-                }
-                else{
-                    dstIndex++;
-                }
             }
         }
-        if(geneEdgeNum == flatEdgeLayerNum[layerCount]){
-            for(int i = 0; i < flatEdgeLayerNum[layerCount]; i++){
-                linkInfor.push_back(SwLink(SwNode(tempSrcVec[i], layerCount), SwNode(tempDstVec[i], -1*layerCount)));
-                linkInfor.push_back(SwLink(SwNode(tempDstVec[i], -1*layerCount), SwNode(tempSrcVec[i], layerCount)));
-            }
-            layerCount++;
-        }
-        else{
-            std::cout <<  geneEdgeNum << " "<< layerCount << "\n";
-            PrintVectorInt(outRemainDegrees);
-            PrintVectorInt(inRemainDegrees);
-            for(int i = 0; i < geneEdgeNum; i++){
-                outRemainDegrees[tempSrcVec[i]]++;
-                inRemainDegrees[tempDstVec[i]]++;
-                possibleConnect[tempSrcVec[i]].push_back(tempDstVec[i]);
-                possibleConnect[tempDstVec[i]].push_back(tempSrcVec[i]);
-            }
-            deadCycleBreak++;
-        }
-        if(deadCycleBreak > 0){
-            std::cerr <<  "Can't construct, please change the rand seed!"  <<std::endl;
-            exit(1);
-        }
+        layerCount++;
     }
+
     std::cout << linkInfor.size() << "\n";
 }

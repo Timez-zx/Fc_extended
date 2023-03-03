@@ -4,10 +4,26 @@
 #include <vector>
 #include <numeric>
 #include <random>
+#include <stack>
 #include <cstring>
 #include <algorithm>
 #include "utils.h"
 #include "basic_gene_fc.h"
+
+typedef struct _Edge
+{
+    int nextEdgeIdex;
+    int toNode;
+    int srcNode;
+} Edge;
+
+
+bool DetectCycleStack(const std::vector<int>& heads, const std::vector<Edge>& edges, int start);
+
+void AddEdges(std::vector<int>& heads, std::vector<Edge>& edges, int src, int dst, int &edgeCount);
+
+void DeleLastEdges(std::vector<int>& heads, std::vector<Edge>& edges, int &edgeCount);
+
 
 class FcWithFlatEdge: public BasicGeneFc{
     public:
