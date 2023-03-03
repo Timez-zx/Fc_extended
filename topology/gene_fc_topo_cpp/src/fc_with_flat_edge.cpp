@@ -141,7 +141,9 @@ void FcWithFlatEdge::GeneUpDownTopo(std::vector<std::vector<int> > &possibleConn
                 vertexConnect[dst][src] = true;
                 swDegreeLabel[dst] = 1;
                 linkInfor.push_back(SwLink(SwNode(src, i), SwNode(dst, i-1)));
+                edgeLabel.push_back(0);
                 linkInfor.push_back(SwLink(SwNode(dst, i-1), SwNode(src, i)));
+                edgeLabel.push_back(0);
                 RemoveVecEle(possibleConnect[src], dst);
                 RemoveVecEle(possibleConnect[dst], src);
                 RemoveVecEle(srcChoose, src);
@@ -203,17 +205,29 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
             src = outDegreeSw[rand()%outDegreeSw.size()];
             dst = inDegreeSw[rand()%inDegreeSw.size()];
             while(!FindVecEle(possibleConnect[src], dst)){
+                deadCycleBreak++;
+                if(deadCycleBreak > 1e4){
+                    std::cerr << "Please check the number of flat edges or change the random seed!" << std::endl;
+                    exit(1);
+                }
                 src = outDegreeSw[rand()%outDegreeSw.size()];
                 dst = inDegreeSw[rand()%inDegreeSw.size()];
             }
             AddEdges(acycleHeads, acycleEdges, src, dst, edgeCount);
             if(DetectCycleStack(acycleHeads, acycleEdges, dst)){
+                deadCycleBreak++;
+                if(deadCycleBreak > 1e4){
+                    std::cerr << "Please check the number of flat edges or change the random seed!" << std::endl;
+                    exit(1);
+                }
                 DeleLastEdges(acycleHeads, acycleEdges, edgeCount);
                 continue;
             }
             else{
                 linkInfor.push_back(SwLink(SwNode(src, layerCount), SwNode(dst, layerCount)));
+                edgeLabel.push_back(1);
                 linkInfor.push_back(SwLink(SwNode(dst, layerCount), SwNode(src, layerCount)));
+                edgeLabel.push_back(-1);
                 outRemainDegrees[src]--;
                 inRemainDegrees[dst]--;
                 if(outRemainDegrees[src] == 0)
@@ -227,6 +241,7 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
         }
         layerCount++;
     }
+    std::cout <<"Flat edge constructed!\n";
 }
 
 
@@ -271,6 +286,7 @@ void FcWithFlatEdge::SaveTopoInfor(){
         dst = linkInfor[i].dstNode.swLabel;
         dstLayer = linkInfor[i].dstNode.layerLabel;
         swPairToLayerPair[GetHash(src, dst, switches)] = GetHash(srcLayer, dstLayer, layerNum);
+        swPairToEdgeLabel[GetHash(src, dst, switches)] = edgeLabel[i];
         ofs << i << "," << src << "," << dst << "," << 0 << "," << 1 << ",0,0,0,0"<< std::endl;
     }
     ofs.close();
@@ -337,11 +353,10 @@ void FcWithFlatEdge::MthreadKsp(int threadNum, int pathNum, int vcNum, bool ifRe
     fileDirName += GenePathKsp("data/all_graph_route_ksp/", pathNum, vcNum);
 
     std::thread* th = new std::thread[threadNum];
-    // for(int i = 0; i < threadNum; i++){
-    //     th[i] = std::thread(&FcWithFlatEdge::thread_up_down_ksp, this, thread_pairs[i], i, path_num, vc_num, if_report, report_inter, if_store, file_dir_name);
-    // }
-    // for(int i = 0; i < threadNum; i++)
-    //     th[i].join();
+    for(int i = 0; i < threadNum; i++)
+        th[i] = std::thread(&FcWithFlatEdge::ThreadKsp, this, threadPairs[i], i, pathNum, vcNum, ifReport, reportInter, fileDirName);
+    for(int i = 0; i < threadNum; i++)
+        th[i].join();
 
     std::string filePath("data/all_graph_route_ksp/" + fileDirName + "/" + fileDirName);
     std::string lenPath(filePath + "_num"); 
@@ -369,10 +384,145 @@ void FcWithFlatEdge::MthreadKsp(int threadNum, int pathNum, int vcNum, bool ifRe
     fclose(ofs);
     fclose(ofsLen);
     for(int i = 0; i < threadNum; i++){
-        delete[] graphPr[i];
+        delete graphPr[i];
         graphPr[i] = NULL;
     }
-    delete[] graphPr;
+    delete graphPr;
     graphPr = NULL;
+}
 
+
+void FcWithFlatEdge::ThreadKsp(const std::vector<Pair> &routePairs, int threadLabel, int pathNum, int vcNum, bool ifReport, int reportInter, std::string storeFile){
+    int count = 0, storeCount = 0;
+    uint16_t dataNum;
+    FILE* ofs;
+    FILE* ofsLen;
+    uint16_t* tempData;
+    uint16_t* tempInfor = new uint16_t[switches*1000];
+    uint16_t** storePairsInfo = new uint16_t*[reportInter];
+    std::vector<uint16_t> storeInfoLen;
+
+    std::string filePath("data/all_graph_route_ksp/" + storeFile + "/" + storeFile + std::to_string(threadLabel));
+    std::string lenPath(filePath + "_num");
+    ofs = fopen(filePath.c_str(), "w");
+    ofsLen = fopen(lenPath.c_str(), "w");
+
+    for(int i = 0; i < routePairs.size(); i++){
+        dataNum  = SearchKsp(routePairs[i].src, routePairs[i].dst, pathNum, vcNum, tempInfor, threadLabel);
+        if(ifReport){
+            count++;
+            if(count % reportInter == 0)
+                std::cout << "The thread " << threadLabel << " " <<count/double(routePairs.size()) << std::endl;
+        }
+        tempData = new uint16_t[dataNum];
+        memcpy(tempData, tempInfor, sizeof(uint16_t)*dataNum);
+        storePairsInfo[storeCount] = tempData;
+        storeInfoLen.push_back(pathNum);
+        storeInfoLen.push_back(dataNum);
+        storeCount++;
+        if(storeCount == reportInter) {
+            fwrite(&storeInfoLen[0], sizeof(uint16_t), storeCount*2, ofsLen);
+            for(int j = 0; j < reportInter; j++){
+                fwrite(storePairsInfo[j], sizeof(uint16_t), storeInfoLen[2*j+1], ofs);
+                delete[] storePairsInfo[j];
+                storePairsInfo[j] = NULL;
+            }
+            fflush(ofs);
+            storeInfoLen.clear();
+            storeCount = 0;
+        }
+    }
+    fwrite(&storeInfoLen[0], sizeof(uint16_t), storeCount*2, ofsLen);
+    for(int j = 0; j < storeCount; j++){
+        fwrite(storePairsInfo[j], sizeof(uint16_t), storeInfoLen[2*j+1], ofs);
+        delete[] storePairsInfo[j];
+    }
+    fclose(ofs);
+    fclose(ofsLen);
+    delete[] tempInfor;
+    tempInfor = NULL;
+    delete[] storePairsInfo;
+    storePairsInfo = NULL;
+}
+
+
+uint16_t FcWithFlatEdge::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_t *pathInfor, int threadLabel){
+    KShortestPath ksp(graphPr[threadLabel]);
+    double cost = ksp.Init(src, dst);
+    int pathCount = 0, pathLen, vcUsed, pastLayer, lastPass;
+    int srcInter, dstInter, srcLayer, dstLayer, layerHashValue, edgeLabel;
+    int path[1000], layerPass[1000];
+    uint16_t dataNum=0,realPath[1000];
+    std::vector<Link*> shortestPath;
+    std::vector<int> layerInfor(2);
+    std::vector<int> extractLayerPass;
+
+    while(cost < 10000 & pathCount < pathNum){
+        vcUsed = 1;
+        pastLayer = 0;
+        lastPass = -1;
+        shortestPath.clear();
+        extractLayerPass.clear();
+        shortestPath = ksp.GetPath();
+        pathLen = cost+1;
+        for(int i = 0; i < shortestPath.size(); i++)
+            path[i] = shortestPath[i]->source_id;
+        path[shortestPath.size()] = dst;
+        for(int i = 0; i < pathLen-1; i++){
+            srcInter = path[i];
+            dstInter = path[i+1];
+            layerHashValue = swPairToLayerPair[GetHash(srcInter, dstInter, switches)];
+            GetValue(layerHashValue, layerNum, layerInfor);
+            srcLayer = layerInfor[0];
+            dstLayer = layerInfor[1];
+            layerPass[2*i] = srcLayer;
+            layerPass[2*i+1] = dstLayer;
+        }
+        for(int i = 0; i < 2*(pathLen-1); i++){
+            if(layerPass[i] != lastPass)
+                extractLayerPass.push_back(layerPass[i]);
+            lastPass = layerPass[i];
+        }
+        for(int i = 0; i < extractLayerPass.size()-1; i++){
+            srcLayer = extractLayerPass[i];
+            if(srcLayer < pastLayer && srcLayer < extractLayerPass[i+1]){
+                vcUsed++;
+            }
+            pastLayer = srcLayer;
+        }  
+        cost = ksp.FindNextPath();
+        if(vcUsed > vcNum)
+            continue;
+        else{
+            pathCount++;
+            for(int i = 0; i < pathLen-1; i++){
+                if(layerPass[2*i] < layerPass[2*i+1]){
+                    realPath[2*i] = layerPass[2*i]*switches + path[i];
+                    realPath[2*i+1] = layerPass[2*i+1]*switches + path[i+1];
+                }
+                else if(layerPass[2*i] > layerPass[2*i+1]){
+                    realPath[2*i] = layerPass[2*i]*switches + path[i] + (layerNum-layerPass[2*i]-1)*2*switches;
+                    realPath[2*i+1] = layerPass[2*i+1]*switches + path[i+1] + (layerNum-layerPass[2*i+1]-1)*2*switches;
+                }
+                else{
+                    srcInter = path[i];
+                    dstInter = path[i+1];
+                    edgeLabel = swPairToEdgeLabel[GetHash(srcInter, dstInter, switches)];
+                    if(edgeLabel > 0){
+                        realPath[2*i] = layerPass[2*i]*switches + path[i];
+                        realPath[2*i+1] = layerPass[2*i+1]*switches + path[i+1];
+                    }
+                    else if(edgeLabel < 0){
+                        realPath[2*i] = layerPass[2*i]*switches + path[i] + (layerNum-layerPass[2*i]-1)*2*switches;
+                        realPath[2*i+1] = layerPass[2*i+1]*switches + path[i+1] + (layerNum-layerPass[2*i+1]-1)*2*switches;
+                    }
+                }
+                pathInfor[dataNum + 2*i] = realPath[2*i];
+                pathInfor[dataNum + 2*i + 1] = realPath[2*i+1];
+
+            }
+            dataNum += 2*(pathLen-1);
+        }
+    }
+    return dataNum;
 }

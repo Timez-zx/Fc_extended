@@ -48,6 +48,8 @@ class FcWithFlatEdge: public BasicGeneFc{
         void GeneFlatTopo(std::vector<std::vector<int> > &possibleConnect);
         std::string GenePathKsp(const std::string& path, int pathNum, int vcNum);
         std::string GenePath(const std::string& path);
+        void ThreadKsp(const std::vector<Pair> &routePairs, int threadLabel, int pathNum, int vcNum, bool ifReport, int reportInter, std::string storeFile);
+        uint16_t SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_t *pathInfor, int threadLabel);
     private:
         int switches;
         int layerNum;
@@ -57,10 +59,12 @@ class FcWithFlatEdge: public BasicGeneFc{
         std::vector<int> upDownDegree; 
         std::vector<int> flatEdgeLayerNum;
         std::vector<SwLink> linkInfor;
+        std::vector<int> edgeLabel;
 
         std::string topoPath;
 
         std::unordered_map<int,int> swPairToLayerPair;
+        std::unordered_map<int,int> swPairToEdgeLabel;
 
         Graph **graphPr=NULL;
 
