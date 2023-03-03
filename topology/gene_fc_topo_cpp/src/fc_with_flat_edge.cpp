@@ -195,6 +195,11 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
     while(layerCount < layerNum){
         remainFlatEdge = flatEdgeLayerNum[layerCount];
         edgeCount = 0;
+        acycleHeads.clear();
+        acycleEdges.clear();
+        acycleEdges.resize(flatDegree*switches/2);
+        acycleHeads.resize(switches);
+        memset(&acycleHeads[0], 0xff, switches*sizeof(int));
         while(remainFlatEdge > 0){
             src = outDegreeSw[rand()%outDegreeSw.size()];
             dst = inDegreeSw[rand()%inDegreeSw.size()];
