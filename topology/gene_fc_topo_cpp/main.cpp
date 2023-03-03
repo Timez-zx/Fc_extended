@@ -10,7 +10,7 @@ using namespace std;
 int main(){
     struct timeval start, end;
     gettimeofday(&start, NULL);
-    int switches = 500;
+    int switches = 400;
     int layerNum = 5;
     int totalPort = 18;
     vector<int> upDownDegree = {1, 2, 2, 2, 1};
