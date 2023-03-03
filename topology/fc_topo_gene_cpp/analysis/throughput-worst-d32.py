@@ -36,7 +36,7 @@ def cost_equivalent_clos(num_eps, num_servers, eps_port_count):
 if __name__ == "__main__":
   to_hosts = 14
   switches = [50, 100, 150, 200, 250, 300, 400, 500]
-  routings = ["ksp_tagger2", "ksp_tagger3", "ksp", "up_down_ksp", "edge_disjoint"]
+  routings = ["ksp_tagger2", "ksp_tagger3", "ksp", "up_down_ksp", "edge_disjoint", "ksp_flat_1_2"]
   patterns = ["WORST"]
   throughput_map = {}
   for pattern in patterns:
@@ -62,6 +62,7 @@ if __name__ == "__main__":
   ksp_throughputs = []
   up_down_ksp_throughputs = []
   edge_disjoin_throughputs = []
+  ksp_flat_1_2_throughputs = []
 
   equal_cost_clos = []
   for i in switches:
@@ -76,6 +77,7 @@ if __name__ == "__main__":
     ksp_throughputs.append(throughput_map[pattern]["ksp"][switch])
     up_down_ksp_throughputs.append(throughput_map[pattern]["up_down_ksp"][switch])
     edge_disjoin_throughputs.append(throughput_map[pattern]["edge_disjoint"][switch])
+    ksp_flat_1_2_throughputs.append(throughput_map[pattern]["ksp_flat_1_2"][switch])
 
 
   ksp_tagger2_throughputs = np.array(ksp_tagger2_throughputs, dtype=float)
@@ -83,6 +85,7 @@ if __name__ == "__main__":
   ksp_throughputs = np.array(ksp_throughputs, dtype=float)
   up_down_ksp_throughputs = np.array(up_down_ksp_throughputs, dtype=float)
   edge_disjoin_throughputs = np.array(edge_disjoin_throughputs, dtype=float)
+  ksp_flat_1_2_throughputs = np.array(ksp_flat_1_2_throughputs, dtype=float)
 
 
   x = np.arange(len(switches))
@@ -95,6 +98,7 @@ if __name__ == "__main__":
   ax.plot(x , up_down_ksp_throughputs, marker='h', color='c', lw=1, label='KSP-UD')
   ax.plot(x , edge_disjoin_throughputs, marker='o', color='darkorange',lw=1, label='EDGE DIS')
   ax.plot(x , equal_cost_clos, marker='x', color='mediumpurple', lw=1, label='CLOS')
+  ax.plot(x , ksp_flat_1_2_throughputs, marker='.', color='black', lw=1, label='KSP-FLAT 1:2')
 
   ax.set_xticks(x)
   ax.set_xticklabels(np.array(switches) * to_hosts)
