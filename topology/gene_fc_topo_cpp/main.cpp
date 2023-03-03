@@ -17,10 +17,10 @@ int main(){
     vector<int> flatEdge = {100, 100, 100, 100, 100, 100, 0};
     FcWithFlatEdge fcFlat(switches, layerNum, totalPort, upDownDegree, flatEdge);
     // fcFlat.StartFastMode();
-    fcFlat.ChangeRandomSeed(5);
+    fcFlat.ChangeRandomSeed(4);
     fcFlat.GeneTopo();
     fcFlat.SaveTopoInfor();
-    fcFlat.MthreadKsp(2, 32, 2, 1, 1000);
+    fcFlat.MthreadKsp(8, 32, 1, 1, 1000);
     
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
