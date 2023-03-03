@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include "utils.h"
 #include "basic_gene_fc.h"
+#include "gurobi_c++.h"
 #include "KSP_PROZ/shortest_path.h"
 
 typedef struct _Edge

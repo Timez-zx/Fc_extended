@@ -12,7 +12,7 @@ GUROBI_LIB_U=$(GUROBI_UBUNTU)/lib/
 GUROBI_INCLUDE_U=$(GUROBI_UBUNTU)/include/
 
 default: $(ALL_SRC) $(ALL_HEADER) main.cpp
-	g++  $(CFLAGS_U) $(ALL_SRC) main.cpp -o $(OUT) 
+	g++  $(CFLAGS_U) $(ALL_SRC) main.cpp -o $(OUT) -I $(GUROBI_INCLUDE_U) -L $(GUROBI_LIB_U) -lgurobi_c++ -lgurobi95
 
 
 clean:
