@@ -288,7 +288,7 @@ void Fc_tagger_kspz::pthread_up_down_ksp(int thread_num, int path_num, int vc_nu
             max_tag_num = thread_tag_num[i];
         if(vc_num >= 100)
             ave_tag_kspN += thread_tag_kspN[i];
-        delete graph_pr[i];
+        delete[] graph_pr[i];
         graph_pr[i] = NULL;
     }
     if(vc_num >= 100){
