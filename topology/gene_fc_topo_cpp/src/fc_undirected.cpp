@@ -77,7 +77,6 @@ void FcUndirected::GeneTopo(){
             }
         }
     }
-    PrintVectorInt(degrees);
     
 }
 
