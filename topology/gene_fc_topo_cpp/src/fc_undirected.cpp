@@ -52,9 +52,9 @@ void FcUndirected::GeneTopo(){
         edgeCount = 0;
         memset(&acycleHeads[0], 0xff, switches*sizeof(int));
         while(edgeNumCount < edgeNumLayer){
-            src = swList[rand()%swList.size()];
+            src = max_element(degrees.begin(), degrees.end()) - degrees.begin();
             dst = possibleConnect[src][rand()%possibleConnect[src].size()];
-            while(!FindVecEle(possibleConnect[src], dst)){
+            while(!FindVecEle(swList, dst)){
                 src = swList[rand()%swList.size()];
                 dst = possibleConnect[src][rand()%possibleConnect[src].size()];
             }
@@ -77,6 +77,7 @@ void FcUndirected::GeneTopo(){
             }
         }
     }
+    PrintVectorInt(degrees);
     
 }
 
