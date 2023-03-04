@@ -71,6 +71,8 @@ void FcUndirected::GeneTopo(){
                     RemoveVecEle(swList, src);
                 if(degrees[dst] == 0)
                     RemoveVecEle(swList, dst);
+                RemoveVecEle(possibleConnect[src], dst);
+                RemoveVecEle(possibleConnect[dst], src);
                 edgeNumCount++;
             }
         }
