@@ -657,189 +657,189 @@ void FcWithFlatEdge::GeneWorseCase(float **flowMatrix, int hosts){
 }
 
 
-// double FcWithFlatEdge::throughputTest(const std::string& type, int seed, int pathNum, int vcNum, int hosts){
-//     std::string fileDirName("");
-//     fileDirName += "sw";
-//     fileDirName += std::to_string(switches);
-//     fileDirName += "_vir";
-//     for(int i = 0; i < layerNum; i++)
-//         fileDirName += std::to_string(upDownDegree[i]);
-//     fileDirName += "_rand";
-//     fileDirName += std::to_string(randomSeed);
-//     fileDirName += "_";
-//     fileDirName += std::to_string(pathNum);
-//     fileDirName += "_";
-//     fileDirName += std::to_string(vcNum);
-//     if(access(("data/all_graph_route_ksp/" + fileDirName).c_str(), 0)){
-//         std::cerr << "No route infor!" << std::endl;
-//         exit(1);
-//     }
+double FcWithFlatEdge::throughputTest(const std::string& type, int seed, int pathNum, int vcNum, int hosts){
+    std::string fileDirName("");
+    fileDirName += "sw";
+    fileDirName += std::to_string(switches);
+    fileDirName += "_vir";
+    for(int i = 0; i < layerNum; i++)
+        fileDirName += std::to_string(upDownDegree[i]);
+    fileDirName += "_rand";
+    fileDirName += std::to_string(randomSeed);
+    fileDirName += "_";
+    fileDirName += std::to_string(pathNum);
+    fileDirName += "_";
+    fileDirName += std::to_string(vcNum);
+    if(access(("data/all_graph_route_ksp/" + fileDirName).c_str(), 0)){
+        std::cerr << "No route infor!" << std::endl;
+        exit(1);
+    }
 
-//     std::string filePath("data/all_graph_route_ksp/" + fileDirName + "/" + fileDirName);
-//     std::string lenPath(filePath + "_num"); 
-//     int state;
-//     FILE* ofs = fopen(filePath.c_str(), "r");
-//     FILE* ofsLen = fopen(lenPath.c_str(), "r");
-//     fseek(ofsLen, 0, SEEK_END);
-//     int lenSize = ftell(ofsLen);
-//     rewind(ofsLen);
-//     fseek(ofs, 0, SEEK_END);
-//     int fileSize = ftell(ofs);
-//     rewind(ofs);
-//     uint16_t *pairLen = new uint16_t[lenSize/2];
-//     uint16_t *pairInfor = new uint16_t[fileSize/2];
-//     state = fread(pairLen, sizeof(uint16_t), lenSize/2, ofsLen);
-//     state = fread(pairInfor, sizeof(uint16_t), fileSize/2, ofs);
+    std::string filePath("data/all_graph_route_ksp/" + fileDirName + "/" + fileDirName);
+    std::string lenPath(filePath + "_num"); 
+    int state;
+    FILE* ofs = fopen(filePath.c_str(), "r");
+    FILE* ofsLen = fopen(lenPath.c_str(), "r");
+    fseek(ofsLen, 0, SEEK_END);
+    int lenSize = ftell(ofsLen);
+    rewind(ofsLen);
+    fseek(ofs, 0, SEEK_END);
+    int fileSize = ftell(ofs);
+    rewind(ofs);
+    uint16_t *pairLen = new uint16_t[lenSize/2];
+    uint16_t *pairInfor = new uint16_t[fileSize/2];
+    state = fread(pairLen, sizeof(uint16_t), lenSize/2, ofsLen);
+    state = fread(pairInfor, sizeof(uint16_t), fileSize/2, ofs);
 
-//     std::unordered_map<int, std::vector<int> > pathToLink;
-//     int nodeLen, basicLen = 0, count, pathCount;
-//     int node1, node2, src = 0, dst = 1;
-//     int basicCount = 1, mapCount;
-//     int sw1, sw2, layer1, layer2, newNode1, newNode2;
+    std::unordered_map<int, std::vector<int> > pathToLink;
+    int nodeLen, basicLen = 0, count, pathCount;
+    int node1, node2, src = 0, dst = 1;
+    int basicCount = 1, mapCount;
+    int sw1, sw2, layer1, layer2, newNode1, newNode2;
 
-//     float *flowMatrix[switches];
-//     for(int i = 0; i < switches; i++){
-//         flowMatrix[i] = new float[switches];
-//         memset(flowMatrix[i], 0, sizeof(float)*switches);
-//     }
-//     if(type == "aa"){
-//         float pairFlow = hosts/float(switches-1);
-//         for(int i = 0; i < switches; i++)
-//             for(int j = 0; j < switches; j++)
-//                 if(i != j)
-//                     flowMatrix[i][j] = pairFlow;
-//     }
-//     else if(type == "ur")
-//         GeneUniformRandom(flowMatrix, seed, hosts);
-//     else if(type == "wr")
-//         GeneWorseCase(flowMatrix, hosts);
+    float *flowMatrix[switches];
+    for(int i = 0; i < switches; i++){
+        flowMatrix[i] = new float[switches];
+        memset(flowMatrix[i], 0, sizeof(float)*switches);
+    }
+    if(type == "aa"){
+        float pairFlow = hosts/float(switches-1);
+        for(int i = 0; i < switches; i++)
+            for(int j = 0; j < switches; j++)
+                if(i != j)
+                    flowMatrix[i][j] = pairFlow;
+    }
+    else if(type == "ur")
+        GeneUniformRandom(flowMatrix, seed, hosts);
+    else if(type == "wr")
+        GeneWorseCase(flowMatrix, hosts);
 
-//     int maxThrough = 10, pathSum = 0;
-//     int *pathNumber[switches];
-//     GRBEnv *env = new GRBEnv();
-//     GRBModel model = GRBModel(*env);
-//     GRBVar **flowVar;
-//     flowVar = new GRBVar*[switches*switches];
-//     for(int i = 0; i < switches; i++)
-//         pathNumber[i] = new int[switches];
-//     GRBVar throughput = model.addVar(0, maxThrough, 0, GRB_CONTINUOUS, "throughput");
+    int maxThrough = 10, pathSum = 0;
+    int *pathNumber[switches];
+    GRBEnv *env = new GRBEnv();
+    GRBModel model = GRBModel(*env);
+    GRBVar **flowVar;
+    flowVar = new GRBVar*[switches*switches];
+    for(int i = 0; i < switches; i++)
+        pathNumber[i] = new int[switches];
+    GRBVar throughput = model.addVar(0, maxThrough, 0, GRB_CONTINUOUS, "throughput");
 
-//     for(int i = 0; i < switches*(switches-1)/2; i++){
-//         nodeLen = pairLen[2*i+1];
-//         count = 0;
-//         pathCount = 0;
-//         pathSum += pairLen[2*i];
-//         if(flowMatrix[src][dst] > 0){
-//             flowVar[src*switches+dst] = model.addVars(pairLen[2*i], GRB_CONTINUOUS);
-//             pathNumber[src][dst] = pairLen[2*i];
-//             for(int j = 0; j < pairLen[2*i]; j++){
-//                 flowVar[src*switches+dst][j].set(GRB_DoubleAttr_LB, 0.0);
-//                 flowVar[src*switches+dst][j].set(GRB_DoubleAttr_UB, 100);
-//             }
-//         }
-//         if(flowMatrix[dst][src] > 0){
-//             flowVar[dst*switches+src] = model.addVars(pairLen[2*i], GRB_CONTINUOUS);
-//             pathNumber[dst][src] = pairLen[2*i];
-//             for(int j = 0; j < pairLen[2*i]; j++){
-//                 flowVar[dst*switches+src][j].set(GRB_DoubleAttr_LB, 0.0);
-//                 flowVar[dst*switches+src][j].set(GRB_DoubleAttr_UB, 100);
-//             }
-//         }
-//         while(count < nodeLen - 1){
-//             node1 = pairInfor[basicLen+count];
-//             node2 = pairInfor[basicLen+count+1];
-//             sw1 = node1%switches;
-//             sw2 = node2%switches;
-//             layer1 = node1/switches;
-//             layer2 = node2/switches;
-//             if(sw1 != sw2){
-//                 if(flowMatrix[src][dst] > 0){
-//                     mapCount = node1*(2*layerNum-1)*switches+node2;
-//                     if(pathToLink.find(mapCount) == pathToLink.end()){
-//                         std::vector<int> temp = {src*switches+dst, pathCount};
-//                         pathToLink[mapCount] = temp;
-//                     }
-//                     else{
-//                         pathToLink[mapCount].push_back(src*switches+dst);
-//                         pathToLink[mapCount].push_back(pathCount);
-//                     }
-//                 }
-//                 if(flowMatrix[dst][src] > 0){
-//                     newNode1 = node1 + (layerNum-1-layer1)*2*switches;
-//                     newNode2 = node2 + (layerNum-1-layer2)*2*switches;
-//                     mapCount = newNode2*(2*layerNum-1)*switches+newNode1;
-//                     if(pathToLink.find(mapCount) == pathToLink.end()){
-//                         std::vector<int> temp = {dst*switches+src, pathCount};
-//                         pathToLink[mapCount] = temp;
-//                     }
-//                     else{
-//                         pathToLink[mapCount].push_back(dst*switches+src);
-//                         pathToLink[mapCount].push_back(pathCount);
-//                     }
-//                 }
-//             }
-//             if(sw2 == dst){
-//                 count++;
-//                 pathCount++;
-//             }
-//             count++;
-//         }
-//         dst++;
-//         if(dst == switches){
-//             src = basicCount;
-//             dst = ++basicCount;
-//         }
-//         basicLen += nodeLen;
-//     }
-//     fclose(ofs);
-//     fclose(ofsLen);
-//     std::cout << "Average path num: " << float(pathSum)*2/(switches*(switches-1)) << std::endl; 
+    for(int i = 0; i < switches*(switches-1)/2; i++){
+        nodeLen = pairLen[2*i+1];
+        count = 0;
+        pathCount = 0;
+        pathSum += pairLen[2*i];
+        if(flowMatrix[src][dst] > 0){
+            flowVar[src*switches+dst] = model.addVars(pairLen[2*i], GRB_CONTINUOUS);
+            pathNumber[src][dst] = pairLen[2*i];
+            for(int j = 0; j < pairLen[2*i]; j++){
+                flowVar[src*switches+dst][j].set(GRB_DoubleAttr_LB, 0.0);
+                flowVar[src*switches+dst][j].set(GRB_DoubleAttr_UB, 100);
+            }
+        }
+        if(flowMatrix[dst][src] > 0){
+            flowVar[dst*switches+src] = model.addVars(pairLen[2*i], GRB_CONTINUOUS);
+            pathNumber[dst][src] = pairLen[2*i];
+            for(int j = 0; j < pairLen[2*i]; j++){
+                flowVar[dst*switches+src][j].set(GRB_DoubleAttr_LB, 0.0);
+                flowVar[dst*switches+src][j].set(GRB_DoubleAttr_UB, 100);
+            }
+        }
+        while(count < nodeLen - 1){
+            node1 = pairInfor[basicLen+count];
+            node2 = pairInfor[basicLen+count+1];
+            sw1 = node1%switches;
+            sw2 = node2%switches;
+            layer1 = node1/switches;
+            layer2 = node2/switches;
+            if(sw1 != sw2){
+                if(flowMatrix[src][dst] > 0){
+                    mapCount = node1*(2*layerNum-1)*switches+node2;
+                    if(pathToLink.find(mapCount) == pathToLink.end()){
+                        std::vector<int> temp = {src*switches+dst, pathCount};
+                        pathToLink[mapCount] = temp;
+                    }
+                    else{
+                        pathToLink[mapCount].push_back(src*switches+dst);
+                        pathToLink[mapCount].push_back(pathCount);
+                    }
+                }
+                if(flowMatrix[dst][src] > 0){
+                    newNode1 = node1 + (layerNum-1-layer1)*2*switches;
+                    newNode2 = node2 + (layerNum-1-layer2)*2*switches;
+                    mapCount = newNode2*(2*layerNum-1)*switches+newNode1;
+                    if(pathToLink.find(mapCount) == pathToLink.end()){
+                        std::vector<int> temp = {dst*switches+src, pathCount};
+                        pathToLink[mapCount] = temp;
+                    }
+                    else{
+                        pathToLink[mapCount].push_back(dst*switches+src);
+                        pathToLink[mapCount].push_back(pathCount);
+                    }
+                }
+            }
+            if(sw2 == dst){
+                count++;
+                pathCount++;
+            }
+            count++;
+        }
+        dst++;
+        if(dst == switches){
+            src = basicCount;
+            dst = ++basicCount;
+        }
+        basicLen += nodeLen;
+    }
+    fclose(ofs);
+    fclose(ofsLen);
+    std::cout << "Average path num: " << float(pathSum)*2/(switches*(switches-1)) << std::endl; 
 
-//     for(int i = 0; i < switches; i++){
-//         for(int j = 0; j < switches; j++){
-//             if(i != j){
-//                 if(flowMatrix[i][j] > 0){
-//                     GRBLinExpr constr = 0;
-//                     for (int k = 0; k < pathNumber[i][j]; k++) 
-//                         constr += flowVar[i*switches+j][k];
-//                     constr -= throughput * flowMatrix[i][j];
-//                     model.addConstr(constr, GRB_EQUAL, 0);
-//                 }
-//             }
-//         }
-//     }  
-//     for(auto &link : pathToLink){
-//         GRBLinExpr constr = 0;
-//         for(int i = 0; i < link.second.size()/2; i++)
-//             constr += flowVar[link.second[2*i]][link.second[2*i+1]];
-//         model.addConstr(constr, GRB_LESS_EQUAL, 1);
-//     }
-//     std::cout << "All consts added" << std::endl;
+    for(int i = 0; i < switches; i++){
+        for(int j = 0; j < switches; j++){
+            if(i != j){
+                if(flowMatrix[i][j] > 0){
+                    GRBLinExpr constr = 0;
+                    for (int k = 0; k < pathNumber[i][j]; k++) 
+                        constr += flowVar[i*switches+j][k];
+                    constr -= throughput * flowMatrix[i][j];
+                    model.addConstr(constr, GRB_EQUAL, 0);
+                }
+            }
+        }
+    }  
+    for(auto &link : pathToLink){
+        GRBLinExpr constr = 0;
+        for(int i = 0; i < link.second.size()/2; i++)
+            constr += flowVar[link.second[2*i]][link.second[2*i+1]];
+        model.addConstr(constr, GRB_LESS_EQUAL, 1);
+    }
+    std::cout << "All consts added" << std::endl;
 
-//     model.setObjective(1 * throughput, GRB_MAXIMIZE);
-//     model.set(GRB_IntParam_OutputFlag, 0);
-//     double throughtResult = 0.0;
-//     try {
-//         model.optimize();
-//         if(model.get(GRB_IntAttr_Status) != GRB_OPTIMAL)
-//             std::cout << "Not optimal " << std::endl;
-//         else{
-//             throughtResult = model.get(GRB_DoubleAttr_ObjVal);
-//             std::cout << "Throughtput: " << throughtResult << std::endl;
-//         }
-//     } catch (GRBException e) {
-//         std::cout << "Error code = " << e.getErrorCode() << std::endl;
-//         std::cout << e.getMessage() << std::endl;
-//     }
+    model.setObjective(1 * throughput, GRB_MAXIMIZE);
+    model.set(GRB_IntParam_OutputFlag, 0);
+    double throughtResult = 0.0;
+    try {
+        model.optimize();
+        if(model.get(GRB_IntAttr_Status) != GRB_OPTIMAL)
+            std::cout << "Not optimal " << std::endl;
+        else{
+            throughtResult = model.get(GRB_DoubleAttr_ObjVal);
+            std::cout << "Throughtput: " << throughtResult << std::endl;
+        }
+    } catch (GRBException e) {
+        std::cout << "Error code = " << e.getErrorCode() << std::endl;
+        std::cout << e.getMessage() << std::endl;
+    }
 
-//     for(int i = 0; i < switches; i++)
-//         delete[] flowMatrix[i];
-//     delete[] pairLen;
-//     delete[] pairInfor;
-//     for(int i = 0; i < switches; i++){
-//         delete[] pathNumber[i];
-//     }
-//     delete[] flowVar;
-//     return throughtResult;
-// }
+    for(int i = 0; i < switches; i++)
+        delete[] flowMatrix[i];
+    delete[] pairLen;
+    delete[] pairInfor;
+    for(int i = 0; i < switches; i++){
+        delete[] pathNumber[i];
+    }
+    delete[] flowVar;
+    return throughtResult;
+}
 
