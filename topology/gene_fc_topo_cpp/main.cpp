@@ -27,8 +27,12 @@ int main(int argc, char* argv[]){
     fcFlat.ChangeRandomSeed(randSeed);
     fcFlat.GeneTopo();
     fcFlat.SaveTopoInfor();
-    fcFlat.MthreadKsp(16, 32, 1, 1, 1000);
-    fcFlat.throughputTest("wr", 1, 32, 1, 14);
+    fcFlat.MthreadKsp(16, 32, 100, 1, 1000);
+    double thPut = 0;
+    for(int i = 1; i < 11; i++){
+        thPut += fcFlat.throughputTest("ur", i, 32, 100, 14);
+    }
+    show(thPut);
     
     gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
