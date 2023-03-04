@@ -16,8 +16,12 @@ FcUndirected::~FcUndirected(){}
 void FcUndirected::GeneTopo(){
     std::vector<int> degrees(switches);
     std::vector<int> interEdgesNum(layerNum);
-    int average = edgeBetSwNum/layerNum;
-    show(edgeBetSwNum);
+    std::vector<std::vector<int> > possibleConnect(switches);
+    std::vector<int> tempVec(switches);
+    std::vector<int> acycleHeads(switches);
+    std::vector<Edge> acycleEdges(switches*2); 
+    int average = edgeBetSwNum/layerNum, edgeNumLayer, edgeNumCount;
+    int src, dst;
     int aboveAveNum = edgeBetSwNum - average*layerNum;
     for(int i = 0; i < layerNum; i++){
         if(i < aboveAveNum)
@@ -25,12 +29,29 @@ void FcUndirected::GeneTopo(){
         else    
             interEdgesNum[i] = average;
     }
-    PrintVectorInt(interEdgesNum);
-    for(int i = 0; i < switches; i++)
+    for(int i = 0; i < switches; i++){
         degrees[i] = totalUpPort;
-    
+        acycleHeads[i] = -1;
+    }
+    for(int i = 0; i < switches; i++)
+        tempVec[i] = i;
+    for(int i = 0; i < switches; i++){
+        possibleConnect[i].assign(tempVec.begin(), tempVec.end());
+        RemoveVecEle(possibleConnect[i], i);
+    }
     for(int i = 0; i < layerNum; i++){
+        edgeNumLayer = interEdgesNum[i];
+        edgeNumCount = 0;
+        acycleHeads.clear();
+        acycleEdges.clear();
+        acycleEdges.resize(2*switches);
+        acycleHeads.resize(switches);
+        memset(&acycleHeads[0], 0xff, switches*sizeof(int));
+        while(edgeNumCount < edgeNumLayer){
 
+
+            edgeNumCount++;
+        }
     }
     
 }
