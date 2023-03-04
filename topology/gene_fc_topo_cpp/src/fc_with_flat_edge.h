@@ -1,7 +1,6 @@
 #ifndef FC_WITH_FLAT_EDGE_H_
 #define FC_WITH_FLAT_EDGE_H_
 
-#include "utils.h"
 #include "basic_gene_fc.h"
 #include "gurobi_c++.h"
 #include "KSP_PROZ/shortest_path.h"
