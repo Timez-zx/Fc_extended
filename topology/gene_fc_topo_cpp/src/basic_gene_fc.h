@@ -4,6 +4,14 @@
 #include <fstream>
 #include <string>
 #include <unistd.h>
+#include <vector>
+#include <numeric>
+#include <random>
+#include <stack>
+#include <thread>
+#include <cstring>
+#include <algorithm>
+#include <unordered_map>
 
 typedef struct _SwNode
 {
@@ -26,4 +34,24 @@ class BasicGeneFc{
         virtual void GeneTopo() = 0;
 };
 
+
+typedef struct _Edge
+{
+    int nextEdgeIdex;
+    int toNode;
+    int srcNode;
+} Edge;
+
+typedef struct _Pair
+{
+    int src;
+    int dst;
+    _Pair(int srcIn, int dstIn): src(srcIn), dst(dstIn){}
+} Pair;
+
+bool DetectCycleStack(const std::vector<int>& heads, const std::vector<Edge>& edges, int start);
+
+void AddEdges(std::vector<int>& heads, std::vector<Edge>& edges, int src, int dst, int &edgeCount);
+
+void DeleLastEdges(std::vector<int>& heads, std::vector<Edge>& edges, int &edgeCount);
 #endif  // BASIC_GENE_FC_H_

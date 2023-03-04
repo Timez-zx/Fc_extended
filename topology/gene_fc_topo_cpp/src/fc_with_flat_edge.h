@@ -1,38 +1,11 @@
 #ifndef FC_WITH_FLAT_EDGE_H_
 #define FC_WITH_FLAT_EDGE_H_
 
-#include <vector>
-#include <numeric>
-#include <random>
-#include <stack>
-#include <thread>
-#include <cstring>
-#include <algorithm>
-#include <unordered_map>
 #include "utils.h"
 #include "basic_gene_fc.h"
 #include "gurobi_c++.h"
 #include "KSP_PROZ/shortest_path.h"
 
-typedef struct _Edge
-{
-    int nextEdgeIdex;
-    int toNode;
-    int srcNode;
-} Edge;
-
-typedef struct _Pair
-{
-    int src;
-    int dst;
-    _Pair(int srcIn, int dstIn): src(srcIn), dst(dstIn){}
-} Pair;
-
-bool DetectCycleStack(const std::vector<int>& heads, const std::vector<Edge>& edges, int start);
-
-void AddEdges(std::vector<int>& heads, std::vector<Edge>& edges, int src, int dst, int &edgeCount);
-
-void DeleLastEdges(std::vector<int>& heads, std::vector<Edge>& edges, int &edgeCount);
 
 
 class FcWithFlatEdge: public BasicGeneFc{
