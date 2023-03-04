@@ -50,23 +50,36 @@ double ksp_tagger_throught(Fc_tagger_kspz& fc, int path_num, int vc_num){
 }
 
 
-int main(){
+int main(int argc, char* argv[]){
+    int switches = 400;
+    int random_seed = 1;
+    if(argc == 3){
+        switches = atoi(argv[1]);
+        random_seed = atoi(argv[2]);
+    }
     struct timeval start, end;
     gettimeofday(&start, NULL);
 
-    int switches = 10000;
     int hosts = 14;
     int ports = 32;
-    int vir_layer_degree[] = {3, 6, 6, 3};
-    int layer_num = 4;
+    int vir_layer_degree[] = {1, 2, 2, 2, 2, 2, 2, 2, 2, 1};
+    int layer_num = 10;
     int is_random = 1;
-    int random_seed = 3;
-    FcTaggerTest fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-    fc_test.fc_topo_gene_1v1(1);
-    fc_test.SaveTaggerGraph();
-    // fc_test.mthreadKsp(16, 64, 100, 1, 10000, 1);
-    fc_test.mthreadKsp(1, 32, 3, 1, 100, 1);
-    // fc_test.mthreadEcmp(16, 1, 10000, 1);
+    // Class Fc_topo_all_route or Fc_edge_disjoin_cost_route is ok
+    Fc_topo_all_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
+    fc_test.fc_topo_gene_1v1(0);
+    fc_test.path_infor_gene();
+    fc_test.build_search_dic();
+
+    bool if_report = true;
+    int report_inter = 5000;
+    bool if_store = true;
+    bool store_part = false;
+    string mode = "ksp";
+    int ksp_num = 32;
+    // ksp mode: for 32 ksp up-down paths in the demo, other mode: all up-down paths
+    fc_test.pthread_for_all_path(16, if_report, report_inter, if_store, mode, ksp_num);
+    double wr_ave = fc_test.throughput_test("wr", 2);
 
     
 
