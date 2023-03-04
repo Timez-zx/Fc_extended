@@ -33,7 +33,7 @@ void FcTaggerTest::SaveTaggerGraph(){
         basicIndex += degree*switches;
     }
     ofs.close();
-    delete portLabel;
+    delete[] portLabel;
     portLabel = NULL;
     topoPath = "data/topo_infor/" + fileDirName + "/" + fileDirName+".txt";
 }
@@ -278,7 +278,7 @@ void FcTaggerTest::mthreadKsp(int threadNum, int pathNum, int vcNum, bool ifRepo
     graphPr = NULL;
     delete thTagNum;
     thTagNum = NULL;
-    delete allData;
+    delete[] allData;
     allData = NULL;
 }
 
@@ -485,7 +485,7 @@ void FcTaggerTest::mthreadEcmp(int threadNum, bool ifReport, int reportInter, bo
     graphPr = NULL;
     delete thTagNum;
     thTagNum = NULL;
-    delete allData;
+    delete[] allData;
     allData = NULL;
 }
 

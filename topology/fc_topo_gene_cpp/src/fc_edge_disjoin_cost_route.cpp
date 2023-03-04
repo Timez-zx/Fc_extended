@@ -175,7 +175,7 @@ void Fc_edge_disjoin_cost_route::fc_topo_gene_1v1(int fast_or_not){
                     two_count++;
                 if(degrees[dst] == 2)
                     two_count++;
-                while(vertex_check[src][dst] == true | (two_count+zero_count == switches && zero_count < 3 && src_remain != 1) | degree_label[dst] == 1){
+                while(vertex_check[src][dst] == true || (two_count+zero_count == switches && zero_count < 3 && src_remain != 1) || degree_label[dst] == 1){
                     if(degrees[dst] == 2)
                         two_count--;
                     if(degrees[dst] == 1)
