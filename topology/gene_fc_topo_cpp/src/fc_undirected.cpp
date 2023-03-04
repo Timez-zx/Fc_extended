@@ -83,4 +83,13 @@ void FcUndirected::GeneTopo(){
 
 
 void FcUndirected::GeneVirtualLink(){
+    std::vector<int> acycleHeads(switches*layerNum);
+    std::vector<Edge> acycleEdges(switches*layerNum*2);
+    int srcHash, dstHash, edgeCount = 0;
+    for(auto link:linkInfor){
+        srcHash = GetHash(link.srcNode.layerLabel, link.srcNode.swLabel, switches);
+        dstHash = GetHash(link.dstNode.layerLabel, link.dstNode.swLabel, switches);
+        AddEdges(acycleHeads, acycleEdges, srcHash, dstHash, edgeCount);
+        AddEdges(acycleHeads, acycleEdges, dstHash, srcHash, edgeCount);
+    } 
 }
