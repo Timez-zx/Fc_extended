@@ -42,7 +42,6 @@ void FcUndirected::GeneTopo(){
         RemoveVecEle(possibleConnect[i], i);
     }
     for(int i = 0; i < layerNum; i++){
-        show(i);
         edgeNumLayer = interEdgesNum[i];
         edgeNumCount = 0;
         acycleHeads.clear();
@@ -79,7 +78,9 @@ void FcUndirected::GeneTopo(){
             }
         }
     }
-    
+    GeneVirtualLink();
 }
 
 
+void FcUndirected::GeneVirtualLink(){
+}

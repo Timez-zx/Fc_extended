@@ -10,6 +10,9 @@ class FcUndirected: public BasicGeneFc{
         void GeneTopo() override;
     
     private:
+        void GeneVirtualLink();
+    
+    private:
         int switches;
         int layerNum;
         int totalUpPort;
