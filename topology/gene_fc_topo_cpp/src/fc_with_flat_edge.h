@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include "utils.h"
 #include "basic_gene_fc.h"
-#include "gurobi_c++.h"
+// #include "gurobi_c++.h"
 #include "KSP_PROZ/shortest_path.h"
 
 typedef struct _Edge
@@ -44,7 +44,7 @@ class FcWithFlatEdge: public BasicGeneFc{
         void ChangeRandomSeed(int seed){randomSeed = seed;}
         void SaveTopoInfor();
         void MthreadKsp(int threadNum, int pathNum, int vcNum, bool ifReport, int reportInter);
-        double throughputTest(const std::string& type, int seed, int pathNum, int vcNum, int hosts);
+        // double throughputTest(const std::string& type, int seed, int pathNum, int vcNum, int hosts);
     private:
         void GeneUpDownTopo(std::vector<std::vector<int> > &possibleConnect);
         void GeneFlatTopo(std::vector<std::vector<int> > &possibleConnect);
