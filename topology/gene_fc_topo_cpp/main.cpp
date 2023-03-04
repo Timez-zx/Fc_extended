@@ -8,7 +8,7 @@ using namespace std;
 
 
 int main(int argc, char* argv[]){
-    int switches = 200;
+    int switches = 400;
     int randSeed = 1;
     if(argc == 3){
         switches = atoi(argv[1]);
@@ -16,10 +16,10 @@ int main(int argc, char* argv[]){
     }
     struct timeval start, end;
     gettimeofday(&start, NULL);
-    int layerNum = 5;
+    int layerNum = 10;
     int totalPort = 18;
-    vector<int> upDownDegree = {1, 2, 2, 2, 1};
-    vector<int> flatEdge = {55, 55, 55, 55, 30};
+    vector<int> upDownDegree = {1, 2, 2, 2, 2, 2, 2, 2, 2, 1};
+    vector<int> flatEdge = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     for(int i = 0; i < layerNum; i++)
         flatEdge[i] *= switches/50;
     FcWithFlatEdge fcFlat(switches, layerNum, totalPort, upDownDegree, flatEdge);
@@ -27,7 +27,7 @@ int main(int argc, char* argv[]){
     fcFlat.ChangeRandomSeed(randSeed);
     fcFlat.GeneTopo();
     fcFlat.SaveTopoInfor();
-    fcFlat.MthreadKsp(8, 32, 1, 1, 1000);
+    fcFlat.MthreadKsp(16, 32, 1, 1, 1000);
     fcFlat.throughputTest("wr", 1, 32, 1, 14);
     
     gettimeofday(&end, NULL);

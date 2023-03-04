@@ -18,7 +18,7 @@ def sum_all_pair_shortest_path_length_adjacency_matrix(g):
     """
 
     num_node = len(g.nodes())
-    A = nx.to_numpy_matrix(g, order='F', dtype=np.float32)
+    A = nx.to_numpy_array(g, order='F', dtype=np.float32)
     B = np.eye(num_node, order='F', dtype=np.float32)
     total_sp = num_node * (num_node - 1) - num_node
     C = np.zeros(np.shape(A), order='F', dtype=np.float32)
@@ -46,7 +46,7 @@ def all_pair_shortest_path_length_adjacency_matrix(g, tor_list=None):
         """
 
     num_node = len(g.nodes())
-    A = nx.to_numpy_matrix(g, order='F', dtype=np.float32)
+    A = nx.to_numpy_array(g, order='F', dtype=np.float32)
     B = np.eye(num_node, order='F', dtype=np.float32)
 
     C = np.eye(num_node, order='F', dtype=np.float32)
