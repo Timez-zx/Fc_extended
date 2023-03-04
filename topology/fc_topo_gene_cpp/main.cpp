@@ -66,7 +66,7 @@ int main(int argc, char* argv[]){
     int is_random = 1;
     // Class Fc_topo_all_route or Fc_edge_disjoin_cost_route is ok
     Fc_topo_all_route fc_test(switches, hosts, ports, vir_layer_degree, layer_num, is_random, random_seed);
-    fc_test.fc_topo_gene_1v1(0);
+    fc_test.fc_topo_gene_1v1(1);
     fc_test.path_infor_gene();
     fc_test.build_search_dic();
 
@@ -77,7 +77,7 @@ int main(int argc, char* argv[]){
     string mode = "ksp";
     int ksp_num = 32;
     // ksp mode: for 32 ksp up-down paths in the demo, other mode: all up-down paths
-    fc_test.pthread_for_all_path(16, if_report, report_inter, if_store, mode, ksp_num);
+    // fc_test.pthread_for_all_path(16, if_report, report_inter, if_store, mode, ksp_num);
     double wr_ave = fc_test.throughput_test("wr", 2);
 
     

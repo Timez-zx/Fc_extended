@@ -1,4 +1,5 @@
 #include "fc_base.h"
+#include "utils.h"
 
 
 Fc_base::~Fc_base(){
@@ -213,7 +214,7 @@ double Fc_base::throughput_test(string type, int seed){
     int len_size = ftell(ofs_len);
     rewind(ofs_len);
     fseek(ofs, 0, SEEK_END);
-    int file_size = ftell(ofs);
+    uint64_t file_size = ftell(ofs);
     rewind(ofs);
     uint16_t *pair_len = new uint16_t[len_size/2];
     uint16_t *pair_infor = new uint16_t[file_size/2];
@@ -230,7 +231,6 @@ double Fc_base::throughput_test(string type, int seed){
     int map_count;
     int layer1, layer2;
     int new_node1, new_node2;
-
     float *flow_matrix[switches];
     for(int i = 0; i < switches; i++){
         flow_matrix[i] = new float[switches];
