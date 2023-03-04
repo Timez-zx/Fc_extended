@@ -20,6 +20,7 @@ void FcUndirected::GeneTopo(){
     std::vector<int> tempVec(switches);
     std::vector<int> acycleHeads(switches);
     std::vector<Edge> acycleEdges(switches*2); 
+    std::vector<int> swList(switches);
     int average = edgeBetSwNum/layerNum, edgeNumLayer, edgeNumCount;
     int src, dst;
     int aboveAveNum = edgeBetSwNum - average*layerNum;
@@ -32,6 +33,7 @@ void FcUndirected::GeneTopo(){
     for(int i = 0; i < switches; i++){
         degrees[i] = totalUpPort;
         acycleHeads[i] = -1;
+        swList[i] = i;
     }
     for(int i = 0; i < switches; i++)
         tempVec[i] = i;
@@ -48,7 +50,12 @@ void FcUndirected::GeneTopo(){
         acycleHeads.resize(switches);
         memset(&acycleHeads[0], 0xff, switches*sizeof(int));
         while(edgeNumCount < edgeNumLayer){
-
+            src = swList[rand()%swList.size()];
+            dst = swList[rand()%swList.size()];
+            while(!FindVecEle(possibleConnect[src], dst)){
+                src = swList[rand()%swList.size()];
+                dst = swList[rand()%swList.size()];
+            }
 
             edgeNumCount++;
         }
