@@ -21,7 +21,7 @@ void FcUndirected::GeneTopo(){
     std::vector<int> acycleHeads(switches);
     std::vector<Edge> acycleEdges(switches*2); 
     std::vector<int> swList(switches);
-    int average = edgeBetSwNum/layerNum, edgeNumLayer, edgeNumCount;
+    int average = edgeBetSwNum/layerNum, edgeNumLayer, edgeNumCount, edgeCount;
     int src, dst;
     int aboveAveNum = edgeBetSwNum - average*layerNum;
     for(int i = 0; i < layerNum; i++){
@@ -42,12 +42,14 @@ void FcUndirected::GeneTopo(){
         RemoveVecEle(possibleConnect[i], i);
     }
     for(int i = 0; i < layerNum; i++){
+        show(i);
         edgeNumLayer = interEdgesNum[i];
         edgeNumCount = 0;
         acycleHeads.clear();
         acycleEdges.clear();
         acycleEdges.resize(2*switches);
         acycleHeads.resize(switches);
+        edgeCount = 0;
         memset(&acycleHeads[0], 0xff, switches*sizeof(int));
         while(edgeNumCount < edgeNumLayer){
             src = swList[rand()%swList.size()];
@@ -56,8 +58,21 @@ void FcUndirected::GeneTopo(){
                 src = swList[rand()%swList.size()];
                 dst = swList[rand()%swList.size()];
             }
-
-            edgeNumCount++;
+            AddEdges(acycleHeads, acycleEdges, src, dst, edgeCount);
+            if(DetectCycleStack(acycleHeads, acycleEdges, dst)){
+                DeleLastEdges(acycleHeads, acycleEdges, edgeCount);
+                continue;
+            }
+            else{
+                AddEdges(acycleHeads, acycleEdges, dst, src, edgeCount);
+                degrees[src]--;
+                degrees[dst]--;
+                if(degrees[src] == 0)
+                    RemoveVecEle(swList, src);
+                if(degrees[dst] == 0)
+                    RemoveVecEle(swList, dst);
+                edgeNumCount++;
+            }
         }
     }
     
