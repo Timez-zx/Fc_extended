@@ -517,6 +517,16 @@ uint16_t FcWithFlatEdge::SearchKsp(int src, int dst, int pathNum, int vcNum, uin
             layerPass[2*i+1] = dstLayer;
             flatPass.push_back(swPairToEdgeLabel[GetHash(srcInter, dstInter, switches)]);
         }
+        for(int i = 0; i < 2*(pathLen-1)-1; i++){
+            if(layerPass[i] > layerPass[i+1]){
+                upFlag = 0;
+                break;
+            }
+            else if(layerPass[i] < layerPass[i+1]){
+                upFlag = 1;
+                break; 
+            }
+        }
         for(int i = 1; i < 2*(pathLen-1); i++){
             if(layerPass[i] < layerPass[i-1])
                 upFlag = 0;
