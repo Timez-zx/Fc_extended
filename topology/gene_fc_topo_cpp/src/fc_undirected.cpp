@@ -67,6 +67,8 @@ void FcUndirected::GeneTopo(){
                 AddEdges(acycleHeads, acycleEdges, dst, src, edgeCount);
                 degrees[src]--;
                 degrees[dst]--;
+                linkInfor.push_back(SwLink(SwNode(src, i), SwNode(dst, i)));
+                linkInfor.push_back(SwLink(SwNode(dst, i), SwNode(src, i)));
                 if(degrees[src] == 0)
                     RemoveVecEle(swList, src);
                 if(degrees[dst] == 0)

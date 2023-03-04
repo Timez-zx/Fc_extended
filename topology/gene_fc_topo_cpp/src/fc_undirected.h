@@ -15,6 +15,7 @@ class FcUndirected: public BasicGeneFc{
         int totalUpPort;
         int maxEdgeNum;
         int edgeBetSwNum;
+        std::vector<SwLink> linkInfor;
 
 
      
