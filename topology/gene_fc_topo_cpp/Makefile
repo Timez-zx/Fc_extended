@@ -20,7 +20,7 @@ default: $(ALL_SRC) $(ALL_HEADER) main.cpp
 
 
 mac: $(ALL_SRC) $(ALL_HEADER) main.cpp
-	g++  $(CFLAGS_U) $(ALL_SRC) main.cpp -o $(OUT)
+	g++  $(CFLAGS_U) $(ALL_SRC) main.cpp -o $(OUT) -I $(GUROBI_INCLUDE_M) -L $(GUROBI_LIB_M) -lgurobi_c++ -lgurobi100
 
 
 clean:
