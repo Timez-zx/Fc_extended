@@ -53,10 +53,10 @@ void FcUndirected::GeneTopo(){
         memset(&acycleHeads[0], 0xff, switches*sizeof(int));
         while(edgeNumCount < edgeNumLayer){
             src = swList[rand()%swList.size()];
-            dst = swList[rand()%swList.size()];
+            dst = possibleConnect[src][rand()%possibleConnect[src].size()];
             while(!FindVecEle(possibleConnect[src], dst)){
                 src = swList[rand()%swList.size()];
-                dst = swList[rand()%swList.size()];
+                dst = possibleConnect[src][rand()%possibleConnect[src].size()];
             }
             AddEdges(acycleHeads, acycleEdges, src, dst, edgeCount);
             if(DetectCycleStack(acycleHeads, acycleEdges, dst)){
