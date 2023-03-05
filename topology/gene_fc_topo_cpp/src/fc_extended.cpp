@@ -180,22 +180,22 @@ void FcExtended::GetCycleEdge(){
     }
     for(int i = 0; i < switches; i++)
         AddEdges(heads, edges, GetVertexLabel(i,layerNum-1,0), GetVertexLabel(i,layerNum-1,1), edgeCount);
-    // for(int i = 0; i < layerNum-1; i++){
-    for(int i = 0; i < 1; i++){
+    for(int i = 0; i < layerNum-1; i++){
         realLayer = layerNum-i-2;
         for(int j = 0; j < switches; j++){
             AddEdges(heads, edges, GetVertexLabel(j,realLayer,0), GetVertexLabel(j,realLayer+1,0), edgeCount);
             AddEdges(heads, edges, GetVertexLabel(j,realLayer+1,1), GetVertexLabel(j,realLayer,1), edgeCount);
         }
         for(int j = linkIndex[i]; j < linkIndex[i+1]; j++){
-            // std::cout << linkInfor[j].srcNode.swLabel << " " << realLayer+1 << " " << linkInfor[j].dstNode.swLabel << " " << realLayer << std::endl; 
             AddEdges(heads, edges, GetVertexLabel(linkInfor[j].srcNode.swLabel,realLayer+1,1), GetVertexLabel(linkInfor[j].dstNode.swLabel,realLayer,1), edgeCount);
             AddEdges(heads, edges, GetVertexLabel(linkInfor[j].dstNode.swLabel,realLayer,0), GetVertexLabel(linkInfor[j].srcNode.swLabel,realLayer+1,0), edgeCount);
         }
-        memset(&visitedGlobal[0], 0, sizeof(int)*totalNode);
-        stackGlobal.clear();
-        DFS(heads, edges, GetVertexLabel(1,realLayer,0), GetVertexLabel(1,realLayer,1));
-        show(maxNodePass);
+
+        // memset(&visitedGlobal[0], 0, sizeof(int)*totalNode);
+        // stackGlobal.clear();
+        // maxNodePass = 0;
+        // DFS(heads, edges, GetVertexLabel(2,realLayer,0), GetVertexLabel(2,realLayer,1));
+        // show(maxNodePass);
     }
 
     
