@@ -139,7 +139,7 @@ void FcExtended::DFS(const std::vector<int>& heads, const std::vector<Edge>& edg
         if(setVer.size() > maxNodePass)
             maxNodePass = setVer.size();
         stackGlobal.pop_back();
-        visitedGlobal[start] = false;
+        visitedGlobal[start] = 0;
         return;
     }
     for(int i = heads[start]; i != -1; i = edges[i].nextEdgeIdex){
@@ -147,11 +147,9 @@ void FcExtended::DFS(const std::vector<int>& heads, const std::vector<Edge>& edg
         if(!visitedGlobal[nearVertex]){
             DFS(heads, edges, nearVertex, end);
         }
-        if(edges[i].nextEdgeIdex == -1){
-            stackGlobal.pop_back();
-            visitedGlobal[start] = false;
-        }
     }
+    stackGlobal.pop_back();
+    visitedGlobal[start] = 0;
 
 }
 
@@ -190,6 +188,7 @@ void FcExtended::GetCycleEdge(){
             AddEdges(heads, edges, GetVertexLabel(j,realLayer+1,1), GetVertexLabel(j,realLayer,1), edgeCount);
         }
         for(int j = linkIndex[i]; j < linkIndex[i+1]; j++){
+            // std::cout << linkInfor[j].srcNode.swLabel << " " << realLayer+1 << " " << linkInfor[j].dstNode.swLabel << " " << realLayer << std::endl; 
             AddEdges(heads, edges, GetVertexLabel(linkInfor[j].srcNode.swLabel,realLayer+1,1), GetVertexLabel(linkInfor[j].dstNode.swLabel,realLayer,1), edgeCount);
             AddEdges(heads, edges, GetVertexLabel(linkInfor[j].dstNode.swLabel,realLayer,0), GetVertexLabel(linkInfor[j].srcNode.swLabel,realLayer+1,0), edgeCount);
         }
