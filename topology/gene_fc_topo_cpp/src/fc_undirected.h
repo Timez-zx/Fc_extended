@@ -8,6 +8,9 @@ class FcUndirected: public BasicGeneFc{
         FcUndirected(const int switchIn, const int layerIn, const int totalPortIn);
         ~FcUndirected();
         void GeneTopo() override;
+        void ChangeRand(int randSeed){
+            randomSeed = randSeed;
+        }
     
     private:
         void GeneVirtualLink(std::vector<std::vector<int> >& allDegrees);
@@ -18,6 +21,7 @@ class FcUndirected: public BasicGeneFc{
         int totalUpPort;
         int maxEdgeNum;
         int edgeBetSwNum;
+        int randomSeed;
         std::vector<SwLink> linkInfor;
 
 

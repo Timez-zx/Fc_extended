@@ -12,11 +12,10 @@ int main(int argc, char* argv[]){
     struct timeval start, end;
     gettimeofday(&start, NULL);
     // int switches = 400;
-    // int randSeed = 1;
-    // if(argc == 3){
-    //     switches = atoi(argv[1]);
-    //     randSeed = atoi(argv[2]);
-    // }
+    int randSeed = 1;
+    if(argc == 2){
+        randSeed = atoi(argv[1]);
+    }
     // int layerNum = 10;
     // int totalPort = 18;
     // vector<int> upDownDegree = {1, 2, 2, 2, 2, 2, 2, 2, 2, 1};
@@ -38,6 +37,7 @@ int main(int argc, char* argv[]){
     int layerIn = 20;
     int portUpNum = 18;
     FcUndirected fcTest(switches, layerIn, portUpNum);
+    fcTest.ChangeRand(randSeed);
     fcTest.GeneTopo();
 
     

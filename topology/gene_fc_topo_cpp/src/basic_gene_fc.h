@@ -52,6 +52,8 @@ typedef struct _Pair
 
 bool DetectCycleStack(const std::vector<int>& heads, const std::vector<Edge>& edges, int start);
 
+bool DetectCycleStackUndirect(const std::vector<int>& heads, const std::vector<Edge>& edges, int start, int end);
+
 void AddEdges(std::vector<int>& heads, std::vector<Edge>& edges, int src, int dst, int &edgeCount);
 
 void DeleLastEdges(std::vector<int>& heads, std::vector<Edge>& edges, int &edgeCount);

@@ -42,6 +42,7 @@ void FcUndirected::GeneTopo(){
         possibleConnect[i].assign(tempVec.begin(), tempVec.end());
         RemoveVecEle(possibleConnect[i], i);
     }
+    srand(randomSeed);
     for(int i = 0; i < layerNum; i++){
         edgeNumLayer = interEdgesNum[i];
         edgeNumCount = 0;
@@ -59,7 +60,7 @@ void FcUndirected::GeneTopo(){
                 dst = possibleConnect[src][rand()%possibleConnect[src].size()];
             }
             AddEdges(acycleHeads, acycleEdges, src, dst, edgeCount);
-            if(DetectCycleStack(acycleHeads, acycleEdges, dst)){
+            if(DetectCycleStackUndirect(acycleHeads, acycleEdges, dst, src)){
                 DeleLastEdges(acycleHeads, acycleEdges, edgeCount);
                 continue;
             }
@@ -81,6 +82,7 @@ void FcUndirected::GeneTopo(){
             }
         }
     }
+    show("Real Edge finished!");
     GeneVirtualLink(allDegrees);
 }
 
@@ -99,6 +101,7 @@ void FcUndirected::GeneVirtualLink(std::vector<std::vector<int> >& allDegrees){
     }
 
     for(int i = 0; i < switches; i++){
+        show(i);
         virEdgeCount = 0;
         possibleConnect.clear();
         possibleConnect.resize(layerNum);
@@ -115,7 +118,7 @@ void FcUndirected::GeneVirtualLink(std::vector<std::vector<int> >& allDegrees){
             srcHash = GetHash(srcLayer, i, switches);
             dstHash = GetHash(dstLayer, i, switches);
             AddEdges(acycleHeads, acycleEdges, srcHash, dstHash, edgeCount);
-            if(DetectCycleStack(acycleHeads, acycleEdges, dstHash)){
+            if(DetectCycleStackUndirect(acycleHeads, acycleEdges, dstHash, srcHash)){
                 DeleLastEdges(acycleHeads, acycleEdges, edgeCount);
                 RemoveVecEle(possibleConnect[srcLayer], dstLayer);
                 RemoveVecEle(possibleConnect[dstLayer], srcLayer);
