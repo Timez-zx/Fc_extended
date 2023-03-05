@@ -22,7 +22,7 @@ void FcUndirected::GeneTopo(){
     std::vector<Edge> acycleEdges(switches*2); 
     std::vector<int> swList(switches);
     std::vector<std::vector<int> > allDegrees(switches, std::vector<int>(layerNum,0));
-    int average = edgeBetSwNum/layerNum, edgeNumLayer, edgeNumCount, edgeCount;
+    int average = edgeBetSwNum/layerNum, edgeNumLayer, edgeNumCount, edgeCount, deadCycleCount = 0;
     int src, dst, lastSrc = -1, srcCount = 0;
     int aboveAveNum = edgeBetSwNum - average*layerNum;
     for(int i = 0; i < layerNum; i++){
@@ -52,10 +52,16 @@ void FcUndirected::GeneTopo(){
         acycleHeads.resize(switches);
         edgeCount = 0;
         memset(&acycleHeads[0], 0xff, switches*sizeof(int));
+        deadCycleCount = 0;
         while(edgeNumCount < edgeNumLayer){
             src = max_element(degrees.begin(), degrees.end()) - degrees.begin();
             dst = possibleConnect[src][rand()%possibleConnect[src].size()];
             while(!FindVecEle(swList, dst)){
+                deadCycleCount++;
+                if(deadCycleCount > 1e3){
+                    show("Please change the random seed, deadcycle happen!");
+                    exit(1);
+                }
                 src = swList[rand()%swList.size()];
                 dst = possibleConnect[src][rand()%possibleConnect[src].size()];
             }
@@ -150,6 +156,7 @@ void FcUndirected::GeneVirtualLink(std::vector<std::vector<int> >& allDegrees){
         }
         
     }
+    show(edgeCount);
 
 
 
