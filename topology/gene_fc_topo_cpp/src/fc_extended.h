@@ -3,6 +3,7 @@
 #include "basic_gene_fc.h"
 
 
+
 class FcExtended: public BasicGeneFc{
     public:
         FcExtended(const int switchIn, const int layerIn, const int totalPortIn, const std::vector<int>& layerDegreeIn);
@@ -17,6 +18,7 @@ class FcExtended: public BasicGeneFc{
         void GetCycleEdge();
     private:
         void GeneLink(std::vector<std::vector<int> > &possibleConnect);
+        int GetVertexLabel(int swLabel, int layer, int ifDown);
     
     
     private:

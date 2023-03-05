@@ -1,6 +1,9 @@
 #include "fc_extended.h"
 
 
+
+
+
 FcExtended::~FcExtended(){}
 
 
@@ -120,6 +123,11 @@ void FcExtended::GeneLink(std::vector<std::vector<int> > &possibleConnect){
     delete[] vertexConnect;
     show(linkInfor.size());
     show("Topo constructed!");
+}
+
+
+int FcExtended::GetVertexLabel(int swLabel, int layer, int ifDown){
+    return ifDown*switches*layerNum+layer*switches+swLabel;
 }
 
 
