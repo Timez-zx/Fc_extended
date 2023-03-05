@@ -14,6 +14,7 @@ class FcExtended: public BasicGeneFc{
         void TopoBuildMode(int ifFast){
             fastTopoBuild = ifFast;
         }
+        void GetCycleEdge();
     private:
         void GeneLink(std::vector<std::vector<int> > &possibleConnect);
     

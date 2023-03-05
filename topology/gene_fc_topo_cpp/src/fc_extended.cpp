@@ -75,7 +75,7 @@ void FcExtended::GeneLink(std::vector<std::vector<int> > &possibleConnect){
                     randIndex = rand()%possibleConnect[src].size();
                     dst = possibleConnect[src][randIndex];
                     swDegrees[dst]++;
-                    if(deadCycleBreak > 1e6){
+                    if(deadCycleBreak > 1e4){
                         std::cerr << "Can't construct, please change the rand seed or use other mode!" << std::endl;
                         exit(1);
                     }
@@ -120,4 +120,14 @@ void FcExtended::GeneLink(std::vector<std::vector<int> > &possibleConnect){
     delete[] vertexConnect;
     show(linkInfor.size());
     show("Topo constructed!");
+}
+
+
+void FcExtended::GetCycleEdge(){
+    int totalNode, maxEdgeNum, edgeCount = 0;
+    totalNode = switches*layerNum*2;
+    maxEdgeNum = switches*layerNum*totalUpPort*10;
+    std::vector<int> heads(totalNode, -1);
+    std::vector<Edge> edges(maxEdgeNum); 
+    
 }
