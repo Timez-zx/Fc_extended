@@ -19,6 +19,8 @@ class FcExtended: public BasicGeneFc{
     private:
         void GeneLink(std::vector<std::vector<int> > &possibleConnect);
         int GetVertexLabel(int swLabel, int layer, int ifDown);
+        int GetSwLabel(int vertexLabel);
+        void DFS(const std::vector<int>& heads, const std::vector<Edge>& edges, int start, int end);
     
     
     private:
@@ -29,6 +31,10 @@ class FcExtended: public BasicGeneFc{
         int fastTopoBuild;
         std::vector<SwLink> linkInfor;
         std::vector<int> layerDegrees; 
+
+        std::vector<int> visitedGlobal;
+        std::vector<int> stackGlobal;
+        int maxNodePass;
 
 
      

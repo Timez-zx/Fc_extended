@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <unistd.h>
+#include <set>
 #include <vector>
 #include <numeric>
 #include <random>
