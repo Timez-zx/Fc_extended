@@ -33,7 +33,7 @@ int main(int argc, char* argv[]){
     //     thPut += fcFlat.throughputTest("ur", i, 32, 100, 14);
     // }
     // show(thPut);
-    int switches = 100;
+    int switches = 1000;
     int layerIn = 20;
     int portUpNum = 18;
     FcUndirected fcTest(switches, layerIn, portUpNum);

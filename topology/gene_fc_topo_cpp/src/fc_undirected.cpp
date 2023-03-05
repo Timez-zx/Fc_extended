@@ -102,7 +102,6 @@ void FcUndirected::GeneVirtualLink(std::vector<std::vector<int> >& allDegrees){
     }
 
     for(int i = 0; i < switches; i++){
-        show(i);
         virEdgeCount = 0;
         possibleConnect.clear();
         possibleConnect.resize(layerNum);
