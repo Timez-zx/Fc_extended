@@ -10,7 +10,7 @@ class FcUndirected: public BasicGeneFc{
         void GeneTopo() override;
     
     private:
-        void GeneVirtualLink();
+        void GeneVirtualLink(std::vector<std::vector<int> >& allDegrees);
     
     private:
         int switches;

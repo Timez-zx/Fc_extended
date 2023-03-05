@@ -7,6 +7,8 @@
 
 void PrintVectorInt(const std::vector<int> &vec);
 
+void InitVectorInt(std::vector<int> &vec);
+
 int GetHash(int src, int dst, int basic);
 
 void GetValue(int hashValue, int basic, std::vector<int>& valueContain);

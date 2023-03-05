@@ -15,3 +15,8 @@ void PrintVectorInt(const std::vector<int> &vec) {
     std::copy(vec.begin(), vec.end(), it);
     std::cout << std::endl;
 }
+
+void InitVectorInt(std::vector<int> &vec){
+    for(int i = 0; i < vec.size(); i++)
+        vec[i] = i;
+}

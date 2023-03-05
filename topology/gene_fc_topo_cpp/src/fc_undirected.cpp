@@ -21,6 +21,7 @@ void FcUndirected::GeneTopo(){
     std::vector<int> acycleHeads(switches);
     std::vector<Edge> acycleEdges(switches*2); 
     std::vector<int> swList(switches);
+    std::vector<std::vector<int> > allDegrees(switches, std::vector<int>(layerNum,0));
     int average = edgeBetSwNum/layerNum, edgeNumLayer, edgeNumCount, edgeCount;
     int src, dst;
     int aboveAveNum = edgeBetSwNum - average*layerNum;
@@ -66,6 +67,8 @@ void FcUndirected::GeneTopo(){
                 AddEdges(acycleHeads, acycleEdges, dst, src, edgeCount);
                 degrees[src]--;
                 degrees[dst]--;
+                allDegrees[src][i]++;
+                allDegrees[dst][i]++;
                 linkInfor.push_back(SwLink(SwNode(src, i), SwNode(dst, i)));
                 linkInfor.push_back(SwLink(SwNode(dst, i), SwNode(src, i)));
                 if(degrees[src] == 0)
@@ -78,18 +81,66 @@ void FcUndirected::GeneTopo(){
             }
         }
     }
-    GeneVirtualLink();
+    GeneVirtualLink(allDegrees);
 }
 
 
-void FcUndirected::GeneVirtualLink(){
-    std::vector<int> acycleHeads(switches*layerNum);
-    std::vector<Edge> acycleEdges(switches*layerNum*2);
-    int srcHash, dstHash, edgeCount = 0;
+void FcUndirected::GeneVirtualLink(std::vector<std::vector<int> >& allDegrees){
+    std::vector<int> acycleHeads(switches*layerNum, -1);
+    std::vector<Edge> acycleEdges(switches*layerNum*10);
+    std::vector<int> layerList(layerNum);
+    std::vector<std::vector<int> > possibleConnect(layerNum);
+    int srcHash, dstHash, edgeCount = 0, virEdgeCount, srcLayer, dstLayer;
+    int averageEdge = floor((maxEdgeNum-edgeBetSwNum)/switches);
     for(auto link:linkInfor){
         srcHash = GetHash(link.srcNode.layerLabel, link.srcNode.swLabel, switches);
         dstHash = GetHash(link.dstNode.layerLabel, link.dstNode.swLabel, switches);
         AddEdges(acycleHeads, acycleEdges, srcHash, dstHash, edgeCount);
-        AddEdges(acycleHeads, acycleEdges, dstHash, srcHash, edgeCount);
-    } 
+    }
+
+    for(int i = 0; i < switches; i++){
+        virEdgeCount = 0;
+        possibleConnect.clear();
+        possibleConnect.resize(layerNum);
+        layerList.clear();
+        layerList.resize(layerNum);
+        InitVectorInt(layerList);
+        for(int j = 0; j < layerNum; j++){
+            possibleConnect[j].assign(layerList.begin(), layerList.end());
+            RemoveVecEle(possibleConnect[j], j);
+        }
+        while(virEdgeCount < averageEdge){
+            srcLayer = min_element(allDegrees[i].begin(), allDegrees[i].end()) - allDegrees[i].begin();
+            dstLayer = possibleConnect[srcLayer][rand()%possibleConnect[srcLayer].size()];
+            srcHash = GetHash(srcLayer, i, switches);
+            dstHash = GetHash(dstLayer, i, switches);
+            AddEdges(acycleHeads, acycleEdges, srcHash, dstHash, edgeCount);
+            if(DetectCycleStack(acycleHeads, acycleEdges, dstHash)){
+                DeleLastEdges(acycleHeads, acycleEdges, edgeCount);
+                RemoveVecEle(possibleConnect[srcLayer], dstLayer);
+                RemoveVecEle(possibleConnect[dstLayer], srcLayer);
+                if(possibleConnect[srcLayer].size() == 0)
+                    RemoveVecEle(layerList, srcLayer);
+                if(possibleConnect[dstLayer].size() == 0)
+                    RemoveVecEle(layerList, dstLayer);
+                continue;
+            }
+            else{
+                AddEdges(acycleHeads, acycleEdges, dstHash, srcHash, edgeCount);
+                RemoveVecEle(possibleConnect[srcLayer], dstLayer);
+                RemoveVecEle(possibleConnect[dstLayer], srcLayer);
+                if(possibleConnect[srcLayer].size() == 0)
+                    RemoveVecEle(layerList, srcLayer);
+                if(possibleConnect[dstLayer].size() == 0)
+                    RemoveVecEle(layerList, dstLayer);
+                allDegrees[i][srcLayer]++;
+                allDegrees[i][dstLayer]++;
+                virEdgeCount++;
+            }
+        }
+        
+    }
+
+
+
 }
