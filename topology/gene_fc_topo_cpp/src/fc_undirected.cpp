@@ -23,7 +23,7 @@ void FcUndirected::GeneTopo(){
     std::vector<int> swList(switches);
     std::vector<std::vector<int> > allDegrees(switches, std::vector<int>(layerNum,0));
     int average = edgeBetSwNum/layerNum, edgeNumLayer, edgeNumCount, edgeCount;
-    int src, dst;
+    int src, dst, lastSrc = -1, srcCount = 0;
     int aboveAveNum = edgeBetSwNum - average*layerNum;
     for(int i = 0; i < layerNum; i++){
         if(i < aboveAveNum)
@@ -62,6 +62,7 @@ void FcUndirected::GeneTopo(){
             AddEdges(acycleHeads, acycleEdges, src, dst, edgeCount);
             if(DetectCycleStackUndirect(acycleHeads, acycleEdges, dst, src)){
                 DeleLastEdges(acycleHeads, acycleEdges, edgeCount);
+                lastSrc = src;
                 continue;
             }
             else{
@@ -93,7 +94,7 @@ void FcUndirected::GeneVirtualLink(std::vector<std::vector<int> >& allDegrees){
     std::vector<int> layerList(layerNum);
     std::vector<std::vector<int> > possibleConnect(layerNum);
     int srcHash, dstHash, edgeCount = 0, virEdgeCount, srcLayer, dstLayer;
-    int averageEdge = floor((maxEdgeNum-edgeBetSwNum)/switches);
+    int averageEdge = floor((maxEdgeNum-edgeBetSwNum)/switches)-1;
     for(auto link:linkInfor){
         srcHash = GetHash(link.srcNode.layerLabel, link.srcNode.swLabel, switches);
         dstHash = GetHash(link.dstNode.layerLabel, link.dstNode.swLabel, switches);
@@ -114,6 +115,13 @@ void FcUndirected::GeneVirtualLink(std::vector<std::vector<int> >& allDegrees){
         }
         while(virEdgeCount < averageEdge){
             srcLayer = min_element(allDegrees[i].begin(), allDegrees[i].end()) - allDegrees[i].begin();
+            if(!FindVecEle(layerList, srcLayer)){
+                if(layerList.size() == 0){
+                    show("Error: can generate the topo, please change seed!");
+                    exit(1);
+                }
+                srcLayer = layerList[rand()%layerList.size()];
+            }
             dstLayer = possibleConnect[srcLayer][rand()%possibleConnect[srcLayer].size()];
             srcHash = GetHash(srcLayer, i, switches);
             dstHash = GetHash(dstLayer, i, switches);
