@@ -163,8 +163,10 @@ void FcUndirected::GeneVirtualLink(std::vector<std::vector<int> >& allDegrees){
 
 
 void FcUndirected::ConpressGraph(const std::vector<int>& heads, const std::vector<Edge>& edges, int edgeCount){
-    int vertexEdgeCount = 0, nearVertex, VirNeigNum;
+    int vertexEdgeCount = 0, nearVertex, VirNeigNum, tempVec;
     std::vector<std::vector<int> > validVec(switches);
+    std::vector<std::vector<int> > combineVec(switches);
+    std::vector<std::vector<int> > combineDegree(switches);
     for(int v = 0; v < heads.size(); v++){
         vertexEdgeCount = 0;
         VirNeigNum = 0;
@@ -177,8 +179,37 @@ void FcUndirected::ConpressGraph(const std::vector<int>& heads, const std::vecto
         if(vertexEdgeCount > VirNeigNum)
             validVec[v%switches].push_back(v);
     }
-    for(int i = 0; i < switches; i++)
-        show(validVec[i].size());
+
+    for(int i = 0; i < switches; i++){
+        while(validVec[i].size() > 0){
+            vertexEdgeCount = 0;
+            for(int j = heads[validVec[i][0]]; j != -1; j = edges[j].nextEdgeIdex){
+                nearVertex = edges[j].toNode;
+                if(nearVertex%switches != validVec[i][0]%switches)
+                    vertexEdgeCount++;
+                else{
+                    if(!FindVecEle(validVec[i], nearVertex))
+                        continue;
+                    else{
+                        for(int k = heads[nearVertex]; k != -1; k = edges[k].nextEdgeIdex){
+                            tempVec = edges[k].toNode;
+                            if(tempVec%switches != nearVertex%switches)
+                                vertexEdgeCount++;
+                        }
+                        RemoveVecEle(validVec[i], nearVertex);
+                    }
+                }
+            }
+
+            combineVec[i].push_back(validVec[i][0]);
+            combineDegree[i].push_back(vertexEdgeCount);
+            RemoveVecEle(validVec[i], validVec[i][0]);
+        }
+        show(combineVec[i].size());
+        PrintVectorInt(combineDegree[i]);
+    }
+
+
 
 }
 
