@@ -132,10 +132,22 @@ int FcExtended::GetVertexLabel(int swLabel, int layer, int ifDown){
 
 
 void FcExtended::GetCycleEdge(){
-    int totalNode, maxEdgeNum, edgeCount = 0;
+    int totalNode, maxEdgeNum, edgeCount = 0, initDegree = 0, lastIndex;
     totalNode = switches*layerNum*2;
     maxEdgeNum = switches*layerNum*totalUpPort*10;
     std::vector<int> heads(totalNode, -1);
-    std::vector<Edge> edges(maxEdgeNum); 
+    std::vector<Edge> edges(maxEdgeNum);
+    std::vector<int> linkIndex;
+    linkIndex.push_back(0);
+    lastIndex = 0;
+    for(int i = layerNum-1; i > 0; i--){
+        linkIndex.push_back((layerDegrees[i]-initDegree)*switches*2+lastIndex);
+        lastIndex += (layerDegrees[i]-initDegree)*switches*2;
+        initDegree = layerDegrees[i]-initDegree;
+    }
+    for(int i = 0; i < switches; i++)
+        AddEdges(heads, edges, GetVertexLabel(i,layerNum-1,0), GetVertexLabel(i,layerNum-1,1), edgeCount);
+
+    
     
 }

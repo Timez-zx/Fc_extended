@@ -25,6 +25,7 @@ int main(int argc, char* argv[]){
     fcTest.ChangeRand(randomSeed);
     fcTest.TopoBuildMode(mode);
     fcTest.GeneTopo();
+    fcTest.GetCycleEdge();
 
     
     gettimeofday(&end, NULL);
