@@ -200,7 +200,7 @@ void FcWithFlatEdge::GeneFlatTopo(std::vector<std::vector<int> > &possibleConnec
                 dst = inDegreeSw[rand()%inDegreeSw.size()];
             }
             AddEdges(acycleHeads, acycleEdges, src, dst, edgeCount);
-            if(DetectCycleStack(acycleHeads, acycleEdges, dst)){
+            if(DetectCycleStackUndirect(acycleHeads, acycleEdges, dst, src)){
                 deadCycleBreak++;
                 if(deadCycleBreak > 1e4){
                     std::cerr << "Please check the number of flat edges or change the random seed!" << std::endl;

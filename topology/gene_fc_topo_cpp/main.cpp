@@ -11,15 +11,15 @@ using namespace std;
 int main(int argc, char* argv[]){
     struct timeval start, end;
     gettimeofday(&start, NULL);
-    // int switches = 400;
+    // int switches = 200;
     int randSeed = 1;
     if(argc == 2){
         randSeed = atoi(argv[1]);
     }
-    // int layerNum = 10;
+    // int layerNum = 5;
     // int totalPort = 18;
-    // vector<int> upDownDegree = {1, 2, 2, 2, 2, 2, 2, 2, 2, 1};
-    // vector<int> flatEdge = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    // vector<int> upDownDegree = {1, 2, 2, 2, 1};
+    // vector<int> flatEdge = {55, 55, 55, 55, 30};
     // for(int i = 0; i < layerNum; i++)
     //     flatEdge[i] *= switches/50;
     // FcWithFlatEdge fcFlat(switches, layerNum, totalPort, upDownDegree, flatEdge);
@@ -27,11 +27,9 @@ int main(int argc, char* argv[]){
     // fcFlat.ChangeRandomSeed(randSeed);
     // fcFlat.GeneTopo();
     // fcFlat.SaveTopoInfor();
-    // fcFlat.MthreadKsp(16, 32, 100, 1, 1000);
+    // fcFlat.MthreadKsp(16, 32, 1, 1, 1000);
     // double thPut = 0;
-    // for(int i = 1; i < 11; i++){
-    //     thPut += fcFlat.throughputTest("ur", i, 32, 100, 14);
-    // }
+    // thPut += fcFlat.throughputTest("wr", 1, 32, 1, 14);
     // show(thPut);
     int switches = 1000;
     int layerIn = 20;
