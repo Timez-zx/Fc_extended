@@ -1,5 +1,6 @@
 #include "fc_undirected.h"
 
+
 FcUndirected::FcUndirected(const int switchIn, const int layerIn, const int totalPortIn){
     switches = switchIn;
     layerNum = layerIn;
@@ -122,7 +123,7 @@ void FcUndirected::GeneVirtualLink(std::vector<std::vector<int> >& allDegrees){
             srcLayer = min_element(allDegrees[i].begin(), allDegrees[i].end()) - allDegrees[i].begin();
             if(!FindVecEle(layerList, srcLayer)){
                 if(layerList.size() == 0){
-                    show("Error: can generate the topo, please change seed!");
+                    show("Error: can't generate the topo, please change seed!");
                     exit(1);
                 }
                 srcLayer = layerList[rand()%layerList.size()];
@@ -145,6 +146,8 @@ void FcUndirected::GeneVirtualLink(std::vector<std::vector<int> >& allDegrees){
                 AddEdges(acycleHeads, acycleEdges, dstHash, srcHash, edgeCount);
                 RemoveVecEle(possibleConnect[srcLayer], dstLayer);
                 RemoveVecEle(possibleConnect[dstLayer], srcLayer);
+                linkInfor.push_back(SwLink(SwNode(i, srcLayer), SwNode(i, dstLayer)));
+                linkInfor.push_back(SwLink(SwNode(i, dstLayer), SwNode(i, srcLayer)));
                 if(possibleConnect[srcLayer].size() == 0)
                     RemoveVecEle(layerList, srcLayer);
                 if(possibleConnect[dstLayer].size() == 0)
@@ -153,11 +156,30 @@ void FcUndirected::GeneVirtualLink(std::vector<std::vector<int> >& allDegrees){
                 allDegrees[i][dstLayer]++;
                 virEdgeCount++;
             }
-        }
-        
+        }   
     }
-    show(edgeCount);
+    ConpressGraph(acycleHeads, acycleEdges, edgeCount);
+}
 
 
+void FcUndirected::ConpressGraph(const std::vector<int>& heads, const std::vector<Edge>& edges, int edgeCount){
+    int vertexEdgeCount = 0, nearVertex, VirNeigNum;
+    std::vector<std::vector<int> > validVec(switches);
+    for(int v = 0; v < heads.size(); v++){
+        vertexEdgeCount = 0;
+        VirNeigNum = 0;
+        for(int i = heads[v]; i != -1; i = edges[i].nextEdgeIdex){
+            nearVertex = edges[i].toNode;
+            if(nearVertex%switches == v%switches)
+                VirNeigNum++;
+            vertexEdgeCount++;
+        }
+        if(vertexEdgeCount > VirNeigNum)
+            validVec[v%switches].push_back(v);
+    }
+    for(int i = 0; i < switches; i++)
+        show(validVec[i].size());
 
 }
+
+

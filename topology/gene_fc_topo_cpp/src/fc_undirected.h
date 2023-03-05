@@ -14,6 +14,7 @@ class FcUndirected: public BasicGeneFc{
     
     private:
         void GeneVirtualLink(std::vector<std::vector<int> >& allDegrees);
+        void ConpressGraph(const std::vector<int>& heads, const std::vector<Edge>& edges, int edgeCount);
     
     private:
         int switches;
