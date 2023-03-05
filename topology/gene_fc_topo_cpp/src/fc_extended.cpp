@@ -92,7 +92,7 @@ void FcExtended::GeneLink(std::vector<std::vector<int> > &possibleConnect){
                 vertexConnect[dst][src] = true;
                 swDegreeLabel[dst] = 1;
                 linkInfor.push_back(SwLink(SwNode(src, i), SwNode(dst, i-1)));
-                linkInfor.push_back(SwLink(SwNode(dst, i-1), SwNode(src, i)));
+                // linkInfor.push_back(SwLink(SwNode(dst, i-1), SwNode(src, i)));
                 RemoveVecEle(possibleConnect[src], dst);
                 RemoveVecEle(possibleConnect[dst], src);
                 RemoveVecEle(srcChoose, src);
@@ -132,7 +132,7 @@ int FcExtended::GetVertexLabel(int swLabel, int layer, int ifDown){
 
 
 void FcExtended::GetCycleEdge(){
-    int totalNode, maxEdgeNum, edgeCount = 0, initDegree = 0, lastIndex;
+    int totalNode, maxEdgeNum, edgeCount = 0, initDegree = 0, lastIndex, realLayer;
     totalNode = switches*layerNum*2;
     maxEdgeNum = switches*layerNum*totalUpPort*10;
     std::vector<int> heads(totalNode, -1);
@@ -141,12 +141,23 @@ void FcExtended::GetCycleEdge(){
     linkIndex.push_back(0);
     lastIndex = 0;
     for(int i = layerNum-1; i > 0; i--){
-        linkIndex.push_back((layerDegrees[i]-initDegree)*switches*2+lastIndex);
-        lastIndex += (layerDegrees[i]-initDegree)*switches*2;
+        linkIndex.push_back((layerDegrees[i]-initDegree)*switches+lastIndex);
+        lastIndex += (layerDegrees[i]-initDegree)*switches;
         initDegree = layerDegrees[i]-initDegree;
     }
     for(int i = 0; i < switches; i++)
         AddEdges(heads, edges, GetVertexLabel(i,layerNum-1,0), GetVertexLabel(i,layerNum-1,1), edgeCount);
+    for(int i = 0; i < layerNum-1; i++){
+        realLayer = layerNum-i-2;
+        for(int j = 0; j < switches; j++){
+            AddEdges(heads, edges, GetVertexLabel(j,realLayer,0), GetVertexLabel(j,realLayer+1,0), edgeCount);
+            AddEdges(heads, edges, GetVertexLabel(j,realLayer+1,1), GetVertexLabel(j,realLayer,1), edgeCount);
+        }
+        for(int j = linkIndex[i]; j < linkIndex[i+1]; j++){
+            AddEdges(heads, edges, GetVertexLabel(linkInfor[j].srcNode.swLabel,realLayer+1,1), GetVertexLabel(linkInfor[j].dstNode.swLabel,realLayer,1), edgeCount);
+            AddEdges(heads, edges, GetVertexLabel(linkInfor[j].dstNode.swLabel,realLayer,0), GetVertexLabel(linkInfor[j].srcNode.swLabel,realLayer+1,0), edgeCount);
+        }
+    }
 
     
     
