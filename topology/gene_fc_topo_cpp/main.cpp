@@ -11,32 +11,7 @@ using namespace std;
 int main(int argc, char* argv[]){
     struct timeval start, end;
     gettimeofday(&start, NULL);
-    // int switches = 200;
-    int randSeed = 1;
-    if(argc == 2){
-        randSeed = atoi(argv[1]);
-    }
-    // int layerNum = 5;
-    // int totalPort = 18;
-    // vector<int> upDownDegree = {1, 2, 2, 2, 1};
-    // vector<int> flatEdge = {55, 55, 55, 55, 30};
-    // for(int i = 0; i < layerNum; i++)
-    //     flatEdge[i] *= switches/50;
-    // FcWithFlatEdge fcFlat(switches, layerNum, totalPort, upDownDegree, flatEdge);
-    // // fcFlat.StartFastMode();
-    // fcFlat.ChangeRandomSeed(randSeed);
-    // fcFlat.GeneTopo();
-    // fcFlat.SaveTopoInfor();
-    // fcFlat.MthreadKsp(16, 32, 1, 1, 1000);
-    // double thPut = 0;
-    // thPut += fcFlat.throughputTest("wr", 1, 32, 1, 14);
-    // show(thPut);
-    int switches = 100;
-    int layerIn = 20;
-    int portUpNum = 18;
-    FcUndirected fcTest(switches, layerIn, portUpNum);
-    fcTest.ChangeRand(randSeed);
-    fcTest.GeneTopo();
+
 
     
     gettimeofday(&end, NULL);
