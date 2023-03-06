@@ -193,7 +193,9 @@ void FcExtended::GetCycleEdge(){
             AddEdges(heads, edges, GetVertexLabel(linkInfor[j].srcNode.swLabel,realLayer+1,1), GetVertexLabel(linkInfor[j].dstNode.swLabel,realLayer,1), edgeCount);
             AddEdges(heads, edges, GetVertexLabel(linkInfor[j].dstNode.swLabel,realLayer,0), GetVertexLabel(linkInfor[j].srcNode.swLabel,realLayer+1,0), edgeCount);
         }
+
         partialVertex.assign(globalVertex.begin(), globalVertex.end());
+        show(globalVertex.size());
         while(partialVertex.size() > 0){
             memset(&visitedGlobal[0], 0, sizeof(int)*totalNode);
             stackGlobal.clear();
@@ -206,6 +208,7 @@ void FcExtended::GetCycleEdge(){
             }
             else{
                 totalEdgeAdd++;
+                std::cout << GetVertexLabel(cycleVer,realLayer,1) << " " << GetVertexLabel(cycleVer,realLayer,0) << std::endl;
                 AddEdges(heads, edges, GetVertexLabel(cycleVer,realLayer,1), GetVertexLabel(cycleVer,realLayer,0), edgeCount);
                 RemoveVecEle(partialVertex, cycleVer);
             }
