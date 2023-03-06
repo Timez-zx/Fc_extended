@@ -488,9 +488,9 @@ uint16_t FcExtended::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_
         for(int i = 0; i < extractLayerPass.size()-1; i++){
             srcLayer = extractLayerPass[i];
             if(srcLayer < pastLayer && srcLayer < extractLayerPass[i+1]){
-                if(swTovirLayer[extractSwPass[i]] > srcLayer){
+                // if(swTovirLayer[extractSwPass[i]] > srcLayer){
                     vcUsed++;
-                }
+                // }
             }
             pastLayer = srcLayer;
         } 
