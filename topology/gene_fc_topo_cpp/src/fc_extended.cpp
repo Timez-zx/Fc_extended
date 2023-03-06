@@ -202,7 +202,7 @@ void FcExtended::GetCycleEdge(){
             maxNodePass = 0;
             cycleVer = partialVertex[rand()%partialVertex.size()];
             DFS(heads, edges, GetVertexLabel(cycleVer,realLayer,0), GetVertexLabel(cycleVer,realLayer,1));
-            if(maxNodePass > 2){
+            if(maxNodePass > i+2){
                 RemoveVecEle(globalVertex, cycleVer);
                 RemoveVecEle(partialVertex, cycleVer);
             }
