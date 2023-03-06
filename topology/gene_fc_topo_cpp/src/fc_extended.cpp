@@ -217,3 +217,52 @@ void FcExtended::GetCycleEdge(){
     }
     show(totalEdgeAdd);
 }
+
+
+std::string FcExtended::GenePath(const std::string &path){
+    if(access(path.c_str(), 0)){
+        std::string cmd("mkdir ");
+        cmd += path;
+        int temp = system(cmd.c_str());
+    }
+    std::string fileDirName("");
+    fileDirName += "sw";
+    fileDirName += std::to_string(switches);
+    fileDirName += "_vir";
+    for(int i = 0; i < layerNum; i++)
+        fileDirName += std::to_string(layerDegrees[i]);
+    fileDirName += "_rand";
+    fileDirName += std::to_string(randomSeed);
+    if(access((path + fileDirName).c_str(), 0)){
+        std::string cmd("mkdir ");
+        cmd += path;
+        cmd += fileDirName;
+        int temp = system(cmd.c_str());
+    }
+    return fileDirName;
+}
+
+
+void FcExtended::SaveTopoInfor(){
+    if(linkInfor.size() == 0){
+        std::cerr << "Please generate graph topology!" << std::endl;
+        exit(1);
+    }
+    std::string fileDirPath = GenePath("data/topo_infor/");
+    std::ofstream ofs("data/topo_infor/" + fileDirPath + "/" + fileDirPath+".txt");
+    int degree;
+    int basic_index = 0, count = 0;
+    int src, dst, srcLayer, dstLayer;
+    ofs << "LinkID,SourceID,DestinationID,PeerID,Cost,Bandwidth,Delay,SRLGNum,SRLGs" << std::endl;
+    for(int i = 0; i < linkInfor.size(); i++){
+        src = linkInfor[i].srcNode.swLabel;
+        srcLayer = linkInfor[i].srcNode.layerLabel;
+        dst = linkInfor[i].dstNode.swLabel;
+        dstLayer = linkInfor[i].dstNode.layerLabel;
+        ofs << count++ << "," << src << "," << dst << "," << 0 << "," << 1 << ",0,0,0,0"<< std::endl;
+        ofs << count++ << "," << dst << "," << src << "," << 0 << "," << 1 << ",0,0,0,0"<< std::endl;
+    }
+    ofs.close();
+    topoPath = "data/topo_infor/" + fileDirPath + "/" + fileDirPath+".txt";
+}
+

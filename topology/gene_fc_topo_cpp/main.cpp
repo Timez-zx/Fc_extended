@@ -27,6 +27,7 @@ int main(int argc, char* argv[]){
     fcTest.TopoBuildMode(mode);
     fcTest.GeneTopo();
     fcTest.GetCycleEdge();
+    fcTest.SaveTopoInfor();
 
     
     gettimeofday(&end, NULL);
