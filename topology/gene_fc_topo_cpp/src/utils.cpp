@@ -20,3 +20,9 @@ void InitVectorInt(std::vector<int> &vec){
     for(int i = 0; i < vec.size(); i++)
         vec[i] = i;
 }
+
+void PrintArrayInt(int *vec, int size){
+    std::ostream_iterator<int> it(std::cout, " ");
+    std::copy(vec, vec+size, it);
+    std::cout << std::endl;
+}

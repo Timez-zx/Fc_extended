@@ -448,11 +448,12 @@ uint16_t FcExtended::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_
     double cost = ksp.Init(src, dst);
     int pathCount = 0, pathLen, vcUsed, pastLayer, lastPass, layerHashValue;
     int srcInter, dstInter, srcLayer, dstLayer;
-    int path[1000], layerPass[1000];
+    int path[1000], layerPass[1000], swPass[1000];
     uint16_t dataNum=0, realPath[1000];
     std::vector<int> layerInfor(2);
     std::vector<Link*> shortestPath;
     std::vector<int> extractLayerPass;
+    std::vector<int> extractSwPass;
 
     while(cost < 10000 & pathCount < pathNum){
         vcUsed = 1;
@@ -474,16 +475,22 @@ uint16_t FcExtended::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_
             dstLayer = layerInfor[1];
             layerPass[2*i] = srcLayer;
             layerPass[2*i+1] = dstLayer;
+            swPass[2*i] = path[i];
+            swPass[2*i+1] = path[i+1];
         }
         for(int i = 0; i < 2*(pathLen-1); i++){
-            if(layerPass[i] != lastPass)
+            if(layerPass[i] != lastPass){
                 extractLayerPass.push_back(layerPass[i]);
+                extractSwPass.push_back(swPass[i]);
+            }
             lastPass = layerPass[i];
         }
         for(int i = 0; i < extractLayerPass.size()-1; i++){
             srcLayer = extractLayerPass[i];
             if(srcLayer < pastLayer && srcLayer < extractLayerPass[i+1]){
-                vcUsed++;
+                if(swTovirLayer[extractSwPass[i]] > srcLayer){
+                    vcUsed++;
+                }
             }
             pastLayer = srcLayer;
         } 
