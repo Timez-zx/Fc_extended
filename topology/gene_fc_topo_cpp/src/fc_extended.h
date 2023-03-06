@@ -45,7 +45,7 @@ class FcExtended: public BasicGeneFc{
         std::vector<int> stackGlobal;
         int maxNodePass;
 
-        std::unordered_map<int,int> swTovirLayer;
+        std::vector<int> swTovirLayer;
         std::unordered_map<int,int> swPairToLayerPair;
         std::string topoPath;
         Graph **graphPr=NULL;

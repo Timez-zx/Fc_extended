@@ -21,7 +21,7 @@ int main(int argc, char* argv[]){
         randomSeed = atoi(argv[2]);
         layerAdd = atoi(argv[3]);
     }
-    // std::vector<int> layerDegrees = {1, 2, 2, 2, 2, 2, 4, 3};
+    // std::vector<int> layerDegrees = {1, 2, 2, 2, 2, 5, 4};
     std::vector<int> layerDegrees = {1, 2, 2, 2, 2, 2, 2, 2, 2, 1};
     FcExtended fcTest(switches, layerIn, totalUpPort, layerDegrees);
     fcTest.ChangeRand(randomSeed);

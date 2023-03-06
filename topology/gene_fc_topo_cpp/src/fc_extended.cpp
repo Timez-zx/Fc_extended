@@ -198,6 +198,7 @@ void FcExtended::GetCycleEdge(int layer){
     linkIndex.push_back(0);
     lastIndex = 0;
     visitedGlobal.resize(totalNode);
+    swTovirLayer.resize(switches);
     for(int i = layerNum-1; i > 0; i--){
         linkIndex.push_back((layerDegrees[i]-initDegree)*switches+lastIndex);
         lastIndex += (layerDegrees[i]-initDegree)*switches;
@@ -239,6 +240,7 @@ void FcExtended::GetCycleEdge(int layer){
             }
         }
     }
+    PrintVectorInt(swTovirLayer);
     show(totalEdgeAdd);
 }
 
@@ -463,6 +465,7 @@ uint16_t FcExtended::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_
         lastPass = -1;
         shortestPath.clear();
         extractLayerPass.clear();
+        extractSwPass.clear();
         shortestPath = ksp.GetPath();
         pathLen = cost+1;
         for(int i = 0; i < shortestPath.size(); i++)
@@ -493,6 +496,10 @@ uint16_t FcExtended::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_
                 if(swTovirLayer[extractSwPass[i]] > srcLayer){
                     vcUsed++;
                 }
+                // else{
+                //     PrintArrayInt(layerPass, 2*(pathLen-1));
+                //     // std::cout << swTovirLayer[extractSwPass[i]] << " " << srcLayer << std::endl;
+                // }
             }
             pastLayer = srcLayer;
         } 
