@@ -149,41 +149,16 @@ void FcExtended::GeneLink(std::vector<std::vector<int> > &possibleConnect){
 
 
 void FcExtended::DFS(const std::vector<int>& heads, const std::vector<Edge>& edges, int start, int end){
-    if(maxNodePass == 1)
-        return;
     visitedGlobal[start] = 1;
     stackGlobal.push_back(start);
     int nearVertex;
     std::set<int> setVer;
-    std::set<int> setEdge;
-    std::vector<int> realPath;
-    int swLabel1, swLabel2;
     if(start == end){
         for(int i = 0; i < stackGlobal.size(); i++){
             setVer.insert(GetSwLabel(stackGlobal[i]));
         }
-        realPath.push_back(GetSwLabel(stackGlobal[0]));
-        for(int i = 0; i < stackGlobal.size()-1; i++){
-            swLabel1 = GetSwLabel(stackGlobal[i]);
-            swLabel2 = GetSwLabel(stackGlobal[i+1]);
-            if(swLabel1 != swLabel2){
-                setEdge.insert(GetHash(swLabel1, swLabel2, switches));
-                setEdge.insert(GetHash(swLabel2, swLabel1, switches));
-                realPath.push_back(swLabel2);
-            }
-        }
-        if(setVer.size() < setEdge.size()/2){
-            maxNodePass = 1;
-        }
-        // else{
-        //     PrintVectorInt(realPath);
-        // }
-        // if(setVer.size() >= maxNodePass)
-        //     maxNodePass = setVer.size();
-        // else{
-        //     show(maxNodePass);
-        //     PrintVectorInt(realPath);
-        // }
+        if(setVer.size() >= maxNodePass)
+            maxNodePass = setVer.size();
         stackGlobal.pop_back();
         visitedGlobal[start] = 0;
         return;
@@ -250,7 +225,7 @@ void FcExtended::GetCycleEdge(int layer){
                 maxNodePass = 0;
                 cycleVer = partialVertex[rand()%partialVertex.size()];
                 DFS(heads, edges, GetVertexLabel(cycleVer,realLayer,0), GetVertexLabel(cycleVer,realLayer,1));
-                if(maxNodePass == 1){
+                if(maxNodePass > i+2){
                     RemoveVecEle(globalVertex, cycleVer);
                     RemoveVecEle(partialVertex, cycleVer);
                 }
