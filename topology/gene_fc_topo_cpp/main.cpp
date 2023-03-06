@@ -29,7 +29,7 @@ int main(int argc, char* argv[]){
     fcTest.GetCycleEdge();
     fcTest.SaveTopoInfor();
     fcTest.MthreadKsp(16, 32, 1, 1, 1000);
-    double throughput = fcTest.throughputTest("wr", 1, 32, 1, 14);
+    double throughput = fcTest.throughputTest("ur", 1, 32, 1, 14);
 
     
     gettimeofday(&end, NULL);
