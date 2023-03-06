@@ -28,8 +28,8 @@ int main(int argc, char* argv[]){
     fcTest.GeneTopo();
     fcTest.GetCycleEdge();
     fcTest.SaveTopoInfor();
-    fcTest.MthreadKsp(16, 32, 1, 1, 1000);
-    double throughput = fcTest.throughputTest("ur", 1, 32, 1, 14);
+    fcTest.MthreadKsp(16, 32, 100, 1, 1000);
+    double throughput = fcTest.throughputTest("ur", 1, 32, 100, 14);
 
     
     gettimeofday(&end, NULL);
