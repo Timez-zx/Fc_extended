@@ -22,8 +22,8 @@ class FcExtended: public BasicGeneFc{
         double throughputTest(const std::string& type, int seed, int pathNum, int vcNum, int hosts);
     private:
         void GeneLink(std::vector<std::vector<int> > &possibleConnect);
-        int GetVertexLabel(int swLabel, int layer, int ifDown);
-        int GetSwLabel(int vertexLabel);
+        inline int GetVertexLabel(int swLabel, int layer, int ifDown);
+        inline int GetSwLabel(int vertexLabel);
         void DFS(const std::vector<int>& heads, const std::vector<Edge>& edges, int start, int end);
         std::string GenePath(const std::string &path);
         std::string GenePathKsp(const std::string& path, int pathNum, int vcNum);
@@ -44,6 +44,7 @@ class FcExtended: public BasicGeneFc{
         std::vector<int> visitedGlobal;
         std::vector<int> stackGlobal;
         int maxNodePass;
+        int returnFlag;
 
         std::vector<int> swTovirLayer;
         std::unordered_map<int,int> swPairToLayerPair;
