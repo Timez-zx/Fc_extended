@@ -154,13 +154,12 @@ void FcExtended::DFS(const std::vector<int>& heads, const std::vector<Edge>& edg
     visitedGlobal[start] = 1;
     stackGlobal.push_back(start);
     int nearVertex;
-    // std::set<int> setVer;
     if(start == end){
-        // for(int i = 0; i < stackGlobal.size(); i++){
-        //     setVer.insert(GetSwLabel(stackGlobal[i]));
-        // }
-        if(GetSwLabel(stackGlobal[1]) !=  GetSwLabel(stackGlobal[stackGlobal.size()-2])){
-            returnFlag = 1;
+        for(int i = 0; i < stackGlobal.size()/2; i++){
+            if(GetSwLabel(stackGlobal[i]) != GetSwLabel(stackGlobal[stackGlobal.size()-i-1])){
+                returnFlag = 1;
+                break;
+            }
         }
         stackGlobal.pop_back();
         visitedGlobal[start] = 0;
@@ -244,31 +243,27 @@ void FcExtended::GetCycleEdge(int layer){
         //     }
         // }
     }
-    for(int i = 0; i < layerNum-1; i++){
-        realLayer = i;
-        if(realLayer >= layer){
-            partialVertex.assign(globalVertex.begin(), globalVertex.end());
-            while(partialVertex.size() > 0){
-                memset(&visitedGlobal[0], 0, sizeof(int)*totalNode);
-                stackGlobal.clear();
-                maxNodePass = layerNum-i;
-                returnFlag = 0;
-                cycleVer = partialVertex[rand()%partialVertex.size()];
-                DFS(heads, edges, GetVertexLabel(cycleVer,realLayer,0), GetVertexLabel(cycleVer,realLayer,1));
-                if(returnFlag){
-                    RemoveVecEle(partialVertex, cycleVer);
-                }
-                else{
-                    totalEdgeAdd++;
-                    if(swTovirLayer[cycleVer] > realLayer)
-                        swTovirLayer[cycleVer] = realLayer;
-                    // std::cout << GetVertexLabel(cycleVer,realLayer,1) << " " << GetVertexLabel(cycleVer,realLayer,0) << std::endl;
-                    AddEdges(heads, edges, GetVertexLabel(cycleVer,realLayer,1), GetVertexLabel(cycleVer,realLayer,0), edgeCount);
-                    RemoveVecEle(partialVertex, cycleVer);
-                    RemoveVecEle(globalVertex, cycleVer);
-                }
+    while(globalVertex.size() > 0){
+        cycleVer = globalVertex[rand()%globalVertex.size()];
+        for(int i = 0; i < layerNum-1; i++){
+            realLayer = layerNum-i-2;
+            memset(&visitedGlobal[0], 0, sizeof(int)*totalNode);
+            stackGlobal.clear();
+            returnFlag = 0;
+            DFS(heads, edges, GetVertexLabel(cycleVer,realLayer,0), GetVertexLabel(cycleVer,realLayer,1));
+            if(returnFlag){
+                RemoveVecEle(globalVertex, cycleVer);
+                break;
+            }
+            else{
+                totalEdgeAdd++;
+                swTovirLayer[cycleVer] = realLayer;
+                if(i > 0)
+                    DeleLastEdges(heads, edges, edgeCount);
+                AddEdges(heads, edges, GetVertexLabel(cycleVer,realLayer,1), GetVertexLabel(cycleVer,realLayer,0), edgeCount);
             }
         }
+
     }
     PrintVectorInt(swTovirLayer);
     show(totalEdgeAdd);
