@@ -654,7 +654,7 @@ double FcWithFlatEdge::throughputTest(const std::string& type, int seed, int pat
     int lenSize = ftell(ofsLen);
     rewind(ofsLen);
     fseek(ofs, 0, SEEK_END);
-    int fileSize = ftell(ofs);
+    int64_t fileSize = ftell(ofs);
     rewind(ofs);
     uint16_t *pairLen = new uint16_t[lenSize/2];
     uint16_t *pairInfor = new uint16_t[fileSize/2];
