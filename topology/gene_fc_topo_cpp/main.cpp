@@ -11,7 +11,7 @@ int main(int argc, char* argv[]){
     struct timeval start, end;
     gettimeofday(&start, NULL);
     int switches = 100;
-    int layerIn = 8;
+    int layerIn = 10;
     int totalUpPort = 18;
     int randomSeed = 1;
     int mode = 0;
@@ -20,8 +20,8 @@ int main(int argc, char* argv[]){
         randomSeed = atoi(argv[2]);
         mode = atoi(argv[3]);
     }
-    std::vector<int> layerDegrees = {1, 2, 2, 2, 2, 2, 4, 3};
-    // std::vector<int> layerDegrees = {1, 2, 2, 2, 2, 2, 2, 2, 2, 1};
+    // std::vector<int> layerDegrees = {1, 2, 2, 2, 2, 2, 4, 3};
+    std::vector<int> layerDegrees = {1, 2, 2, 2, 2, 2, 2, 2, 2, 1};
     FcExtended fcTest(switches, layerIn, totalUpPort, layerDegrees);
     fcTest.ChangeRand(randomSeed);
     fcTest.TopoBuildMode(mode);
