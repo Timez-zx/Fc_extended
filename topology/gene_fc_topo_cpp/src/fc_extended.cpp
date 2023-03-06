@@ -184,7 +184,7 @@ int FcExtended::GetSwLabel(int vertexLabel){
 }
 
 
-void FcExtended::GetCycleEdge(){
+void FcExtended::GetCycleEdge(int layer){
     int totalNode, maxEdgeNum, edgeCount = 0, initDegree = 0, lastIndex, realLayer, cycleVer;
     int totalEdgeAdd = 0;
     totalNode = switches*layerNum*2;
@@ -217,23 +217,25 @@ void FcExtended::GetCycleEdge(){
             AddEdges(heads, edges, GetVertexLabel(linkInfor[j].srcNode.swLabel,realLayer+1,1), GetVertexLabel(linkInfor[j].dstNode.swLabel,realLayer,1), edgeCount);
             AddEdges(heads, edges, GetVertexLabel(linkInfor[j].dstNode.swLabel,realLayer,0), GetVertexLabel(linkInfor[j].srcNode.swLabel,realLayer+1,0), edgeCount);
         }
-        partialVertex.assign(globalVertex.begin(), globalVertex.end());
-        while(partialVertex.size() > 0){
-            memset(&visitedGlobal[0], 0, sizeof(int)*totalNode);
-            stackGlobal.clear();
-            maxNodePass = 0;
-            cycleVer = partialVertex[rand()%partialVertex.size()];
-            DFS(heads, edges, GetVertexLabel(cycleVer,realLayer,0), GetVertexLabel(cycleVer,realLayer,1));
-            if(maxNodePass > i+2){
-                RemoveVecEle(globalVertex, cycleVer);
-                RemoveVecEle(partialVertex, cycleVer);
-            }
-            else{
-                totalEdgeAdd++;
-                swTovirLayer[cycleVer] = realLayer;
-                // std::cout << GetVertexLabel(cycleVer,realLayer,1) << " " << GetVertexLabel(cycleVer,realLayer,0) << std::endl;
-                AddEdges(heads, edges, GetVertexLabel(cycleVer,realLayer,1), GetVertexLabel(cycleVer,realLayer,0), edgeCount);
-                RemoveVecEle(partialVertex, cycleVer);
+        if(realLayer <= layer){
+            partialVertex.assign(globalVertex.begin(), globalVertex.end());
+            while(partialVertex.size() > 0){
+                memset(&visitedGlobal[0], 0, sizeof(int)*totalNode);
+                stackGlobal.clear();
+                maxNodePass = 0;
+                cycleVer = partialVertex[rand()%partialVertex.size()];
+                DFS(heads, edges, GetVertexLabel(cycleVer,realLayer,0), GetVertexLabel(cycleVer,realLayer,1));
+                if(maxNodePass > i+2){
+                    RemoveVecEle(globalVertex, cycleVer);
+                    RemoveVecEle(partialVertex, cycleVer);
+                }
+                else{
+                    totalEdgeAdd++;
+                    swTovirLayer[cycleVer] = realLayer;
+                    // std::cout << GetVertexLabel(cycleVer,realLayer,1) << " " << GetVertexLabel(cycleVer,realLayer,0) << std::endl;
+                    AddEdges(heads, edges, GetVertexLabel(cycleVer,realLayer,1), GetVertexLabel(cycleVer,realLayer,0), edgeCount);
+                    RemoveVecEle(partialVertex, cycleVer);
+                }
             }
         }
     }

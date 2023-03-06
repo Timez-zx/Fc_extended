@@ -15,7 +15,7 @@ class FcExtended: public BasicGeneFc{
         void TopoBuildMode(int ifFast){
             fastTopoBuild = ifFast;
         }
-        void GetCycleEdge();
+        void GetCycleEdge(int layer);
         void SaveTopoInfor();
         uint16_t SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_t *pathInfor, int threadLabel);
         void MthreadKsp(int threadNum, int pathNum, int vcNum, bool ifReport, int reportInter);

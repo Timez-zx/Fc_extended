@@ -15,10 +15,11 @@ int main(int argc, char* argv[]){
     int totalUpPort = 18;
     int randomSeed = 1;
     int mode = 0;
+    int layerAdd = 8;
     if(argc == 4){
         switches = atoi(argv[1]);
         randomSeed = atoi(argv[2]);
-        mode = atoi(argv[3]);
+        layerAdd = atoi(argv[3]);
     }
     // std::vector<int> layerDegrees = {1, 2, 2, 2, 2, 2, 4, 3};
     std::vector<int> layerDegrees = {1, 2, 2, 2, 2, 2, 2, 2, 2, 1};
@@ -26,10 +27,10 @@ int main(int argc, char* argv[]){
     fcTest.ChangeRand(randomSeed);
     fcTest.TopoBuildMode(mode);
     fcTest.GeneTopo();
-    fcTest.GetCycleEdge();
+    fcTest.GetCycleEdge(layerAdd);
     fcTest.SaveTopoInfor();
-    fcTest.MthreadKsp(16, 32, 100, 1, 1000);
-    double throughput = fcTest.throughputTest("ur", 1, 32, 100, 14);
+    fcTest.MthreadKsp(16, 32, 1, 1, 1000);
+    double throughput = fcTest.throughputTest("wr", 1, 32, 1, 14);
 
     
     gettimeofday(&end, NULL);
