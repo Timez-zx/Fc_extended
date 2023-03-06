@@ -266,3 +266,31 @@ void FcExtended::SaveTopoInfor(){
     topoPath = "data/topo_infor/" + fileDirPath + "/" + fileDirPath+".txt";
 }
 
+
+std::string FcExtended::GenePathKsp(const std::string& path, int pathNum, int vcNum){
+    if(access(path.c_str(), 0)){
+        std::string cmd("mkdir ");
+        cmd += path;
+        int temp = system(cmd.c_str());
+    }
+    std::string fileDirPath("");
+    fileDirPath += "sw";
+    fileDirPath += std::to_string(switches);
+    fileDirPath += "_vir";
+    for(int i = 0; i < layerNum; i++)
+        fileDirPath += std::to_string(layerDegrees[i]);
+    fileDirPath += "_rand";
+    fileDirPath += std::to_string(randomSeed);
+    fileDirPath += "_";
+    fileDirPath += std::to_string(pathNum);
+    fileDirPath += "_";
+    fileDirPath += std::to_string(vcNum);
+    if(access((path + fileDirPath).c_str(), 0)){
+        std::string cmd("mkdir ");
+        cmd += path;
+        cmd += fileDirPath;
+        int temp = system(cmd.c_str());
+    }
+    return fileDirPath;
+}
+

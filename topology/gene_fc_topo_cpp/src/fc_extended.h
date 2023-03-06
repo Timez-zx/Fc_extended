@@ -23,6 +23,7 @@ class FcExtended: public BasicGeneFc{
         int GetSwLabel(int vertexLabel);
         void DFS(const std::vector<int>& heads, const std::vector<Edge>& edges, int start, int end);
         std::string GenePath(const std::string &path);
+        std::string GenePathKsp(const std::string& path, int pathNum, int vcNum);
     
     
     private:
