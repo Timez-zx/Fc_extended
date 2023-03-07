@@ -426,6 +426,7 @@ void FcExtended::ThreadKsp(const std::vector<Pair> &routePairs, int threadLabel,
     uint16_t* tempData;
     uint16_t* tempInfor = new uint16_t[switches*1000];
     uint16_t** storePairsInfo = new uint16_t*[reportInter];
+    int pathFind;
     std::vector<uint16_t> storeInfoLen;
 
     std::string filePath("data/all_graph_route_ksp/" + storeFile + "/" + storeFile + std::to_string(threadLabel));
@@ -434,7 +435,7 @@ void FcExtended::ThreadKsp(const std::vector<Pair> &routePairs, int threadLabel,
     ofsLen = fopen(lenPath.c_str(), "w");
 
     for(int i = 0; i < routePairs.size(); i++){
-        dataNum  = SearchKsp(routePairs[i].src, routePairs[i].dst, pathNum, vcNum, tempInfor, threadLabel);
+        dataNum  = SearchKsp(routePairs[i].src, routePairs[i].dst, pathNum, vcNum, tempInfor, threadLabel, pathFind);
         if(ifReport){
             count++;
             if(count % reportInter == 0)
@@ -443,7 +444,7 @@ void FcExtended::ThreadKsp(const std::vector<Pair> &routePairs, int threadLabel,
         tempData = new uint16_t[dataNum];
         memcpy(tempData, tempInfor, sizeof(uint16_t)*dataNum);
         storePairsInfo[storeCount] = tempData;
-        storeInfoLen.push_back(pathNum);
+        storeInfoLen.push_back(pathFind);
         storeInfoLen.push_back(dataNum);
         storeCount++;
         if(storeCount == reportInter) {
@@ -472,7 +473,7 @@ void FcExtended::ThreadKsp(const std::vector<Pair> &routePairs, int threadLabel,
 }
 
 
-uint16_t FcExtended::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_t *pathInfor, int threadLabel){
+uint16_t FcExtended::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_t *pathInfor, int threadLabel, int &pathFind){
     KShortestPath ksp(graphPr[threadLabel]);
     double cost = ksp.Init(src, dst);
     int pathCount = 0, pathLen, vcUsed, pastLayer, lastPass, layerHashValue;
@@ -532,6 +533,8 @@ uint16_t FcExtended::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_
         if(vcUsed > vcNum)
             continue;
         else{
+            // PrintArrayInt(path, pathLen);
+            // PrintArrayInt(layerPass, 2*(pathLen-1));
             pathCount++;
             for(int i = 0; i < pathLen-1; i++){
                 if(layerPass[2*i] < layerPass[2*i+1]){
@@ -548,6 +551,7 @@ uint16_t FcExtended::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_
             dataNum += 2*(pathLen-1);
         }
     }
+    pathFind = pathCount;
     return dataNum;
 }
 

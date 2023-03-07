@@ -17,7 +17,7 @@ class FcExtended: public BasicGeneFc{
         }
         void GetCycleEdge(int layer);
         void SaveTopoInfor();
-        uint16_t SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_t *pathInfor, int threadLabel);
+        uint16_t SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_t *pathInfor, int threadLabel, int& pathFind);
         void MthreadKsp(int threadNum, int pathNum, int vcNum, bool ifReport, int reportInter);
         double throughputTest(const std::string& type, int seed, int pathNum, int vcNum, int hosts);
     private:
