@@ -156,6 +156,7 @@ void FcExtended::DFS(const std::vector<int>& heads, const std::vector<Edge>& edg
     int nearVertex;
     if(start == end){
         for(int i = 0; i < stackGlobal.size()/2; i++){
+        // for(int i = 0; i < 2; i++){
             if(GetSwLabel(stackGlobal[i]) != GetSwLabel(stackGlobal[stackGlobal.size()-i-1])){
                 returnFlag = 1;
                 break;
@@ -252,7 +253,6 @@ void FcExtended::GetCycleEdge(int layer){
             returnFlag = 0;
             DFS(heads, edges, GetVertexLabel(cycleVer,realLayer,0), GetVertexLabel(cycleVer,realLayer,1));
             if(returnFlag){
-                RemoveVecEle(globalVertex, cycleVer);
                 break;
             }
             else{
@@ -263,7 +263,7 @@ void FcExtended::GetCycleEdge(int layer){
                 AddEdges(heads, edges, GetVertexLabel(cycleVer,realLayer,1), GetVertexLabel(cycleVer,realLayer,0), edgeCount);
             }
         }
-
+        RemoveVecEle(globalVertex, cycleVer);
     }
     PrintVectorInt(swTovirLayer);
     show(totalEdgeAdd);
