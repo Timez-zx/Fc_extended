@@ -476,7 +476,7 @@ void FcExtended::ThreadKsp(const std::vector<Pair> &routePairs, int threadLabel,
 uint16_t FcExtended::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_t *pathInfor, int threadLabel, int &pathFind){
     KShortestPath ksp(graphPr[threadLabel]);
     double cost = ksp.Init(src, dst);
-    int pathCount = 0, pathLen, vcUsed, pastLayer, lastPass, layerHashValue;
+    int pathCount = 0, pathLen, vcUsed, pastLayer, lastPass, layerHashValue, totalPath=0;
     int srcInter, dstInter, srcLayer, dstLayer;
     int path[1000], layerPass[1000], swPass[1000];
     uint16_t dataNum=0, realPath[1000];
@@ -485,7 +485,7 @@ uint16_t FcExtended::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_
     std::vector<int> extractLayerPass;
     std::vector<int> extractSwPass;
 
-    while(cost < 10000 & pathCount < pathNum){
+    while(cost < 10000 & pathCount < pathNum & totalPath < 1e4){
         vcUsed = 1;
         pastLayer = 0;
         lastPass = -1;
@@ -530,10 +530,10 @@ uint16_t FcExtended::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_
             pastLayer = srcLayer;
         } 
         cost = ksp.FindNextPath();
+        totalPath++;
         if(vcUsed > vcNum)
             continue;
         else{
-            // PrintArrayInt(path, pathLen);
             // PrintArrayInt(layerPass, 2*(pathLen-1));
             pathCount++;
             for(int i = 0; i < pathLen-1; i++){
