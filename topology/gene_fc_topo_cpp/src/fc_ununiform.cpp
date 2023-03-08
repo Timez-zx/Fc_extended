@@ -77,6 +77,7 @@ void FcUnuniform::GeneLink(std::vector<std::vector<int> > &possibleConnect, std:
     std::vector<int> degreeList(maxLayerLabel, layerDegrees[0]);
     std::vector<int> upLayerDegrees;
     std::vector<int> downLayerDegrees, downRemain;
+    std::set<int> temp;
 
     for(int i = 1; i < maxLayerLabel-1; i++)
         degreeList[i] = layerDegrees[1]/2;
@@ -112,6 +113,7 @@ void FcUnuniform::GeneLink(std::vector<std::vector<int> > &possibleConnect, std:
                     RemoveVecEle(downRemain, dst);
                 RemoveVecEle(possibleConnect[src], dst);
                 RemoveVecEle(possibleConnect[dst], src);
+                temp.insert(GetHash(src, dst, switches));
                 linkInfor.push_back(SwLink(SwNode(src, i), SwNode(dst, i-1)));
                 // std::cout << src << " " << dst << " " << i << " " << i-1 <<std::endl;
                 bitMap[src][dst] = 1;
@@ -124,6 +126,7 @@ void FcUnuniform::GeneLink(std::vector<std::vector<int> > &possibleConnect, std:
     // for(int i = 0; i < switches; i++){
     //     show(possibleConnect[i].size());
     // }
+    show(temp.size());
 
     show("Topo constructed!");
 }
