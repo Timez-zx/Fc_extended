@@ -73,36 +73,53 @@ void FcUnuniform::GeneTopo(){
 
 void FcUnuniform::GeneLink(std::vector<std::vector<int> > &possibleConnect, std::vector<std::vector<int> > &layerSwitch){
     int upLayerDegree, downLayerDegree;
-    int src, dst;
+    int src, dst, lastdst, lastsrc;
     std::vector<int> degreeList(maxLayerLabel, layerDegrees[0]);
     std::vector<int> upLayerDegrees;
     std::vector<int> downLayerDegrees, downRemain;
+
     for(int i = 1; i < maxLayerLabel-1; i++)
         degreeList[i] = layerDegrees[1]/2;
     for(int i = 1; i < maxLayerLabel; i++){
-        show(i);
         upLayerDegrees.clear();
         downLayerDegrees.clear();
         downRemain.clear();
         upLayerDegrees.assign(switches, degreeList[i]);
-        downLayerDegrees.assign(switches, degreeList[i-1]);
+        downLayerDegrees.assign(switches, 0);
+        for(int j = 0; j < layerSwitch[i-1].size(); j++)
+            downLayerDegrees[layerSwitch[i-1][j]] = degreeList[i-1];
         downRemain.assign(layerSwitch[i-1].begin(), layerSwitch[i-1].end());
         for(int j = 0; j < layerSwitch[i].size(); j++){
             src = layerSwitch[i][j];
             for(int k = 0; k < upLayerDegrees[0]; k++){
-                dst = possibleConnect[src][rand()%possibleConnect[src].size()];
-                while(!FindVecEle(downRemain, dst)){
-                    dst = possibleConnect[src][rand()%possibleConnect[src].size()];
+                dst = max_element(downLayerDegrees.begin(), downLayerDegrees.end()) - downLayerDegrees.begin();
+                // dst = downRemain[rand()%downRemain.size()];
+                // dst = possibleConnect[src][rand()%possibleConnect[src].size()];
+                while(!FindVecEle(possibleConnect[src], dst)){
+                    if(downRemain.size() == 1){
+                        // if(downLayerDegrees[lastdst] == 0)
+                        downRemain.push_back(lastdst);
+                        downLayerDegrees[lastdst]++;
+                        possibleConnect[lastsrc].push_back(lastdst);
+                        possibleConnect[lastdst].push_back(lastsrc);
+                        // k--;
+                    }
+                    dst = downRemain[rand()%downRemain.size()];
+                    // std::cout << src << " " << dst << " " << downRemain.size() << std::endl;
                 }
                 downLayerDegrees[dst]--;
                 if(downLayerDegrees[dst] == 0)
                     RemoveVecEle(downRemain, dst);
-                // std::cout << src << " " << dst << " " << downRemain.size() << std::endl;
                 RemoveVecEle(possibleConnect[src], dst);
                 RemoveVecEle(possibleConnect[dst], src);
+                lastdst = dst;
+                lastsrc = src;
             }
         }
     }
+    // for(int i = 0; i < switches; i++){
+    //     show(possibleConnect[i].size());
+    // }
 
     show("Topo constructed!");
 }
