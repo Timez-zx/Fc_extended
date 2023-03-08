@@ -55,7 +55,7 @@ int main(int argc, char* argv[]){
     }
     fcTest.SaveTopoInfor();
     fcTest.MthreadKsp(16, 32, 1, 1, 1000);
-    double throughput = fcTest.throughputTest("ur", 2, 32, 1, 14);
+    double throughput = fcTest.throughputTest("wr", 2, 32, 1, 14);
 
     
     gettimeofday(&end, NULL);
