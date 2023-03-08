@@ -35,17 +35,18 @@ int main(int argc, char* argv[]){
     // double throughput = fcTest.throughputTest("wr", 1, 32, 1, 14);
 
     int switches = 100;
-    int layerIn = 5;
-    int totalUpPort = 26;
+    int layerIn = 4;
+    int totalUpPort = 18;
     int randomSeed = 1;
     int mode = 0;
-    int maxLayerLabel = 14;
-    if(argc == 2){
+    int maxLayerLabel = 10;
+    if(argc == 3){
         switches = atoi(argv[1]);
+        randomSeed = atoi(argv[2]);
     }
-    std::vector<int> layerDegrees = {1, 8, 8, 8, 1};
+    std::vector<int> layerDegrees = {1, 8, 8, 1};
     FcUnuniform fcTest(switches, layerIn, totalUpPort, maxLayerLabel,layerDegrees);
-    for(int i = 0; i < 1000; i++){
+    for(int i = randomSeed; i < 1000; i++){
         fcTest.ChangeRand(i);
         fcTest.GeneTopo();
         if(fcTest.topoStatus){
