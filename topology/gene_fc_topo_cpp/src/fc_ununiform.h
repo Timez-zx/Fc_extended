@@ -20,7 +20,7 @@ class FcUnuniform: public BasicGeneFc{
         // void MthreadKsp(int threadNum, int pathNum, int vcNum, bool ifReport, int reportInter);
         // double throughputTest(const std::string& type, int seed, int pathNum, int vcNum, int hosts);
     private:
-        void GeneLink(std::vector<std::vector<int> > &possibleConnect);
+        void GeneLink(std::vector<std::vector<int> > &possibleConnect, std::vector<std::vector<int> > &layerSwitch);
         // std::string GenePath(const std::string &path);
         // std::string GenePathKsp(const std::string& path, int pathNum, int vcNum);
         // void ThreadKsp(const std::vector<Pair> &routePairs, int threadLabel, int pathNum, int vcNum, bool ifReport, int reportInter, std::string storeFile);

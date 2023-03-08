@@ -54,11 +54,9 @@ void FcUnuniform::GeneTopo(){
             layerSwitch[layerChoose].push_back(i);
         }
     }
-
-    for(int i = 0; i < maxLayerLabel; i++){
-        PrintVectorInt(layerSwitch[i]);
-    }
-
+    // for(int i = 0; i < maxLayerLabel; i++){
+    //     PrintVectorInt(layerSwitch[i]);
+    // }
     for(int i = 0; i < switches; i++){
         possibleConnect[i].assign(tempVec.begin(), tempVec.end());
         RemoveVecEle(possibleConnect[i], i);
@@ -69,11 +67,42 @@ void FcUnuniform::GeneTopo(){
         bitMap[i] = new int[switches];
         memset(bitMap[i], 0, sizeof(int)*switches);
     }
-    GeneLink(possibleConnect);
+    GeneLink(possibleConnect, layerSwitch);
 }
 
 
-void FcUnuniform::GeneLink(std::vector<std::vector<int> > &possibleConnect){
+void FcUnuniform::GeneLink(std::vector<std::vector<int> > &possibleConnect, std::vector<std::vector<int> > &layerSwitch){
+    int upLayerDegree, downLayerDegree;
+    int src, dst;
+    std::vector<int> degreeList(maxLayerLabel, layerDegrees[0]);
+    std::vector<int> upLayerDegrees;
+    std::vector<int> downLayerDegrees, downRemain;
+    for(int i = 1; i < maxLayerLabel-1; i++)
+        degreeList[i] = layerDegrees[1]/2;
+    for(int i = 1; i < maxLayerLabel; i++){
+        show(i);
+        upLayerDegrees.clear();
+        downLayerDegrees.clear();
+        downRemain.clear();
+        upLayerDegrees.assign(switches, degreeList[i]);
+        downLayerDegrees.assign(switches, degreeList[i-1]);
+        downRemain.assign(layerSwitch[i-1].begin(), layerSwitch[i-1].end());
+        for(int j = 0; j < layerSwitch[i].size(); j++){
+            src = layerSwitch[i][j];
+            for(int k = 0; k < upLayerDegrees[0]; k++){
+                dst = possibleConnect[src][rand()%possibleConnect[src].size()];
+                while(!FindVecEle(downRemain, dst)){
+                    dst = possibleConnect[src][rand()%possibleConnect[src].size()];
+                }
+                downLayerDegrees[dst]--;
+                if(downLayerDegrees[dst] == 0)
+                    RemoveVecEle(downRemain, dst);
+                // std::cout << src << " " << dst << " " << downRemain.size() << std::endl;
+                RemoveVecEle(possibleConnect[src], dst);
+                RemoveVecEle(possibleConnect[dst], src);
+            }
+        }
+    }
 
     show("Topo constructed!");
 }
