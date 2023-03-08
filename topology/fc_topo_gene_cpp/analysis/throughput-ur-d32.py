@@ -36,7 +36,7 @@ def cost_equivalent_clos(num_eps, num_servers, eps_port_count):
 if __name__ == "__main__":
   to_hosts = 14
   switches = [50, 100, 150, 200, 250, 300, 400, 500]
-  routings = ["ksp", "fc_ksp", "ed"]
+  routings = ["ksp", "fc_ksp", "ed", "ksp_ununiform"]
   patterns = ["uniform random"]
   throughput_map = {}
   for pattern in patterns:
@@ -60,6 +60,7 @@ if __name__ == "__main__":
   ksp_throughputs = []
   fc_ksp_throughputs = []
   ed_throughputs = []
+  ununiform_ksp10_throughputs = []
 
   equal_cost_clos = []
   for i in switches:
@@ -72,12 +73,14 @@ if __name__ == "__main__":
     ksp_throughputs.append(throughput_map[pattern]["ksp"][switch])
     fc_ksp_throughputs.append(throughput_map[pattern]["fc_ksp"][switch])
     ed_throughputs.append(throughput_map[pattern]["ed"][switch])
+    ununiform_ksp10_throughputs.append(throughput_map[pattern]["ksp_ununiform"][switch])
     
 
 
   fc_ksp_throughputs = np.array(fc_ksp_throughputs, dtype=float)
   ed_throughputs = np.array(ed_throughputs, dtype=float)
   ksp_throughputs = np.array(ksp_throughputs, dtype=float)
+  ununiform_ksp10_throughputs = np.array(ununiform_ksp10_throughputs, dtype=float)
 
   x = np.arange(len(switches))
   width = 0.2
@@ -86,7 +89,8 @@ if __name__ == "__main__":
   ax.plot(x , ksp_throughputs, marker='*', color='r',lw=1, label='KSP')
   ax.plot(x , ed_throughputs, marker='o', color='darkorange',lw=1, label='EDGE DIS')
   ax.plot(x , equal_cost_clos, marker='x', color='mediumpurple', lw=1, label='CLOS')
-  ax.plot(x , fc_ksp_throughputs, marker='.', color='black', lw=1, label='FC-KSP')
+  ax.plot(x , fc_ksp_throughputs, marker='s', color='c', lw=1, label='FC-KSP')
+  ax.plot(x , ununiform_ksp10_throughputs, marker='.', color='black', lw=1, label='KSP-UNUNI')
 
   ax.set_xticks(x)
   ax.set_xticklabels(np.array(switches) * to_hosts)
