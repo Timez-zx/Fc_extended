@@ -102,7 +102,7 @@ if __name__ == "__main__":
   ax.plot(x , edge_disjoin_throughputs, marker='o', color='darkorange',lw=1, label='EDGE DIS')
   ax.plot(x , equal_cost_clos, marker='x', color='mediumpurple', lw=1, label='CLOS')
   ax.plot(x , up_down_ksp10_throughputs, marker='s', color='c', lw=1, label='KSP-UP10')
-  ax.plot(x , ununiform_ksp10_throughputs, marker='.', color='black', lw=1, label='KSP-UP10')
+  ax.plot(x , ununiform_ksp10_throughputs, marker='.', color='black', lw=1, label='KSP-UNUNI')
 
   ax.set_xticks(x)
   ax.set_xticklabels(np.array(switches) * to_hosts)
