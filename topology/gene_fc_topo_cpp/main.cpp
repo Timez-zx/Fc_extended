@@ -39,7 +39,7 @@ int main(int argc, char* argv[]){
     int totalUpPort = 18;
     int randomSeed = 1;
     int mode = 0;
-    int maxLayerLabel = 10;
+    int maxLayerLabel = 6;
     if(argc == 3){
         switches = atoi(argv[1]);
         randomSeed = atoi(argv[2]);
