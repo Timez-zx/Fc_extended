@@ -310,7 +310,7 @@ void FcUnuniform::ThreadKsp(const std::vector<Pair> &routePairs, int threadLabel
         storeInfoLen.push_back(dataNum);
         storeCount++;
         if(storeCount == reportInter) {
-            // exit(1);
+            exit(1);
             fwrite(&storeInfoLen[0], sizeof(uint16_t), storeCount*2, ofsLen);
             for(int j = 0; j < reportInter; j++){
                 fwrite(storePairsInfo[j], sizeof(uint16_t), storeInfoLen[2*j+1], ofs);
@@ -388,7 +388,7 @@ uint16_t FcUnuniform::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16
             continue;
         }
         else{
-            // PrintArrayInt(layerPass, 2*(pathLen-1));
+            PrintArrayInt(layerPass, 2*(pathLen-1));
             pathCount++;
             for(int i = 0; i < pathLen-1; i++){
                 if(layerPass[2*i] < layerPass[2*i+1]){
