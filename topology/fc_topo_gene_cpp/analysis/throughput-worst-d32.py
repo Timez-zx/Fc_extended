@@ -36,7 +36,7 @@ def cost_equivalent_clos(num_eps, num_servers, eps_port_count):
 if __name__ == "__main__":
   to_hosts = 14
   switches = [50, 100, 150, 200, 250, 300, 400, 500]
-  routings = ["ksp_tagger2", "ksp_tagger3", "ksp", "up_down_ksp", "edge_disjoint", "up_down_ksp10",]
+  routings = ["ksp_tagger2", "ksp_tagger3", "ksp", "up_down_ksp", "edge_disjoint", "up_down_ksp10","ksp_ununiform"]
   patterns = ["WORST"]
   throughput_map = {}
   for pattern in patterns:
@@ -63,6 +63,7 @@ if __name__ == "__main__":
   up_down_ksp_throughputs = []
   edge_disjoin_throughputs = []
   up_down_ksp10_throughputs = []
+  ununiform_ksp10_throughputs = []
 
   equal_cost_clos = []
   for i in switches:
@@ -78,6 +79,7 @@ if __name__ == "__main__":
     up_down_ksp_throughputs.append(throughput_map[pattern]["up_down_ksp"][switch])
     edge_disjoin_throughputs.append(throughput_map[pattern]["edge_disjoint"][switch])
     up_down_ksp10_throughputs.append(throughput_map[pattern]["up_down_ksp10"][switch])
+    ununiform_ksp10_throughputs.append(throughput_map[pattern]["ksp_ununiform"][switch])
     
 
 
@@ -87,6 +89,7 @@ if __name__ == "__main__":
   up_down_ksp_throughputs = np.array(up_down_ksp_throughputs, dtype=float)
   edge_disjoin_throughputs = np.array(edge_disjoin_throughputs, dtype=float)
   up_down_ksp10_throughputs = np.array(up_down_ksp10_throughputs, dtype=float)
+  ununiform_ksp10_throughputs = np.array(ununiform_ksp10_throughputs, dtype=float)
 
   x = np.arange(len(switches))
   width = 0.2
@@ -95,10 +98,11 @@ if __name__ == "__main__":
   # ax.plot(x , ksp_tagger2_throughputs, marker='s', lw=1, label='KSP_T2')
   # ax.plot(x , ksp_tagger3_throughputs, marker='<', color='greenyellow', lw=1, label='KSP_T3')
   ax.plot(x , ksp_throughputs, marker='*', color='r',lw=1, label='KSP')
-  ax.plot(x , up_down_ksp_throughputs, marker='h', color='c', lw=1, label='KSP-UD')
+  ax.plot(x , up_down_ksp_throughputs, marker='h', color='greenyellow', lw=1, label='KSP-UD')
   ax.plot(x , edge_disjoin_throughputs, marker='o', color='darkorange',lw=1, label='EDGE DIS')
   ax.plot(x , equal_cost_clos, marker='x', color='mediumpurple', lw=1, label='CLOS')
-  ax.plot(x , up_down_ksp10_throughputs, marker='.', color='black', lw=1, label='KSP-UP10')
+  ax.plot(x , up_down_ksp10_throughputs, marker='s', color='c', lw=1, label='KSP-UP10')
+  ax.plot(x , ununiform_ksp10_throughputs, marker='.', color='black', lw=1, label='KSP-UP10')
 
   ax.set_xticks(x)
   ax.set_xticklabels(np.array(switches) * to_hosts)
