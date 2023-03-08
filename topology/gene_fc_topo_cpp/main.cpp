@@ -49,7 +49,7 @@ int main(int argc, char* argv[]){
     fcTest.ChangeRand(randomSeed);
     fcTest.TopoBuildMode(mode);
     fcTest.GeneTopo();
-    // fcTest.SaveTopoInfor();
+    fcTest.SaveTopoInfor();
     // fcTest.MthreadKsp(1, 32, 1, 1, 1);
     // double throughput = fcTest.throughputTest("wr", 2, 32, 2, 14);
 
