@@ -43,7 +43,7 @@ void FcUnuniform::GeneTopo(){
     layerSwitch[0].resize(switches);
     InitVectorInt(layerSwitch[0]);
     layerSwitch[maxLayerLabel-1].assign(layerSwitch[0].begin(), layerSwitch[0].end());
-    mediumSwNum = switches/(layerDegrees[1]/2);
+    mediumSwNum = switches/(layerDegrees[1]/layerDegrees[0]/2);
     mediumLayer = layerNum-2;
     averageLabel = (maxLayerLabel-2)/mediumLayer;
     for(int i = 0; i < switches; i++){
