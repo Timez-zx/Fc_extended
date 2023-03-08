@@ -42,6 +42,8 @@ class FcUnuniform: public BasicGeneFc{
         std::unordered_map<int,int> swPairToLayerPair;
         std::string topoPath;
         Graph **graphPr=NULL;
+    public:
+        bool topoStatus;
 };
 
 

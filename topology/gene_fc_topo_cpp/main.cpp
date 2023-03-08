@@ -40,18 +40,22 @@ int main(int argc, char* argv[]){
     int randomSeed = 1;
     int mode = 0;
     int maxLayerLabel = 10;
-    if(argc == 3){
+    if(argc == 2){
         switches = atoi(argv[1]);
-        randomSeed = atoi(argv[2]);
     }
     std::vector<int> layerDegrees = {1, 8, 8, 1};
     FcUnuniform fcTest(switches, layerIn, totalUpPort, maxLayerLabel,layerDegrees);
-    fcTest.ChangeRand(randomSeed);
-    fcTest.TopoBuildMode(mode);
-    fcTest.GeneTopo();
+    for(int i = 0; i < 1000; i++){
+        fcTest.ChangeRand(i);
+        fcTest.GeneTopo();
+        if(fcTest.topoStatus){
+            show(i);
+            break;
+        }
+    }
     fcTest.SaveTopoInfor();
-    // fcTest.MthreadKsp(1, 32, 1, 1, 1);
-    // double throughput = fcTest.throughputTest("wr", 2, 32, 2, 14);
+    fcTest.MthreadKsp(16, 32, 1, 1, 1000);
+    double throughput = fcTest.throughputTest("ur", 2, 32, 1, 14);
 
     
     gettimeofday(&end, NULL);
