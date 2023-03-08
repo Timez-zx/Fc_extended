@@ -39,7 +39,7 @@ int main(int argc, char* argv[]){
     int totalUpPort = 18;
     int randomSeed = 1;
     int mode = 0;
-    int maxLayerLabel = 6;
+    int maxLayerLabel = 10;
     if(argc == 3){
         switches = atoi(argv[1]);
         randomSeed = atoi(argv[2]);
@@ -49,9 +49,9 @@ int main(int argc, char* argv[]){
     fcTest.ChangeRand(randomSeed);
     fcTest.TopoBuildMode(mode);
     fcTest.GeneTopo();
-    // fcTest.SaveTopoInfor();
-    // fcTest.MthreadKsp(16, 32, 1, 1, 1000);
-    // double throughput = fcTest.throughputTest("wr", 2, 32, 1, 14);
+    fcTest.SaveTopoInfor();
+    fcTest.MthreadKsp(16, 32, 2, 1, 1000);
+    double throughput = fcTest.throughputTest("wr", 2, 32, 2, 14);
 
     
     gettimeofday(&end, NULL);

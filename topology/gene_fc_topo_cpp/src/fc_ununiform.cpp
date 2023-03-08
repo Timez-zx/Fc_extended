@@ -347,7 +347,7 @@ uint16_t FcUnuniform::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16
     std::vector<Link*> shortestPath;
     std::vector<int> extractLayerPass;
 
-    while(cost < 10000 & pathCount < pathNum & totalPath < 1e4){
+    while(cost < 10000 & pathCount < pathNum & totalPath < 2e4){
         vcUsed = 1;
         pastLayer = 0;
         lastPass = -1;
