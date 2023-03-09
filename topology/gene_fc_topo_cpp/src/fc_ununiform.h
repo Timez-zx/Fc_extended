@@ -24,6 +24,7 @@ class FcUnuniform: public BasicGeneFc{
         void GeneLink(std::vector<std::vector<int> > &possibleConnect, std::vector<std::vector<int> > &layerSwitch);
         inline int GetVertexLabel(int swLabel, int layer, int ifDown);
         inline int GetSwLabel(int vertexLabel);
+        inline int GetLayerLabel(int vertexLabel);
         void DFS(const std::vector<int>& heads, const std::vector<Edge>& edges, int start, int end);
         std::string GenePath(const std::string &path);
         std::string GenePathKsp(const std::string& path, int pathNum, int vcNum);

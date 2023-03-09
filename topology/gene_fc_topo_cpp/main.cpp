@@ -63,7 +63,7 @@ int main(int argc, char* argv[]){
     double throughput = fcTest.throughputTest("wr", 1, 32, 1, 14);
 
     
-    // gettimeofday(&end, NULL);
+    gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     return 0;
 }

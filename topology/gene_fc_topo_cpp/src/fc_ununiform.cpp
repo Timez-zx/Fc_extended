@@ -46,6 +46,7 @@ void FcUnuniform::GeneTopo(){
     mediumSwNum = switches/(layerDegrees[1]/layerDegrees[0]/2);
     mediumLayer = layerNum-2;
     averageLabel = (maxLayerLabel-2)/mediumLayer;
+    swLayers.clear();
     swLayers.resize(switches);
     for(int i = 0; i < switches; i++){
         swLayers[i].push_back(0);
@@ -146,9 +147,7 @@ void FcUnuniform::DFS(const std::vector<int>& heads, const std::vector<Edge>& ed
     stackGlobal.push_back(start);
     int nearVertex;
     if(start == end){
-        // PrintVectorInt(stackGlobal);
         for(int i = 1; i < stackGlobal.size()/2; i++){
-        // for(int i = 0; i < 2; i++){
             if(GetSwLabel(stackGlobal[i]) != GetSwLabel(stackGlobal[stackGlobal.size()-i-1])){
                 returnFlag = 1;
                 break;
@@ -176,6 +175,10 @@ inline int FcUnuniform::GetVertexLabel(int swLabel, int layer, int ifDown){
 
 inline int FcUnuniform::GetSwLabel(int vertexLabel){
     return (vertexLabel%(switches*maxLayerLabel))%switches;
+}
+
+inline int FcUnuniform::GetLayerLabel(int vertexLabel){
+    return (vertexLabel%(switches*maxLayerLabel))/switches;
 }
 
 
