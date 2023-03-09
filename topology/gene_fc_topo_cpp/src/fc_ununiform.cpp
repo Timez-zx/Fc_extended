@@ -147,7 +147,7 @@ void FcUnuniform::DFS(const std::vector<int>& heads, const std::vector<Edge>& ed
     int nearVertex;
     if(start == end){
         // PrintVectorInt(stackGlobal);
-        for(int i = 0; i < stackGlobal.size()/2; i++){
+        for(int i = 1; i < stackGlobal.size()/2; i++){
         // for(int i = 0; i < 2; i++){
             if(GetSwLabel(stackGlobal[i]) != GetSwLabel(stackGlobal[stackGlobal.size()-i-1])){
                 returnFlag = 1;
@@ -179,7 +179,7 @@ inline int FcUnuniform::GetSwLabel(int vertexLabel){
 }
 
 
-void FcUnuniform::GetCycleEdge(){
+void FcUnuniform::GetCycleEdge(int randSeed){
     int totalNode, maxEdgeNum, edgeCount = 0, realLayer, cycleVer;
     int totalEdgeAdd = 0, src, dst, srcLayer, dstLayer;
     totalNode = switches*maxLayerLabel*2;
@@ -209,6 +209,7 @@ void FcUnuniform::GetCycleEdge(){
         AddEdges(heads, edges, GetVertexLabel(src,srcLayer,1), GetVertexLabel(dst,dstLayer,1), edgeCount);
         AddEdges(heads, edges, GetVertexLabel(dst,dstLayer,0), GetVertexLabel(src,srcLayer,0), edgeCount);
     }
+    srand(randSeed);
     while(globalVertex.size() > 0){
         cycleVer = globalVertex[rand()%globalVertex.size()];
         for(int i = 0; i < layerNum-1; i++){
@@ -444,11 +445,12 @@ uint16_t FcUnuniform::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16
     double cost = ksp.Init(src, dst);
     int pathCount = 0, pathLen, vcUsed, pastLayer, lastPass, layerHashValue, totalPath=0;
     int srcInter, dstInter, srcLayer, dstLayer;
-    int path[1000], layerPass[1000];
+    int path[1000], layerPass[1000], swPass[1000];
     uint16_t dataNum=0, realPath[1000];
     std::vector<int> layerInfor(2);
     std::vector<Link*> shortestPath;
     std::vector<int> extractLayerPass;
+    std::vector<int> extractSwPass;
 
     while(cost < 10000 & pathCount < pathNum & totalPath < 2e4){
         vcUsed = 1;
@@ -456,6 +458,7 @@ uint16_t FcUnuniform::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16
         lastPass = -1;
         shortestPath.clear();
         extractLayerPass.clear();
+        extractSwPass.clear();
         shortestPath = ksp.GetPath();
         pathLen = cost+1;
         for(int i = 0; i < shortestPath.size(); i++)
@@ -470,17 +473,22 @@ uint16_t FcUnuniform::SearchKsp(int src, int dst, int pathNum, int vcNum, uint16
             dstLayer = layerInfor[1];
             layerPass[2*i] = srcLayer;
             layerPass[2*i+1] = dstLayer;
+            swPass[2*i] = path[i];
+            swPass[2*i+1] = path[i+1];
         }
         for(int i = 0; i < 2*(pathLen-1); i++){
             if(layerPass[i] != lastPass){
                 extractLayerPass.push_back(layerPass[i]);
+                extractSwPass.push_back(swPass[i]);
             }
             lastPass = layerPass[i];
         }
         for(int i = 0; i < extractLayerPass.size()-1; i++){
             srcLayer = extractLayerPass[i];
             if(srcLayer < pastLayer && srcLayer < extractLayerPass[i+1]){
+                if(swTovirLayer[extractSwPass[i]] > srcLayer){
                     vcUsed++;
+                }
             }
             pastLayer = srcLayer;
         } 

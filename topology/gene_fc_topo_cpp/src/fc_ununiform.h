@@ -19,7 +19,7 @@ class FcUnuniform: public BasicGeneFc{
         uint16_t SearchKsp(int src, int dst, int pathNum, int vcNum, uint16_t *pathInfor, int threadLabel, int& pathFind);
         void MthreadKsp(int threadNum, int pathNum, int vcNum, bool ifReport, int reportInter);
         double throughputTest(const std::string& type, int seed, int pathNum, int vcNum, int hosts);
-        void GetCycleEdge();
+        void GetCycleEdge(int randSeed);
     private:
         void GeneLink(std::vector<std::vector<int> > &possibleConnect, std::vector<std::vector<int> > &layerSwitch);
         inline int GetVertexLabel(int swLabel, int layer, int ifDown);

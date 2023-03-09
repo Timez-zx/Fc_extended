@@ -9,8 +9,6 @@ using namespace std;
 
 
 int main(int argc, char* argv[]){
-    struct timeval start, end;
-    gettimeofday(&start, NULL);
     // int switches = 100;
     // int layerIn = 6;
     // int totalUpPort = 10;
@@ -40,9 +38,11 @@ int main(int argc, char* argv[]){
     int randomSeed = 1;
     int mode = 0;
     int maxLayerLabel = 10;
-    if(argc == 3){
+    int seed = 1;
+    if(argc == 4){
         switches = atoi(argv[1]);
         randomSeed = atoi(argv[2]);
+        seed = atoi(argv[3]);
     }
     std::vector<int> layerDegrees = {1, 8, 8, 1};
     FcUnuniform fcTest(switches, layerIn, totalUpPort, maxLayerLabel,layerDegrees);
@@ -54,10 +54,12 @@ int main(int argc, char* argv[]){
             break;
         }
     }
-    // fcTest.SaveTopoInfor();
-    fcTest.GetCycleEdge();
-    // fcTest.MthreadKsp(16, 32, 1, 1, 1000);
-    // double throughput = fcTest.throughputTest("ur", randomSeed, 32, 1, 14);
+    fcTest.GetCycleEdge(seed);
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
+    fcTest.SaveTopoInfor();
+    fcTest.MthreadKsp(16, 32, 1, 1, 1000);
+    double throughput = fcTest.throughputTest("wr", randomSeed, 32, 1, 14);
 
     
     gettimeofday(&end, NULL);
