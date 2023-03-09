@@ -59,10 +59,11 @@ int main(int argc, char* argv[]){
     gettimeofday(&start, NULL);
     fcTest.SaveTopoInfor();
     fcTest.MthreadKsp(16, 32, 1, 1, 1000);
+    gettimeofday(&end, NULL);
     double throughput = fcTest.throughputTest("wr", randomSeed, 32, 1, 14);
 
     
-    gettimeofday(&end, NULL);
+    // gettimeofday(&end, NULL);
     cout << "Time use: " << (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)/double(1e6) << "s" << endl;
     return 0;
 }

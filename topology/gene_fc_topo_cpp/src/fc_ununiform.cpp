@@ -210,27 +210,27 @@ void FcUnuniform::GetCycleEdge(int randSeed){
         AddEdges(heads, edges, GetVertexLabel(dst,dstLayer,0), GetVertexLabel(src,srcLayer,0), edgeCount);
     }
     srand(randSeed);
-    while(globalVertex.size() > 0){
-        cycleVer = globalVertex[rand()%globalVertex.size()];
-        for(int i = 0; i < layerNum-1; i++){
-            realLayer = swLayers[cycleVer][layerNum-i-2];
-            memset(&visitedGlobal[0], 0, sizeof(int)*totalNode);
-            stackGlobal.clear();
-            returnFlag = 0;
-            DFS(heads, edges, GetVertexLabel(cycleVer,realLayer,0), GetVertexLabel(cycleVer,realLayer,1));
-            if(returnFlag){
-                break;
-            }
-            else{
-                totalEdgeAdd++;
-                swTovirLayer[cycleVer] = realLayer;
-                if(i > 0)
-                    DeleLastEdges(heads, edges, edgeCount);
-                AddEdges(heads, edges, GetVertexLabel(cycleVer,realLayer,1), GetVertexLabel(cycleVer,realLayer,0), edgeCount);
-            }
-        }
-        RemoveVecEle(globalVertex, cycleVer);
-    }
+    // while(globalVertex.size() > 0){
+    //     cycleVer = globalVertex[rand()%globalVertex.size()];
+    //     for(int i = 0; i < layerNum-1; i++){
+    //         realLayer = swLayers[cycleVer][layerNum-i-2];
+    //         memset(&visitedGlobal[0], 0, sizeof(int)*totalNode);
+    //         stackGlobal.clear();
+    //         returnFlag = 0;
+    //         DFS(heads, edges, GetVertexLabel(cycleVer,realLayer,0), GetVertexLabel(cycleVer,realLayer,1));
+    //         if(returnFlag){
+    //             break;
+    //         }
+    //         else{
+    //             totalEdgeAdd++;
+    //             swTovirLayer[cycleVer] = realLayer;
+    //             if(i > 0)
+    //                 DeleLastEdges(heads, edges, edgeCount);
+    //             AddEdges(heads, edges, GetVertexLabel(cycleVer,realLayer,1), GetVertexLabel(cycleVer,realLayer,0), edgeCount);
+    //         }
+    //     }
+    //     RemoveVecEle(globalVertex, cycleVer);
+    // }
     PrintVectorInt(swTovirLayer);
     show(totalEdgeAdd);
 }
