@@ -46,16 +46,27 @@ void FcUnuniform::GeneTopo(){
     mediumSwNum = switches/(layerDegrees[1]/layerDegrees[0]/2);
     mediumLayer = layerNum-2;
     averageLabel = (maxLayerLabel-2)/mediumLayer;
+    swLayers.resize(switches);
+    for(int i = 0; i < switches; i++){
+        swLayers[i].push_back(0);
+    }
     for(int i = 0; i < switches; i++){
         for(int j = 0; j < mediumLayer; j++){
             layerChoose = rand()%averageLabel+1+j*averageLabel;
             while(layerSwitch[layerChoose].size() >= mediumSwNum)
                 layerChoose = rand()%averageLabel+1+j*averageLabel;
             layerSwitch[layerChoose].push_back(i);
+            swLayers[i].push_back(layerChoose);
         }
+    }
+    for(int i = 0; i < switches; i++){
+        swLayers[i].push_back(maxLayerLabel-1);
     }
     // for(int i = 0; i < maxLayerLabel; i++){
     //     PrintVectorInt(layerSwitch[i]);
+    // }
+    // for(int i = 0; i < switches; i++){
+    //     PrintVectorInt(swLayers[i]);
     // }
     for(int i = 0; i < switches; i++){
         possibleConnect[i].assign(tempVec.begin(), tempVec.end());
@@ -127,6 +138,101 @@ void FcUnuniform::GeneLink(std::vector<std::vector<int> > &possibleConnect, std:
     show("Topo constructed!");
 }
 
+
+void FcUnuniform::DFS(const std::vector<int>& heads, const std::vector<Edge>& edges, int start, int end){
+    if(returnFlag == 1)
+        return;
+    visitedGlobal[start] = 1;
+    stackGlobal.push_back(start);
+    int nearVertex;
+    if(start == end){
+        // PrintVectorInt(stackGlobal);
+        for(int i = 0; i < stackGlobal.size()/2; i++){
+        // for(int i = 0; i < 2; i++){
+            if(GetSwLabel(stackGlobal[i]) != GetSwLabel(stackGlobal[stackGlobal.size()-i-1])){
+                returnFlag = 1;
+                break;
+            }
+        }
+        stackGlobal.pop_back();
+        visitedGlobal[start] = 0;
+        return;
+    }
+    for(int i = heads[start]; i != -1; i = edges[i].nextEdgeIdex){
+        nearVertex = edges[i].toNode;
+        if(!visitedGlobal[nearVertex]){
+            DFS(heads, edges, nearVertex, end);
+        }
+    }
+    stackGlobal.pop_back();
+    visitedGlobal[start] = 0;
+
+}
+
+
+inline int FcUnuniform::GetVertexLabel(int swLabel, int layer, int ifDown){
+    return ifDown*switches*maxLayerLabel+layer*switches+swLabel;
+}
+
+inline int FcUnuniform::GetSwLabel(int vertexLabel){
+    return (vertexLabel%(switches*maxLayerLabel))%switches;
+}
+
+
+void FcUnuniform::GetCycleEdge(){
+    int totalNode, maxEdgeNum, edgeCount = 0, realLayer, cycleVer;
+    int totalEdgeAdd = 0, src, dst, srcLayer, dstLayer;
+    totalNode = switches*maxLayerLabel*2;
+    maxEdgeNum = switches*maxLayerLabel*totalUpPort*10;
+    std::vector<int> heads(totalNode, -1);
+    std::vector<Edge> edges(maxEdgeNum);
+    std::vector<int> globalVertex(switches);
+    InitVectorInt(globalVertex);
+    visitedGlobal.resize(totalNode);
+    swTovirLayer.resize(switches);
+    for(int i = 0; i < switches; i++){
+        AddEdges(heads, edges, GetVertexLabel(i,maxLayerLabel-1,0), GetVertexLabel(i,maxLayerLabel-1,1), edgeCount);
+        swTovirLayer[i] = maxLayerLabel-1;
+    }
+    for(int i = 0; i < maxLayerLabel-1; i++){
+        realLayer = maxLayerLabel-i-2;
+        for(int j = 0; j < switches; j++){
+            AddEdges(heads, edges, GetVertexLabel(j,realLayer,0), GetVertexLabel(j,realLayer+1,0), edgeCount);
+            AddEdges(heads, edges, GetVertexLabel(j,realLayer+1,1), GetVertexLabel(j,realLayer,1), edgeCount);
+        }
+    }
+    for(int i = 0; i < linkInfor.size(); i++){
+        src = linkInfor[i].srcNode.swLabel;
+        dst = linkInfor[i].dstNode.swLabel;
+        srcLayer = linkInfor[i].srcNode.layerLabel;
+        dstLayer = linkInfor[i].dstNode.layerLabel;
+        AddEdges(heads, edges, GetVertexLabel(src,srcLayer,1), GetVertexLabel(dst,dstLayer,1), edgeCount);
+        AddEdges(heads, edges, GetVertexLabel(dst,dstLayer,0), GetVertexLabel(src,srcLayer,0), edgeCount);
+    }
+    while(globalVertex.size() > 0){
+        cycleVer = globalVertex[rand()%globalVertex.size()];
+        for(int i = 0; i < layerNum-1; i++){
+            realLayer = swLayers[cycleVer][layerNum-i-2];
+            memset(&visitedGlobal[0], 0, sizeof(int)*totalNode);
+            stackGlobal.clear();
+            returnFlag = 0;
+            DFS(heads, edges, GetVertexLabel(cycleVer,realLayer,0), GetVertexLabel(cycleVer,realLayer,1));
+            if(returnFlag){
+                break;
+            }
+            else{
+                totalEdgeAdd++;
+                swTovirLayer[cycleVer] = realLayer;
+                if(i > 0)
+                    DeleLastEdges(heads, edges, edgeCount);
+                AddEdges(heads, edges, GetVertexLabel(cycleVer,realLayer,1), GetVertexLabel(cycleVer,realLayer,0), edgeCount);
+            }
+        }
+        RemoveVecEle(globalVertex, cycleVer);
+    }
+    PrintVectorInt(swTovirLayer);
+    show(totalEdgeAdd);
+}
 
 
 std::string FcUnuniform::GenePath(const std::string &path){

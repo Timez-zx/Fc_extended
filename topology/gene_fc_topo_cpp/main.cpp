@@ -54,9 +54,10 @@ int main(int argc, char* argv[]){
             break;
         }
     }
-    fcTest.SaveTopoInfor();
-    fcTest.MthreadKsp(16, 32, 1, 1, 1000);
-    double throughput = fcTest.throughputTest("ur", randomSeed, 32, 1, 14);
+    // fcTest.SaveTopoInfor();
+    fcTest.GetCycleEdge();
+    // fcTest.MthreadKsp(16, 32, 1, 1, 1000);
+    // double throughput = fcTest.throughputTest("ur", randomSeed, 32, 1, 14);
 
     
     gettimeofday(&end, NULL);
