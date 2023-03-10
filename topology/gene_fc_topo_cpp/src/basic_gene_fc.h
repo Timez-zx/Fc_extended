@@ -24,6 +24,20 @@ typedef struct _SwNode
     _SwNode(int swLabelIn, int layerLabelIn):swLabel(swLabelIn), layerLabel(layerLabelIn){}
 } SwNode;
 
+typedef struct _SwNodePort
+{
+    int swLabel;
+    int portLabel;
+    _SwNodePort(int swLabelIn, int portLabelIn):swLabel(swLabelIn), portLabel(portLabelIn){}
+} SwNodePort;
+
+typedef struct _SwLinkPort
+{
+    SwNodePort srcNode;
+    SwNodePort dstNode;
+    _SwLinkPort(const SwNodePort& srcNodeIn, const SwNodePort& dstNodeIn): srcNode(srcNodeIn), dstNode(dstNodeIn){}
+} SwLinkPort;
+
 typedef struct _SwLink
 {
     SwNode srcNode;

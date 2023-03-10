@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include "src/fc_extended.h"
 #include "src/fc_ununiform.h"
+#include "src/greedy_topo.h"
 using namespace std;
 
 
@@ -61,6 +62,7 @@ int main(int argc, char* argv[]){
     fcTest.MthreadKsp(16, 32, 1, 1, 1000);
     gettimeofday(&end, NULL);
     double throughput = fcTest.throughputTest("wr", 1, 32, 1, 14);
+
 
     
     gettimeofday(&end, NULL);
