@@ -148,6 +148,7 @@ void FcUnuniform::DFS(const std::vector<int>& heads, const std::vector<Edge>& ed
     int nearVertex;
     if(start == end){
         for(int i = 1; i < stackGlobal.size()/2; i++){
+        // for(int i = 1; i < 2; i++){
             if(GetSwLabel(stackGlobal[i]) != GetSwLabel(stackGlobal[stackGlobal.size()-i-1])){
                 returnFlag = 1;
                 break;
